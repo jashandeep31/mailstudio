@@ -8,10 +8,11 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "drizzle:generate": "tsx node_modules/drizzle-kit/bin.cjs generate",
     "drizzle:push": "tsx node_modules/drizzle-kit/bin.cjs push",
-    "drizzle:studio": "tsx node_modules/drizzle-kit/bin.cjs studio"
+    "drizzle:studio": "tsx node_modules/drizzle-kit/bin.cjs studio",
+    "dev": "tsc-watch --onSuccess \"node dist/index.js\""
   },
   "exports": {
-    "/": "./dist/index.js"
+    ".": "./dist/index.js"
   },
   "keywords": [],
   "author": "",
@@ -19,7 +20,8 @@
   "dependencies": {
     "dotenv": "^17.2.3",
     "drizzle-orm": "^0.45.1",
-    "pg": "^8.16.3"
+    "pg": "^8.16.3",
+    "tsc-watch": "^7.2.0"
   },
   "devDependencies": {
     "@types/pg": "^8.16.0",

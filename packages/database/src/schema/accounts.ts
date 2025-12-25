@@ -15,9 +15,9 @@ export const accountTable = pgTable("accounts", {
       onDelete: "cascade",
     }),
   provider: accountProviderEnum("provider").notNull(),
-  blocked: boolean().notNull(),
+  blocked: boolean().notNull().default(false),
 
-  last_login: timestamp().notNull(),
-  updated_at: timestamp().notNull(),
+  last_login: timestamp().notNull().defaultNow(),
+  updated_at: timestamp().notNull().defaultNow(),
   created_at: timestamp().notNull().defaultNow(),
 });
