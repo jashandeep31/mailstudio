@@ -4,7 +4,7 @@ const page = () => {
   return (
     <div className="space-y-6 pt-6 pb-8 md:pt-10 md:pb-12 lg:py-32">
       <div className="mx-auto flex max-w-[64rem] flex-col items-center gap-4 text-center">
-        <h1 className="font-heading text-3xl sm:text-5xl md:text-6xl lg:text-7xl">
+        <h1 className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl">
           Design, manage, and ship email templates — faster.
         </h1>
 
