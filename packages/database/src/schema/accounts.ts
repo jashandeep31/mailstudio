@@ -6,7 +6,7 @@ export const accountProviderEnum = pgEnum("provider", [
   "credentials",
 ]);
 
-export const accountTable = pgTable("accounts", {
+export const accountsTable = pgTable("accounts", {
   id: uuid("id").defaultRandom().primaryKey(),
   user_id: uuid("user_id")
     .notNull()

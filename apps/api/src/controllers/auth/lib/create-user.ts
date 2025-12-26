@@ -1,8 +1,15 @@
-import { accountProviderEnum, accountTable, db, usersTable } from "@repo/db";
+import {
+  accountProviderEnum,
+  accountsTable,
+  db,
+  eq,
+  usersTable,
+} from "@repo/db";
 interface CreateUser {
   email: string;
   name?: string | undefined;
   avatar?: string | undefined;
+  password?: string | undefined;
   provider: (typeof accountProviderEnum.enumValues)[number];
 }
 
@@ -11,42 +18,56 @@ export const createUser = async ({
   name,
   avatar,
   provider,
-}: CreateUser) => {
-  /* 
-1. Check if user exist and with which provider
-2. if yes return error
-3. if not create the user 
+  password,
+}: CreateUser): Promise<typeof usersTable.$inferSelect> => {
+  const [isUser] = await db
+    .select()
+    .from(usersTable)
+    .where(eq(usersTable.email, email));
+  if (isUser) {
+    const [isAccount] = await db
+      .select()
+      .from(accountsTable)
+      .where(eq(accountsTable.user_id, isUser.id));
 
-*/
+    if (isAccount && isAccount.provider !== "google") {
+      throw new Error("please login with the proper way");
+    }
 
-  const firstName: string =
-    name && name.trim().length > 0 && name.split(" ")[0]
-      ? name.split(" ")[0]!
-      : email.split("@")[0]!;
-
-  const lastName = name?.split(" ")[1] ?? null;
-  const avatarUrl = avatar ?? "test";
-  if (provider === "google") {
-    await db.transaction(async (tx) => {
-      const [user] = await db
-        .insert(usersTable)
-        .values({
-          email,
-          firstName,
-          lastName: lastName,
-          avatar: avatarUrl,
-          role: "user",
-        })
-        .returning();
-
-      if (!user) throw new Error();
-      await db
-        .insert(accountTable)
-        .values({
-          user_id: user.id,
-          provider: "google",
-        })
-        .returning();
-    });
+    return isUser;
   }
+
+  const getNames = (): [string, string?] => {
+    if (!name?.trim()) {
+      return [email.split("@")[0]!];
+    }
+    const parts = name.trim().split(" ");
+    const first = parts[0]!;
+    const last = parts.length > 1 ? parts[1] : undefined;
+    return last ? [first, last] : [first];
+  };
+  const [firstName, lastName] = getNames();
+  const avatarUrl = avatar ?? "test";
+  const user = await db.transaction(async (tx) => {
+    const [user] = await tx
+      .insert(usersTable)
+      .values({
+        email,
+        firstName,
+        lastName,
+        avatar: avatarUrl,
+        role: "user",
+        ...(password ? { password } : {}),
+      })
+      .returning();
+
+    if (!user) throw new Error("Unable to create the user");
+    await tx.insert(accountsTable).values({
+      user_id: user.id,
+      provider,
+      last_login: new Date(),
+    });
+    return user;
+  });
+  return user;
 };

@@ -14,3 +14,7 @@ export const usersTable = pgTable("users", {
   created_at: timestamp().defaultNow().notNull(),
   deleted_at: timestamp(),
 });
+export const testTable = pgTable("tests", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  name: varchar({ length: 255 }).notNull(),
+});

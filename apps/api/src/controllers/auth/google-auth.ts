@@ -50,10 +50,19 @@ export const googleAuthCallbackController = catchAsync(
 
     const parsedPayload = payloadSchema.parse(payload);
 
-    const user = createUser({
+    const user = await createUser({
       ...parsedPayload,
       provider: "google",
     });
-    res.status(200).json({ payload });
+    res.cookie(
+      "session",
+      JSON.stringify({
+        id: user.id,
+        email: user.email,
+        role: user.role,
+        issuedAt: new Date(),
+      }),
+    );
+    res.status(200).json({ message: "login success" });
   },
 );
