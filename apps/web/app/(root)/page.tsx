@@ -1,6 +1,14 @@
 import React from "react";
 import { Sparkles, Store } from "lucide-react";
-const page = () => {
+import { getSession } from "@/lib/get-session";
+import { redirect } from "next/navigation";
+const page = async () => {
+  const session = await getSession();
+  console.log(session);
+  if (session) {
+    redirect("/dashboard");
+  }
+
   return (
     <div className="space-y-6 pt-6 pb-8 md:pt-10 md:pb-12 lg:py-32">
       <div className="mx-auto flex max-w-[64rem] flex-col items-center gap-4 text-center">
