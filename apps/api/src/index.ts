@@ -4,11 +4,15 @@ import { env } from "./lib/env.js";
 import authRoutes from "./routes/auth-routes.js";
 import cookiesParser from "cookie-parser";
 import { checkAuthorization } from "./middlewares/check-authorization.js";
+import { createServer } from "node:http";
+import { WebSocketServer } from "ws";
+import { SocketHandler } from "./web-sockets/socket-handler.js";
 // app config.
 const app = express();
 app.use(express.json());
 app.use(cors());
 app.use(cookiesParser());
+const server = createServer(app);
 
 const RANDOM_CODE = Math.floor(Math.random() * 100);
 
@@ -28,6 +32,15 @@ app.get("/test", (req, res) => {
   });
 });
 
-app.listen(env.PORT, () => {
-  console.log(`server is running at the port ${env.PORT}.`);
+export const ws = new WebSocketServer({
+  server,
+});
+
+ws.on("connection", (socket, req) => {
+  console.log(`connection is herei`);
+  SocketHandler(socket);
+});
+
+server.listen(env.PORT, () => {
+  console.log(`Server is running at ${env.PORT}`);
 });
