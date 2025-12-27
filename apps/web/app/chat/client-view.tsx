@@ -10,11 +10,13 @@ import LeftPanel from "@/components/chat/left-panel";
 import { useWebSocketContext } from "@/contexts/web-socket-context";
 
 const ClientView = () => {
-  const socket = useWebSocketContext();
+  const ws = useWebSocketContext();
   useEffect(() => {
-    socket.send("gasdfj");
+    if (ws) {
+      ws.send("This is working");
+    }
     return () => {};
-  }, [socket]);
+  }, [ws]);
 
   return (
     <div className="flex min-h-screen flex-col p-2">

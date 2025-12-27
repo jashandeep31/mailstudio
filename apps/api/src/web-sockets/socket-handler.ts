@@ -8,6 +8,6 @@ export const SocketHandler = (socket: WebSocket) => {
     }),
   );
   socket.on("message", (e) => {
-    console.log(e);
+    console.log(e.toString());
   });
 };

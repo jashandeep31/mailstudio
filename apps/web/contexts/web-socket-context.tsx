@@ -1,13 +1,7 @@
 import { createContext, useContext, useEffect, useState } from "react";
-type WebSocketState =
-  | { status: "connecting" }
-  | { status: "connected"; socket: WebSocket }
-  | { status: "error"; error: Event }
-  | { status: "closed" };
 
-const WebSocketContext = createContext<WebSocketState>({
-  status: "connecting",
-});
+const WebSocketContext = createContext<WebSocket | null>(null);
+
 import React from "react";
 
 export default function WebSocketProvider({
@@ -15,24 +9,20 @@ export default function WebSocketProvider({
 }: {
   children: React.ReactNode;
 }) {
-  const [state, setState] = useState<WebSocketState>({
-    status: "connecting",
-  });
+  const [socket, setSocket] = useState<WebSocket | null>(null);
 
   useEffect(() => {
     const ws = new WebSocket("ws://localhost:8000");
 
     ws.onopen = () => {
-      setState({ status: "connected", socket: ws });
-    };
-
-    ws.onerror = (e) => {
-      setState({ status: "error", error: e });
+      setSocket(ws);
     };
 
     ws.onclose = () => {
-      setState({ status: "closed" });
+      setSocket(null);
     };
+
+    ws.onerror = () => {};
 
     return () => {
       ws.close();
@@ -40,7 +30,7 @@ export default function WebSocketProvider({
   }, []);
 
   return (
-    <WebSocketContext.Provider value={state}>
+    <WebSocketContext.Provider value={socket}>
       {children}
     </WebSocketContext.Provider>
   );
@@ -49,9 +39,5 @@ export default function WebSocketProvider({
 export const useWebSocketContext = () => {
   const ctx = useContext(WebSocketContext);
 
-  if (ctx.status !== "connected") {
-    throw new Error("WebSocket not connected");
-  }
-
-  return ctx.socket; // 🔥 only socket
+  return ctx;
 };
