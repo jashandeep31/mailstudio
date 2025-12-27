@@ -4,7 +4,6 @@ import { env } from "./lib/env.js";
 import authRoutes from "./routes/auth-routes.js";
 import cookiesParser from "cookie-parser";
 import { checkAuthorization } from "./middlewares/check-authorization.js";
-import { testFlow } from "./ai/mail/test-flow.js";
 // app config.
 const app = express();
 app.use(express.json());
@@ -12,9 +11,6 @@ app.use(cors());
 app.use(cookiesParser());
 
 const RANDOM_CODE = Math.floor(Math.random() * 100);
-
-// test code
-testFlow();
 
 // routes of all application
 app.use("/api/v1", authRoutes);

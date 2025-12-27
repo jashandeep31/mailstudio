@@ -3,8 +3,8 @@ import { googleGenAi } from "../config.js";
 import fs from "node:fs";
 import { z } from "zod";
 
-const PROPER_PROMPT: boolean = false;
-const LAYOUT_LAYOUT_PROMPT: boolean = false;
+const PROPER_PROMPT: boolean = true;
+const LAYOUT_LAYOUT_PROMPT: boolean = true;
 
 export const testFlow = async () => {
   const properPromptresponse = await getProperPrompt();
@@ -19,16 +19,6 @@ export const testFlow = async () => {
     JSON.stringify(array),
     processAllAtSectionInstructon,
   );
-  // let prevRes = "";
-  // // for (const section of array) {
-  // //   console.log(section.title);
-  // //   prevRes = await processEachSection(
-  // //     prevRes + section.description!,
-  // //     processEachSectionInstructon,
-  // //   );
-  // // }
-  console.log(`done`);
-  // console.log(JSON./str);
 };
 const processAllAtSection = async (content: string, instruction: string) => {
   const layoutPlanner = await googleGenAi.models.generateContent({
@@ -37,25 +27,11 @@ const processAllAtSection = async (content: string, instruction: string) => {
     config: { systemInstruction: instruction },
   });
   console.log(layoutPlanner.text);
-  fs.writeFileSync("final.txt", layoutPlanner.text!);
+  fs.writeFileSync("final1.txt", layoutPlanner.text!);
   return layoutPlanner.text!;
 };
 
-const processAllAtSectionInstructon = `You are profesioan emial writert in teh mjml format you write hte email in the proper format to be send across the client you ahve been based all the sections of the email please wrtie the them down in the proepr mjml mail which keeps it sself rpseonseive`;
-
-const processEachSection = async (content: string, instruction: string) => {
-  const layoutPlanner = await googleGenAi.models.generateContent({
-    model: "models/gemini-3-pro-preview",
-    contents: content!,
-    config: { systemInstruction: instruction },
-  });
-  console.log(layoutPlanner.text);
-  fs.writeFileSync("final.txt", layoutPlanner.text!);
-  return layoutPlanner.text!;
-};
-
-const processEachSectionInstructon = `
-Your are proffessional mjml; repsonsive email template writer we pass you each section of the email tempalte and you ahve to write it down to the mjml format while maiing the repsnoseive and hte other thisngs about hte section end result should be teh mjml wiht that section if their anyting inte mjml like section please ocntineue taking ti over with you you have to retun the full code`;
+const processAllAtSectionInstructon = `You are profesioan emial writert in teh mjml format you write hte email in the proper format to be send across the client you ahve been based all the sections of the email please wrtie the them down in the proepr mjml mail which keeps it sself rpseonseive dont  leave anything with the temp data always data the data to it fill some demo data when you are makieing anytjing`;
 
 const getlayoutplanner = async (
   content: string,
@@ -65,24 +41,8 @@ const getlayoutplanner = async (
     const layoutPlanner = await googleGenAi.models.generateContent({
       model: "models/gemini-3-pro-preview",
       contents: content!,
-      config: { systemInstruction: instruction },
-    });
-
-    fs.writeFileSync("layout.txt", layoutPlanner.text!);
-    return layoutPlanner.text!;
-  }
-  const res = fs.readFileSync("layout.txt", "utf-8");
-  return res;
-};
-
-const getProperPrompt = async (): Promise<string> => {
-  if (PROPER_PROMPT) {
-    const userPrompt = `Generate  the mail template for the i can send to hte client how have 3 items in teh cart form last 5 dastys i wanna ask him to make checkout and get the discount of 10% by using the code test.`;
-    const properPrompt = await googleGenAi.models.generateContent({
-      model: "models/gemini-3-pro-preview",
-      contents: userPrompt + JSON.stringify(brandKit),
       config: {
-        systemInstruction: SYSTEM_INSTRUCTION,
+        systemInstruction: instruction,
         responseMimeType: "application/json",
         responseSchema: {
           type: Type.OBJECT,
@@ -105,6 +65,24 @@ const getProperPrompt = async (): Promise<string> => {
             },
           },
         },
+      },
+    });
+
+    fs.writeFileSync("layout.txt", layoutPlanner.text!);
+    return layoutPlanner.text!;
+  }
+  const res = fs.readFileSync("layout.txt", "utf-8");
+  return res;
+};
+
+const getProperPrompt = async (): Promise<string> => {
+  if (PROPER_PROMPT) {
+    const userPrompt = `Create the mail tmepalte for the user had purchased hte items form the our webiste and now aer sennding him the invoicde keep it minimal so that user should be cpatable for seeing the each item of hte chekcout `;
+    const properPrompt = await googleGenAi.models.generateContent({
+      model: "models/gemini-3-pro-preview",
+      contents: userPrompt + JSON.stringify(brandKit),
+      config: {
+        systemInstruction: SYSTEM_INSTRUCTION,
       },
     });
 
