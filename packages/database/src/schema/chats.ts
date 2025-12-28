@@ -8,6 +8,7 @@ import {
   integer,
 } from "drizzle-orm/pg-core";
 import { usersTable } from "./users.js";
+import { brandKitsTabe } from "./brand-kits.js";
 
 export const projectsTable = pgTable("projects", {
   id: uuid().defaultRandom().primaryKey(),
@@ -46,6 +47,9 @@ export const versionPromptsTable = pgTable("version_prompts", {
     .references(() => projectVersionsTable.id, { onDelete: "cascade" }),
   prompt: text("prompt").notNull(),
   // BrandKit
+  brand_kit_id: uuid("brand_kit_id").references(() => brandKitsTabe.id, {
+    onDelete: "cascade",
+  }),
   // Images
   created_at: timestamp().notNull().defaultNow(),
 });
