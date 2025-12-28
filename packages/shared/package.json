@@ -1,0 +1,24 @@
+{
+  "name": "@repo/shared",
+  "version": "1.0.0",
+  "description": "",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "tsc-watch --onSuccess \"node dist/index.js\"",
+    "build": "npx tsc"
+  },
+  "exports": {
+    ".": "./dist/index.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "zod": "^4.1.13"
+  },
+  "devDependencies": {
+    "tsc-watch": "^7.2.0"
+  }
+}

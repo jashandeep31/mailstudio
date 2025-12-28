@@ -1,35 +1,27 @@
 "use client";
-import Navbar from "@/components/chat/navbar";
-import React, { useEffect } from "react";
-import {
-  ResizableHandle,
-  ResizablePanel,
-  ResizablePanelGroup,
-} from "@repo/ui/components/resizable";
-import LeftPanel from "@/components/chat/left-panel";
+import InputArea from "@/components/chat/input-area";
 import { useWebSocketContext } from "@/contexts/web-socket-context";
+import React, { useState } from "react";
 
-const ClientView = () => {
-  const ws = useWebSocketContext();
-  useEffect(() => {
-    if (ws) {
-      ws.send("This is working");
-    }
-    return () => {};
-  }, [ws]);
+export default function ClientView() {
+  const { sendEvent } = useWebSocketContext();
 
+  const [userPrompt, setUserPrompt] = useState("");
+  const handleSumbmit = () => {
+    sendEvent("event:new-chat", {
+      message: userPrompt,
+      media: [],
+    });
+  };
   return (
-    <div className="flex min-h-screen flex-col p-2">
-      <Navbar />
-      <div className="grid flex-1">
-        <ResizablePanelGroup className="h-full">
-          <LeftPanel />
-          <ResizableHandle />
-          <ResizablePanel></ResizablePanel>
-        </ResizablePanelGroup>
+    <div className="flex min-h-screen items-center justify-center">
+      <div className="min-w-[50%]">
+        <InputArea
+          userPrompt={userPrompt}
+          setUserPrompt={setUserPrompt}
+          handleSubmit={handleSumbmit}
+        />
       </div>
     </div>
   );
-};
-
-export default ClientView;
+}

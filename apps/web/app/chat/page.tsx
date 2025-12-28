@@ -1,12 +1,10 @@
-import { getSession } from "@/lib/get-session";
-import { redirect } from "next/navigation";
 import React from "react";
 import ClientView from "./client-view";
+import { getSession } from "@/lib/get-session";
+import { redirect } from "next/navigation";
 
-async function page() {
-  const session = await getSession();
-  if (!session) redirect("/");
+export default async function page() {
+  const session = getSession();
+  if (!session) redirect("/login");
   return <ClientView />;
 }
-
-export default page;

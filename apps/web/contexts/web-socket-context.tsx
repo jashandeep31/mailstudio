@@ -1,6 +1,24 @@
 import { createContext, useContext, useEffect, useState } from "react";
+import {
+  SocketEventSchemas,
+  SocketEventKey,
+  SocketEventPayload,
+} from "@repo/shared";
 
-const WebSocketContext = createContext<WebSocket | null>(null);
+type SendEvent = <K extends SocketEventKey>(
+  event: K,
+  payload: SocketEventPayload<K>,
+) => void;
+
+interface IWebSocketContext {
+  socket: WebSocket | null;
+  sendEvent: SendEvent;
+}
+
+const WebSocketContext = createContext<IWebSocketContext>({
+  socket: null,
+  sendEvent: () => {},
+});
 
 import React from "react";
 
@@ -10,6 +28,20 @@ export default function WebSocketProvider({
   children: React.ReactNode;
 }) {
   const [socket, setSocket] = useState<WebSocket | null>(null);
+
+  const sendEvent: SendEvent = (event, payload) => {
+    if (!socket) {
+      console.log("Socket not connected");
+      return;
+    }
+    const parsed = SocketEventSchemas[event].parse(payload);
+    socket.send(
+      JSON.stringify({
+        event,
+        data: parsed,
+      }),
+    );
+  };
 
   useEffect(() => {
     const ws = new WebSocket("ws://localhost:8000");
@@ -30,7 +62,12 @@ export default function WebSocketProvider({
   }, []);
 
   return (
-    <WebSocketContext.Provider value={socket}>
+    <WebSocketContext.Provider
+      value={{
+        socket: socket,
+        sendEvent,
+      }}
+    >
       {children}
     </WebSocketContext.Provider>
   );
