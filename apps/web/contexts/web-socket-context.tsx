@@ -50,6 +50,9 @@ export default function WebSocketProvider({
       setSocket(ws);
     };
 
+    ws.onmessage = (e) => {
+      console.log(e);
+    };
     ws.onclose = () => {
       setSocket(null);
     };

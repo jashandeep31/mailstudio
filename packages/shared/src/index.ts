@@ -1,4 +1,4 @@
-import { z, ZodXID } from "zod";
+import { z } from "zod";
 
 export const SocketEventSchemas = {
   "event:new-chat": z.object({

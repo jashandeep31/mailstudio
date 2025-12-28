@@ -11,12 +11,26 @@ export const SocketHandler = (socket: WebSocket) => {
   );
 
   socket.on("message", (e) => {
-    const { rawEvent, data } = JSON.parse(e.toString());
+    const { event: rawEvent, data: rawData } = JSON.parse(e.toString());
     const event = SocketEventKeySchema.parse(rawEvent);
-    const parsed = SocketEventSchemas[event].parse(data);
+    const parsedEvent = SocketEventSchemas[event].safeParse(rawData);
+    if (!parsedEvent.success) {
+      console.log(`errors`);
+      return;
+    }
+
+    const data = parsedEvent.data;
 
     switch (event) {
       case "event:new-chat":
+        socket.send(
+          JSON.stringify({
+            key: "res:fas",
+            data: {
+              redirectUrl: "dfa",
+            },
+          }),
+        );
         break;
       case "event:chat-message":
         break;
