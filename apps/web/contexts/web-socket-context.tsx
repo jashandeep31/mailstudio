@@ -21,6 +21,7 @@ const WebSocketContext = createContext<IWebSocketContext>({
 });
 
 import React from "react";
+import { redirect } from "next/navigation";
 
 export default function WebSocketProvider({
   children,
@@ -51,7 +52,7 @@ export default function WebSocketProvider({
     };
 
     ws.onmessage = (e) => {
-      console.log(e);
+      socketOnMessageHandler(e);
     };
     ws.onclose = () => {
       setSocket(null);
@@ -63,6 +64,16 @@ export default function WebSocketProvider({
       ws.close();
     };
   }, []);
+
+  const socketOnMessageHandler = (e: MessageEvent<any>) => {
+    const rawData = JSON.parse(e.data);
+    const key = rawData.key;
+    const data = rawData.data;
+    switch (key) {
+      case "res:new-chat":
+        redirect(data.redirectUrl);
+    }
+  };
 
   return (
     <WebSocketContext.Provider

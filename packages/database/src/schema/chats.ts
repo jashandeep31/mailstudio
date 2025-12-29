@@ -7,11 +7,12 @@ import {
   boolean,
   integer,
 } from "drizzle-orm/pg-core";
-import { usersTable } from "./users.js";
-import { brandKitsTabe } from "./brand-kits.js";
 
-export const projectsTable = pgTable("projects", {
-  id: uuid().defaultRandom().primaryKey(),
+import { usersTable } from "./users.js";
+import { brandKitsTable } from "./brand-kits.js";
+
+export const chatsTable = pgTable("chats", {
+  id: uuid("id").defaultRandom().primaryKey(),
 
   user_id: uuid("user_id")
     .notNull()
@@ -19,50 +20,76 @@ export const projectsTable = pgTable("projects", {
       onDelete: "cascade",
     }),
 
-  thumbnail: text(),
-  name: varchar(),
-  public: boolean().default(false),
-  updated_at: timestamp().notNull().defaultNow(),
-  created_at: timestamp().notNull().defaultNow(),
+  name: varchar("name", { length: 255 }).notNull(),
+  thumbnail: text("thumbnail"),
+
+  public: boolean("public").notNull().default(false),
+
+  created_at: timestamp("created_at", { withTimezone: true })
+    .notNull()
+    .defaultNow(),
+
+  updated_at: timestamp("updated_at", { withTimezone: true })
+    .notNull()
+    .defaultNow(),
 });
 
-export const projectVersionsTable = pgTable("project_versions", {
+export const chatVersionsTable = pgTable("chat_versions", {
   id: uuid("id").defaultRandom().primaryKey(),
 
-  project_id: uuid("project_id")
+  chat_id: uuid("chat_id")
     .notNull()
-    .references(() => projectsTable.id, { onDelete: "cascade" }),
-
-  versionNumber: integer("version_number").notNull(),
-
-  updated_at: timestamp().notNull().defaultNow(),
-  createdAt: timestamp("created_at").notNull().defaultNow(),
-});
-
-export const versionPromptsTable = pgTable("version_prompts", {
-  id: uuid("id").defaultRandom().primaryKey(),
-  version_id: uuid("version_id")
-    .notNull()
-    .unique()
-    .references(() => projectVersionsTable.id, { onDelete: "cascade" }),
-  prompt: text("prompt").notNull(),
-  // BrandKit
-  brand_kit_id: uuid("brand_kit_id").references(() => brandKitsTabe.id, {
-    onDelete: "cascade",
-  }),
-  // Images
-  created_at: timestamp().notNull().defaultNow(),
-});
-
-export const versionOutputsTable = pgTable("version_outputs", {
-  id: uuid("id").defaultRandom().primaryKey(),
-  version_id: uuid("version_id")
-    .notNull()
-    .unique()
-    .references(() => projectVersionsTable.id, {
+    .references(() => chatsTable.id, {
       onDelete: "cascade",
     }),
+
+  version_number: integer("version_number").notNull(),
+
+  created_at: timestamp("created_at", { withTimezone: true })
+    .notNull()
+    .defaultNow(),
+
+  updated_at: timestamp("updated_at", { withTimezone: true })
+    .notNull()
+    .defaultNow(),
+});
+
+export const chatVersionPromptsTable = pgTable("chat_version_prompts", {
+  id: uuid("id").defaultRandom().primaryKey(),
+
+  version_id: uuid("version_id")
+    .notNull()
+    .unique()
+    .references(() => chatVersionsTable.id, {
+      onDelete: "cascade",
+    }),
+
+  prompt: text("prompt").notNull(),
+
+  brand_kit_id: uuid("brand_kit_id").references(() => brandKitsTable.id, {
+    onDelete: "cascade",
+  }),
+
+  created_at: timestamp("created_at", { withTimezone: true })
+    .notNull()
+    .defaultNow(),
+});
+
+export const chat_version_outputsTable = pgTable("chat_version_outputs", {
+  id: uuid("id").defaultRandom().primaryKey(),
+
+  version_id: uuid("version_id")
+    .notNull()
+    .unique()
+    .references(() => chatVersionsTable.id, {
+      onDelete: "cascade",
+    }),
+
   overview: text("overview"),
+
   output_code: text("output_code").notNull(),
-  created_at: timestamp("created_at").notNull().defaultNow(),
+
+  created_at: timestamp("created_at", { withTimezone: true })
+    .notNull()
+    .defaultNow(),
 });

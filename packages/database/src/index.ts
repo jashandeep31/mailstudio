@@ -13,3 +13,6 @@ await db.insert(testTable).values({
 
 export * from "./schema/accounts.js";
 export * from "./schema/users.js";
+export * from "./schema/chats.js";
+export * from "./schema/brand-kits.js";
+export * from "./schema/chat-media.js";

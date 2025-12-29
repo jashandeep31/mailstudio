@@ -8,7 +8,7 @@ import {
 } from "drizzle-orm/pg-core";
 import { usersTable } from "./users.js";
 
-export const brandKitsTabe = pgTable("brand_kits", {
+export const brandKitsTable = pgTable("brand_kits", {
   id: uuid("id").defaultRandom().primaryKey(),
   user_id: uuid("user_id")
     .notNull()
