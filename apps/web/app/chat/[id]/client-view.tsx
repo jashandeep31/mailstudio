@@ -21,10 +21,18 @@ export interface Version {
   chat_verion_outputs?: typeof chatVersionOutputsTable.$inferSelect;
 }
 
+export type StreamingOverview = {
+  versionId: string;
+  chatId: string;
+  questionId: string;
+  response: string;
+} | null;
 const ClientView = () => {
   const params = useParams();
   const { sendEvent, socket } = useWebSocketContext();
 
+  const [streamingOverview, setStreamingOverview] =
+    useState<StreamingOverview>(null);
   const [versions, setVersions] = useState<Version[]>([]);
 
   useEffect(() => {
@@ -33,6 +41,14 @@ const ClientView = () => {
         const parsedData = JSON.parse(e.data);
         if (parsedData.key === "res:chat-data") {
           setVersions(parsedData.data.versions);
+        }
+        if (parsedData.key === "res:stream-answer") {
+          setStreamingOverview({
+            versionId: parsedData.data.versionId,
+            chatId: parsedData.data.chatId,
+            questionId: parsedData.data.questionId,
+            response: parsedData.data.response,
+          });
         }
       };
     }
@@ -50,7 +66,10 @@ const ClientView = () => {
       <Navbar />
       <div className="grid flex-1">
         <ResizablePanelGroup className="h-full">
-          <LeftPanel versions={versions} />
+          <LeftPanel
+            versions={versions}
+            streamingOverview={streamingOverview}
+          />
           <ResizableHandle />
           <ResizablePanel></ResizablePanel>
         </ResizablePanelGroup>

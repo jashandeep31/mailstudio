@@ -2,12 +2,13 @@ import { ResizablePanel } from "@repo/ui/components/resizable";
 import React from "react";
 import { Button } from "@repo/ui/components/button";
 import { Copy, PencilLine } from "lucide-react";
-import { Version } from "@/app/chat/[id]/client-view";
+import { StreamingOverview, Version } from "@/app/chat/[id]/client-view";
 
 interface LeftPanel {
   versions: Version[];
+  streamingOverview: StreamingOverview;
 }
-export default function LeftPanel({ versions }: LeftPanel) {
+export default function LeftPanel({ versions, streamingOverview }: LeftPanel) {
   return (
     <ResizablePanel className="flex flex-col p-3" defaultSize={"25%"}>
       {versions.map((version) => (
@@ -15,13 +16,14 @@ export default function LeftPanel({ versions }: LeftPanel) {
           {version.chat_version_prompts && (
             <UserChatBubble message={version.chat_version_prompts.prompt} />
           )}
+
           <div className="mt-3">
             <p className="text-muted-foreground text-sm font-bold">Working..</p>
-            <p className="text-muted-foreground mt-1 text-sm">
-              I&apos;ll create a login page inspired by the Apollo.io design you
-              shared. Let me first understand your codebase structure, then
-              build the login page component.
-            </p>
+            {streamingOverview?.versionId === version.chat_versions.id && (
+              <p className="text-muted-foreground mt-1 text-sm">
+                {streamingOverview.response}
+              </p>
+            )}
           </div>
         </div>
       ))}
