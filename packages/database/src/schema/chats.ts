@@ -75,7 +75,7 @@ export const chatVersionPromptsTable = pgTable("chat_version_prompts", {
     .defaultNow(),
 });
 
-export const chat_version_outputsTable = pgTable("chat_version_outputs", {
+export const chatVersionOutputsTable = pgTable("chat_version_outputs", {
   id: uuid("id").defaultRandom().primaryKey(),
 
   version_id: uuid("version_id")

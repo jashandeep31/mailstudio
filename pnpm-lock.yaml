@@ -81,6 +81,9 @@ importers:
 
   apps/web:
     dependencies:
+      '@repo/db':
+        specifier: workspace:*
+        version: link:../../packages/database
       '@repo/shared':
         specifier: workspace:*
         version: link:../../packages/shared

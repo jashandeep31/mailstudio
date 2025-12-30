@@ -12,6 +12,9 @@ export const SocketEventSchemas = {
     media: z.array(z.string()),
     brandKitId: z.string().optional(),
   }),
+  "event:joined-chat": z.object({
+    chatId: z.string(),
+  }),
 } as const;
 
 export const SocketEventKeySchema = z.enum(
