@@ -9,6 +9,7 @@ import { handleQuestionEvent } from "./handlers/handle-question-event.js";
 import z, { keyof } from "zod";
 import { handleChatJoinEvent } from "./handlers/handle-chat-join-event.js";
 import { streamAndHandleQuestionOverview } from "./functions/stream-and-handle-question-overview.js";
+import { ChatRoom } from "./index.js";
 
 // {"event":"event:new-chat","data":{"message":"","media":[]}}
 export const SocketHandler = async (socket: WebSocket) => {
@@ -61,6 +62,17 @@ create the mail template for user to verify the mail by clicking the button belo
             },
           }),
         );
+
+        ChatRoom.set(parsedData.chatId, {
+          userId: "",
+          streaming: true,
+          questionId: "56b2b3ce-3912-4a2f-acec-9b0d573221bb",
+          onHold: false,
+          createdAt: new Date(),
+          leftOn: new Date(),
+          isUserConnected: true,
+        });
+
         let str2 = "";
         for (const char of string) {
           await new Promise((resolve) => setTimeout(resolve, 10));

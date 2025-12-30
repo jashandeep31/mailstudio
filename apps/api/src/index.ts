@@ -7,7 +7,7 @@ import { checkAuthorization } from "./middlewares/check-authorization.js";
 import { createServer } from "node:http";
 import { WebSocketServer } from "ws";
 import { SocketHandler } from "./web-sockets/socket-handler.js";
-
+import cookie from "cookie";
 // app config.
 const app = express();
 app.use(express.json());
@@ -39,6 +39,10 @@ export const ws = new WebSocketServer({
 
 ws.on("connection", (socket, req) => {
   console.log(`connection is herei`);
+  const parsedCookie = cookie.parse(req.headers.cookie!);
+  const session = JSON.parse(decodeURIComponent(parsedCookie.session!));
+  console.log(session);
+  socket.userId = session.id;
   SocketHandler(socket);
 });
 
