@@ -17,7 +17,7 @@ export const handleQuestionEvent = async (
     if (!chatVersion) throw new Error("Failed to create the chat");
     await db.insert(chatVersionPromptsTable).values({
       version_id: chatVersion.id,
-      prompt: "hwo to makeit ",
+      prompt: data.message,
     });
 
     return chatVersion;

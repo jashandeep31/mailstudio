@@ -45,7 +45,6 @@ export const SocketHandler = (socket: WebSocket) => {
       case "event:joined-chat": {
         const parsedData = getParsedData(event, rawData);
         const versions = await handleChatJoinEvent(parsedData);
-        console.log(versions);
         socket.send(
           JSON.stringify({
             key: "res:chat-data",

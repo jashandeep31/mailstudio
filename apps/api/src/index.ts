@@ -7,6 +7,7 @@ import { checkAuthorization } from "./middlewares/check-authorization.js";
 import { createServer } from "node:http";
 import { WebSocketServer } from "ws";
 import { SocketHandler } from "./web-sockets/socket-handler.js";
+
 // app config.
 const app = express();
 app.use(express.json());
