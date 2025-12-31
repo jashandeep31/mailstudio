@@ -9,7 +9,7 @@ import { handleQuestionEvent } from "./handlers/handle-question-event.js";
 import z, { keyof } from "zod";
 import { handleChatJoinEvent } from "./handlers/handle-chat-join-event.js";
 import { streamAndHandleQuestionOverview } from "./functions/stream-and-handle-question-overview.js";
-import { ChatRoom } from "./index.js";
+import { ChatRoom } from "./chat-room.js";
 
 // {"event":"event:new-chat","data":{"message":"","media":[]}}
 export const SocketHandler = async (socket: WebSocket) => {
@@ -19,8 +19,6 @@ export const SocketHandler = async (socket: WebSocket) => {
       message: "Connected to server",
     }),
   );
-  const string = `l Studio
-create the mail template for user to verify the mail by clicking the button below he has the new signup on our platform. If he doesn't done it then don't perform any action we willa uto delete on the no verificationWorking.. I'll create a login page inspired by the Apollo.io design you shared. Let me first understand your codebase structure, then build the login page component.`;
 
   socket.on("message", async (e) => {
     const { event: rawEvent, data: rawData } = JSON.parse(e.toString());
@@ -48,6 +46,12 @@ create the mail template for user to verify the mail by clicking the button belo
           chatId: chat.id,
         });
         if (!chatQuestion) throw new Error("Something went wrong");
+        // streamAndHandleQuestionOverview({
+        //   chatId: chat.id,
+        //   questionId: chatQuestion.id,
+        //   question: chatQuestion.prompt,
+        //   socket,
+        // });
 
         break;
       }
@@ -62,32 +66,20 @@ create the mail template for user to verify the mail by clicking the button belo
             },
           }),
         );
-
-        ChatRoom.set(parsedData.chatId, {
-          userId: "",
-          streaming: true,
-          questionId: "56b2b3ce-3912-4a2f-acec-9b0d573221bb",
-          onHold: false,
-          createdAt: new Date(),
-          leftOn: new Date(),
-          isUserConnected: true,
+        const chatRoom = ChatRoom.get(parsedData.chatId);
+        if (!chatRoom) return;
+        chatRoom.socket = socket;
+        socket.once("close", () => {
+          chatRoom.abortController?.abort();
+          ChatRoom.delete(parsedData.chatId);
         });
-
-        let str2 = "";
-        for (const char of string) {
-          await new Promise((resolve) => setTimeout(resolve, 10));
-          str2 += char;
-          socket.send(
-            JSON.stringify({
-              key: "res:stream-answer",
-              data: {
-                versionId: "82c0a77e-bfa6-4349-b5d7-03bb7d7aa875",
-                chatId: "ec596619-1b42-47ed-8ea0-3876e194fdbf",
-                questionId: "56b2b3ce-3912-4a2f-acec-9b0d573221bb",
-                response: str2,
-              },
-            }),
-          );
+        if (chatRoom.pendingStream) {
+          startStream({
+            chatId: parsedData.chatId,
+            socket,
+            questionId: chatRoom.pendingStream.questionId,
+            question: chatRoom.pendingStream.question,
+          });
         }
 
         break;
@@ -108,3 +100,11 @@ export const getParsedData = <K extends keyof typeof SocketEventSchemas>(
   }
   return parsedResult.data as z.infer<(typeof SocketEventSchemas)[K]>;
 };
+function startStream(arg0: {
+  chatId: string;
+  socket: WebSocket;
+  questionId: any;
+  question: any;
+}) {
+  throw new Error("Function not implemented.");
+}
