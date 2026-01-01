@@ -1,11 +1,38 @@
 import { googleGenAi } from "../config.js";
 
 export async function* getQuestionOverview(prompt: string) {
-  const response = await googleGenAi.models.generateContentStream({
-    model: "models/gemini-3-pro-preview",
-    contents: prompt,
-    config: {
-      systemInstruction: `You are a professional prompt analyzer and overview writer. 
+  let enabled = false;
+  if (enabled) {
+    const response = await googleGenAi.models.generateContentStream({
+      model: "models/gemini-3-pro-preview",
+      contents: prompt,
+      config: {
+        systemInstruction: SYSTEM_INSTRUCTION,
+      },
+    });
+    let tempText = "";
+    for await (const chunk of response) {
+      if (!chunk.text) continue; // ignore non-text parts
+      tempText += chunk.text;
+      yield { text: tempText, done: false };
+    }
+    yield { text: tempText, done: true };
+  }
+  let tempText = "";
+
+  for (const char of SYSTEM_INSTRUCTION) {
+    tempText += char;
+    yield { text: tempText, done: false };
+    await new Promise<void>((resolve, reject) => {
+      setTimeout(() => {
+        resolve();
+      }, 100);
+    });
+  }
+  yield { text: tempText, done: true };
+}
+
+const SYSTEM_INSTRUCTION = `You are a professional prompt analyzer and overview writer. 
 
 When a user sends you a prompt (e.g., "create a mail template for user signup"), your task is to:
 1. Acknowledge what the user is asking for
@@ -19,16 +46,4 @@ Example:
 User prompt: "create a mail template regarding user signup"
 Your response: "I'll create a comprehensive signup email template tailored to your needs. This will include a warm welcome message, clear call-to-action buttons, user verification steps, and brand-consistent styling. The template will be mobile-responsive and include best practices for user engagement, ensuring new users feel welcomed while guiding them through the initial setup process effectively."
 
-Always maintain this professional, overview-style format in your responses.`,
-    },
-  });
-
-  let tempText = "";
-  for await (const chunk of response) {
-    const text = chunk.text;
-    tempText += text;
-    const data = chunk.data;
-    yield { text: text, done: false };
-  }
-  yield { text: tempText, done: true };
-}
+Always maintain this professional, overview-style format in your responses.`;

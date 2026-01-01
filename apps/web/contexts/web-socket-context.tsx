@@ -108,6 +108,9 @@ export default function WebSocketProvider({
     switch (key) {
       case "res:new-chat":
         redirect(data.redirectUrl);
+        break;
+      case "res:stream-answer":
+        console.log(data);
     }
   };
 

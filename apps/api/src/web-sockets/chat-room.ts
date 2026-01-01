@@ -7,4 +7,4 @@ type ChatRoom = {
     question: string;
   } | null;
 };
-export const ChatRoom = new Map<string, ChatRoom>();
+export const ChatRooms = new Map<string, ChatRoom>();

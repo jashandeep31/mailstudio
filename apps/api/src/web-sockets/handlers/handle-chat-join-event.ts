@@ -7,10 +7,13 @@ import {
   eq,
 } from "@repo/db";
 import { SocketEventSchemas } from "@repo/shared";
+import WebSocket from "ws";
 import z from "zod";
+import { streamAndHandleQuestion } from "../functions/stream-and-handle-question.js";
 
 export const handleChatJoinEvent = async (
   data: z.infer<(typeof SocketEventSchemas)["event:joined-chat"]>,
+  socket: WebSocket,
 ) => {
   const versions = await db
     .select()
@@ -26,5 +29,16 @@ export const handleChatJoinEvent = async (
     )
     .orderBy(desc(chatVersionsTable.version_number))
     .limit(3);
+
+  // sending the chat data  to the user
+  socket.send(
+    JSON.stringify({
+      key: "res:chat-data",
+      data: {
+        versions,
+      },
+    }),
+  );
+
   return versions;
 };
