@@ -4,7 +4,7 @@ import { useWebSocketContext } from "@/contexts/web-socket-context";
 import React, { useState } from "react";
 
 export default function ClientView() {
-  const { sendEvent } = useWebSocketContext();
+  const { sendEvent, isConnected } = useWebSocketContext();
 
   const [userPrompt, setUserPrompt] = useState(
     "create the mail template for user to verify the mail by clicking the button below he has the new signup on our platform. If he doesn't done it then don't perform any action we will auto delete on the no verification",
@@ -23,6 +23,7 @@ export default function ClientView() {
           setUserPrompt={setUserPrompt}
           handleSubmit={handleSumbmit}
         />
+        <p>{isConnected ? "yes" : "no"}</p>
       </div>
     </div>
   );

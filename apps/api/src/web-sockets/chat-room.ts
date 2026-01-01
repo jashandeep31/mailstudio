@@ -1,4 +1,4 @@
-type ChatSession = {
+type ChatRoom = {
   chatId: string;
   socket: WebSocket | null;
   abortController: AbortController | null;

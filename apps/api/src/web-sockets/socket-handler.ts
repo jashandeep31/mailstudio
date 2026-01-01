@@ -68,11 +68,11 @@ export const SocketHandler = async (socket: WebSocket) => {
         );
         const chatRoom = ChatRoom.get(parsedData.chatId);
         if (!chatRoom) return;
-        chatRoom.socket = socket;
-        socket.once("close", () => {
-          chatRoom.abortController?.abort();
-          ChatRoom.delete(parsedData.chatId);
-        });
+        // chatRoom.socket = socket;
+        // socket.once("close", () => {
+        //   chatRoom.abortController?.abort();
+        //   ChatRoom.delete(parsedData.chatId);
+        // });
         if (chatRoom.pendingStream) {
           startStream({
             chatId: parsedData.chatId,

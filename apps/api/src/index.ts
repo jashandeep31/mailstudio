@@ -38,10 +38,13 @@ export const ws = new WebSocketServer({
 });
 
 ws.on("connection", (socket, req) => {
-  console.log(`connection is herei`);
+  const cookies = req.headers.cookie;
+  if (!cookies) {
+    console.log(`not authenticated `);
+    return;
+  }
   const parsedCookie = cookie.parse(req.headers.cookie!);
   const session = JSON.parse(decodeURIComponent(parsedCookie.session!));
-  console.log(session);
   socket.userId = session.id;
   SocketHandler(socket);
 });
