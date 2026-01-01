@@ -61,6 +61,21 @@ export default function WebSocketProvider({
     socket.send(payloadString);
   };
 
+  const socketOnMessageHandler = useCallback(
+    (e: MessageEvent<string>) => {
+      const rawData = JSON.parse(e.data);
+      const key = rawData.key;
+      const data = rawData.data;
+      switch (key) {
+        case "res:new-chat":
+          router.push(`${data.redirectUrl}`);
+          break;
+        case "res:stream-answer":
+          console.log(data);
+      }
+    },
+    [router],
+  );
   const connect = useCallback(() => {
     try {
       const ws = new WebSocket("ws://localhost:8000");
@@ -97,24 +112,11 @@ export default function WebSocketProvider({
     } catch {
       console.log(`errro is thies`);
     }
-  }, []);
+  }, [socketOnMessageHandler]);
 
   useEffect(() => {
     connect();
   }, [connect]);
-
-  const socketOnMessageHandler = (e: MessageEvent<string>) => {
-    const rawData = JSON.parse(e.data);
-    const key = rawData.key;
-    const data = rawData.data;
-    switch (key) {
-      case "res:new-chat":
-        router.push(`${data.redirectUrl}`);
-        break;
-      case "res:stream-answer":
-        console.log(data);
-    }
-  };
 
   return (
     <WebSocketContext.Provider

@@ -4,6 +4,7 @@ import { handleNewChatEvent } from "./handlers/handle-new-chat-event.js";
 import { handleQuestionEvent } from "./handlers/handle-question-event.js";
 import z from "zod";
 import { handleChatJoinEvent } from "./handlers/handle-chat-join-event.js";
+import { ProcesingVersions } from "../state/processing-versions-state.js";
 
 export const SocketHandler = async (socket: WebSocket) => {
   socket.on("message", async (e) => {
@@ -32,7 +33,29 @@ export const SocketHandler = async (socket: WebSocket) => {
       case "event:joined-chat": {
         const data = getParsedData(event, rawData);
         await handleChatJoinEvent(data, socket);
+        const ProcesingVersion = ProcesingVersions.get(
+          `${socket.userId}::${data.chatId}`,
+        );
+        if (!ProcesingVersion) return;
+        ProcesingVersion.sockets.add(socket);
+        socket.send(
+          JSON.stringify({
+            key: "res:chat-stream",
+            data: {
+              questionId: ProcesingVersion.questionId,
+              answer: ProcesingVersion.overviewOutput,
+            },
+          }),
+        );
         break;
+      }
+      case "event:left-chat": {
+        const data = getParsedData(event, rawData);
+        const ProcesingVersion = ProcesingVersions.get(
+          `${socket.userId}::${data.chatId}`,
+        );
+        if (!ProcesingVersion) return;
+        ProcesingVersion.sockets.delete(socket);
       }
       case "event:chat-message":
         break;

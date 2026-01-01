@@ -15,6 +15,9 @@ export const SocketEventSchemas = {
   "event:joined-chat": z.object({
     chatId: z.string(),
   }),
+  "event:left-chat": z.object({
+    chatId: z.string(),
+  }),
 } as const;
 
 export const SocketEventKeySchema = z.enum(

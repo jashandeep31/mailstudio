@@ -35,6 +35,14 @@ const ClientView = () => {
     useState<StreamingOverview>(null);
   const [versions, setVersions] = useState<Version[]>([]);
 
+  useEffect(() => {
+    return () => {
+      sendEvent("event:left-chat", {
+        chatId: params.id! as string,
+      });
+    };
+  }, [params.id, sendEvent]);
+
   // useEffect(() => {
   //   if (socket) {
   //     // socket.onmessage = (e) => {
