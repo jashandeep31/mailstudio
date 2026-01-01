@@ -44,4 +44,6 @@ export const streamAndHandleQuestion = async ({
       }
     }
   }
+  currentStreamData.isDone = true;
+  ProcesingVersions.delete(key);
 };

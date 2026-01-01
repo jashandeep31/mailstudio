@@ -11,6 +11,7 @@ import {
   SocketEventKey,
   SocketEventPayload,
 } from "@repo/shared";
+import { v4 as uuid } from "uuid";
 
 // constants
 const MAX_RECONNECT_ATTEMPTS = 5;
@@ -70,8 +71,8 @@ export default function WebSocketProvider({
         case "res:new-chat":
           router.push(`${data.redirectUrl}`);
           break;
-        case "res:stream-answer":
-          console.log(data);
+        default:
+        // TODO: move the zustand store
       }
     },
     [router],
@@ -92,7 +93,6 @@ export default function WebSocketProvider({
         }
       };
       ws.onmessage = (e) => {
-        console.log(e);
         socketOnMessageHandler(e);
       };
       ws.onclose = () => {
