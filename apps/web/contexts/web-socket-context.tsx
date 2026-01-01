@@ -35,13 +35,14 @@ const WebSocketContext = createContext<IWebSocketContext>({
 });
 
 import React from "react";
-import { redirect } from "next/navigation";
+import { useRouter } from "next/navigation";
 
 export default function WebSocketProvider({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const router = useRouter();
   const [socket, setSocket] = useState<WebSocket | null>(null);
   const reconnectAttemptCountRef = useRef(0);
   const [isConnected, setIsConnected] = useState<boolean>(false);
@@ -63,6 +64,7 @@ export default function WebSocketProvider({
   const connect = useCallback(() => {
     try {
       const ws = new WebSocket("ws://localhost:8000");
+
       ws.onopen = () => {
         setIsConnected(true);
         setSocket(ws);
@@ -75,6 +77,7 @@ export default function WebSocketProvider({
         }
       };
       ws.onmessage = (e) => {
+        console.log(e);
         socketOnMessageHandler(e);
       };
       ws.onclose = () => {
@@ -84,7 +87,6 @@ export default function WebSocketProvider({
         // Attempting to reconnect to the server
         if (reconnectAttemptCountRef.current < MAX_RECONNECT_ATTEMPTS) {
           reconnectAttemptCountRef.current++;
-          connect();
           setTimeout(() => {
             connect();
           }, RECONNECT_INTERVAL);
@@ -107,7 +109,7 @@ export default function WebSocketProvider({
     const data = rawData.data;
     switch (key) {
       case "res:new-chat":
-        redirect(data.redirectUrl);
+        router.push(`${data.redirectUrl}`);
         break;
       case "res:stream-answer":
         console.log(data);

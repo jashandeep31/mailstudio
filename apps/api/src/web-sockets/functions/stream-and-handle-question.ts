@@ -27,11 +27,11 @@ export const streamAndHandleQuestion = async ({
   ProcesingVersions.set(key, currentStreamData);
   // chunk= {text:"ai repsonse" , done boolean}
   for await (const chunk of getQuestionOverview(chatQuestion.prompt)) {
-    console.log(chunk);
+    // console.log(chunk);
     currentStreamData.overviewOutput = chunk.text || "";
     for (const socket of currentStreamData.sockets) {
       if (socket.readyState === socket.OPEN) {
-        console.log(`sokcet is senign the serusilt`);
+        // console.log(`sokcet is senign the serusilt`);
         socket.send(
           JSON.stringify({
             key: "res:stream-answer",

@@ -29,30 +29,31 @@ export type StreamingOverview = {
 } | null;
 const ClientView = () => {
   const params = useParams();
-  const { sendEvent, socket } = useWebSocketContext();
+  const { sendEvent } = useWebSocketContext();
 
   const [streamingOverview, setStreamingOverview] =
     useState<StreamingOverview>(null);
   const [versions, setVersions] = useState<Version[]>([]);
 
-  useEffect(() => {
-    if (socket) {
-      socket.onmessage = (e) => {
-        const parsedData = JSON.parse(e.data);
-        if (parsedData.key === "res:chat-data") {
-          setVersions(parsedData.data.versions);
-        }
-        if (parsedData.key === "res:stream-answer") {
-          setStreamingOverview({
-            versionId: parsedData.data.versionId,
-            chatId: parsedData.data.chatId,
-            questionId: parsedData.data.questionId,
-            response: parsedData.data.response,
-          });
-        }
-      };
-    }
-  }, [socket]);
+  // useEffect(() => {
+  //   if (socket) {
+  //     // socket.onmessage = (e) => {
+  //     //   const parsedData = JSON.parse(e.data);
+  //     //   if (parsedData.key === "res:chat-data") {
+  //     //     console.log(`dat`);
+  //     //     setVersions(parsedData.data.versions);
+  //     //   }
+  //     //   if (parsedData.key === "res:stream-answer") {
+  //     //     setStreamingOverview({
+  //     //       versionId: parsedData.data.versionId,
+  //     //       chatId: parsedData.data.chatId,
+  //     //       questionId: parsedData.data.questionId,
+  //     //       response: parsedData.data.response,
+  //     //     });
+  //     //   }
+  //     // };
+  //   }
+  // }, [socket]);
 
   useEffect(() => {
     sendEvent("event:joined-chat", {

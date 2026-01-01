@@ -7,6 +7,7 @@ import { handleChatJoinEvent } from "./handlers/handle-chat-join-event.js";
 
 export const SocketHandler = async (socket: WebSocket) => {
   socket.on("message", async (e) => {
+    console.log(`mesatge `, e.toString());
     const { event: rawEvent, data: rawData } = JSON.parse(e.toString());
     const event = SocketEventKeySchema.parse(rawEvent);
     const parsedEvent = SocketEventSchemas[event].safeParse(rawData);
