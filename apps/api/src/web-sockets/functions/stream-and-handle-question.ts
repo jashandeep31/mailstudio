@@ -1,4 +1,4 @@
-import { chatVersionPromptsTable } from "@repo/db";
+import { chatVersionOutputsTable, chatVersionPromptsTable, db } from "@repo/db";
 import { getQuestionOverview } from "../../ai/mail/get-question-overview.js";
 import { ProcesingVersions } from "../../state/processing-versions-state.js";
 import WebSocket from "ws";
@@ -24,14 +24,22 @@ export const streamAndHandleQuestion = async ({
     sockets: new Set<WebSocket>(),
     abortController: new AbortController(),
   };
+  socket.send(
+    JSON.stringify({
+      key: "res:stream-answer",
+      data: {
+        versionId: chatQuestion.version_id,
+        chatId: chatId,
+        questionId: chatQuestion.id,
+        response: "",
+      },
+    }),
+  );
   ProcesingVersions.set(key, currentStreamData);
-  // chunk= {text:"ai repsonse" , done boolean}
   for await (const chunk of getQuestionOverview(chatQuestion.prompt)) {
-    // console.log(chunk);
     currentStreamData.overviewOutput = chunk.text || "";
     for (const socket of currentStreamData.sockets) {
       if (socket.readyState === socket.OPEN) {
-        // console.log(`sokcet is senign the serusilt`);
         socket.send(
           JSON.stringify({
             key: "res:stream-answer",
@@ -47,5 +55,11 @@ export const streamAndHandleQuestion = async ({
     }
   }
   currentStreamData.isDone = true;
+
+  await db.insert(chatVersionOutputsTable).values({
+    version_id: chatQuestion.version_id,
+    overview: currentStreamData.overviewOutput,
+    output_code: currentStreamData.overviewOutput,
+  });
   ProcesingVersions.delete(key);
 };

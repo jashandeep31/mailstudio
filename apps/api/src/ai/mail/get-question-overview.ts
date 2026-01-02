@@ -1,10 +1,10 @@
 import { googleGenAi } from "../config.js";
 
 export async function* getQuestionOverview(prompt: string) {
-  let enabled = false;
+  let enabled = true;
   if (enabled) {
     const response = await googleGenAi.models.generateContentStream({
-      model: "models/gemini-3-pro-preview",
+      model: "models/gemini-flash-latest",
       contents: prompt,
       config: {
         systemInstruction: SYSTEM_INSTRUCTION,
@@ -17,19 +17,20 @@ export async function* getQuestionOverview(prompt: string) {
       yield { text: tempText, done: false };
     }
     yield { text: tempText, done: true };
-  }
-  let tempText = "";
+  } else {
+    let tempText = "";
 
-  for (const char of SYSTEM_INSTRUCTION) {
-    tempText += char;
-    yield { text: tempText, done: false };
-    await new Promise<void>((resolve, reject) => {
-      setTimeout(() => {
-        resolve();
-      }, 200);
-    });
+    for (const char of SYSTEM_INSTRUCTION) {
+      tempText += char;
+      yield { text: tempText, done: false };
+      await new Promise<void>((resolve, reject) => {
+        setTimeout(() => {
+          resolve();
+        }, 200);
+      });
+    }
+    yield { text: tempText, done: true };
   }
-  yield { text: tempText, done: true };
 }
 
 const SYSTEM_INSTRUCTION = `You are a professional prompt analyzer and overview writer. 

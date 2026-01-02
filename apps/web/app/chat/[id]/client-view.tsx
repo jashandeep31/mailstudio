@@ -19,7 +19,7 @@ import { useSocketEvents } from "@/zustand-store/socket-events-store";
 export interface Version {
   chat_versions: typeof chatVersionsTable.$inferSelect;
   chat_version_prompts?: typeof chatVersionPromptsTable.$inferSelect;
-  chat_verion_outputs?: typeof chatVersionOutputsTable.$inferSelect;
+  chat_version_outputs?: typeof chatVersionOutputsTable.$inferSelect;
 }
 
 export type StreamingOverview = {

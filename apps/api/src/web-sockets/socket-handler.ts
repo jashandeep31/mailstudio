@@ -38,15 +38,6 @@ export const SocketHandler = async (socket: WebSocket) => {
         );
         if (!ProcesingVersion) return;
         ProcesingVersion.sockets.add(socket);
-        // socket.send(
-        //   JSON.stringify({
-        //     key: "res:chat-stream",
-        //     data: {
-        //       questionId: ProcesingVersion.questionId,
-        //       answer: ProcesingVersion.overviewOutput,
-        //     },
-        //   }),
-        // );
         break;
       }
       case "event:left-chat": {
