@@ -36,8 +36,10 @@ export const streamAndHandleQuestion = async ({
           JSON.stringify({
             key: "res:stream-answer",
             data: {
-              chatId,
-              overviewOutput: currentStreamData.overviewOutput,
+              versionId: chatQuestion.version_id,
+              chatId: chatId,
+              questionId: chatQuestion.id,
+              response: chunk.text,
             },
           }),
         );

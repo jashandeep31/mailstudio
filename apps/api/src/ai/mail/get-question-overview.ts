@@ -26,7 +26,7 @@ export async function* getQuestionOverview(prompt: string) {
     await new Promise<void>((resolve, reject) => {
       setTimeout(() => {
         resolve();
-      }, 100);
+      }, 200);
     });
   }
   yield { text: tempText, done: true };

@@ -1,6 +1,6 @@
 "use client";
 import Navbar from "@/components/chat/navbar";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import {
   ResizableHandle,
   ResizablePanel,
@@ -14,6 +14,7 @@ import {
   chatVersionPromptsTable,
   chatVersionsTable,
 } from "@repo/db";
+import { useSocketEvents } from "@/zustand-store/socket-events-store";
 
 export interface Version {
   chat_versions: typeof chatVersionsTable.$inferSelect;
@@ -28,46 +29,38 @@ export type StreamingOverview = {
   response: string;
 } | null;
 const ClientView = () => {
+  const { events } = useSocketEvents();
+  const eventsArray = useMemo(() => [...events.values()], [events]);
+
   const params = useParams();
   const { sendEvent } = useWebSocketContext();
-
   const [streamingOverview, setStreamingOverview] =
     useState<StreamingOverview>(null);
   const [versions, setVersions] = useState<Version[]>([]);
-
   useEffect(() => {
-    return () => {
-      sendEvent("event:left-chat", {
-        chatId: params.id! as string,
-      });
-    };
-  }, [params.id, sendEvent]);
-
-  // useEffect(() => {
-  //   if (socket) {
-  //     // socket.onmessage = (e) => {
-  //     //   const parsedData = JSON.parse(e.data);
-  //     //   if (parsedData.key === "res:chat-data") {
-  //     //     console.log(`dat`);
-  //     //     setVersions(parsedData.data.versions);
-  //     //   }
-  //     //   if (parsedData.key === "res:stream-answer") {
-  //     //     setStreamingOverview({
-  //     //       versionId: parsedData.data.versionId,
-  //     //       chatId: parsedData.data.chatId,
-  //     //       questionId: parsedData.data.questionId,
-  //     //       response: parsedData.data.response,
-  //     //     });
-  //     //   }
-  //     // };
-  //   }
-  // }, [socket]);
+    for (const event of eventsArray) {
+      if (event.key === "res:chat-data") {
+        setVersions(event.data.versions);
+      } else if (event.key === "res:stream-answer") {
+        setStreamingOverview({
+          versionId: event.data.versionId,
+          chatId: event.data.chatId,
+          questionId: event.data.questionId,
+          response: event.data.response,
+        });
+      }
+    }
+  }, [eventsArray]);
 
   useEffect(() => {
     sendEvent("event:joined-chat", {
       chatId: params.id as string,
     });
-    return () => {};
+    return () => {
+      sendEvent("event:left-chat", {
+        chatId: params.id! as string,
+      });
+    };
   }, [params.id, sendEvent]);
 
   return (

@@ -37,12 +37,14 @@ const WebSocketContext = createContext<IWebSocketContext>({
 
 import React from "react";
 import { useRouter } from "next/navigation";
+import { useSocketEvents } from "@/zustand-store/socket-events-store";
 
 export default function WebSocketProvider({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const addEvent = useSocketEvents((s) => s.addEvent);
   const router = useRouter();
   const [socket, setSocket] = useState<WebSocket | null>(null);
   const reconnectAttemptCountRef = useRef(0);
@@ -72,10 +74,14 @@ export default function WebSocketProvider({
           router.push(`${data.redirectUrl}`);
           break;
         default:
-        // TODO: move the zustand store
+          addEvent({
+            id: uuid(),
+            data,
+            key: key,
+          });
       }
     },
-    [router],
+    [router, addEvent],
   );
   const connect = useCallback(() => {
     try {
