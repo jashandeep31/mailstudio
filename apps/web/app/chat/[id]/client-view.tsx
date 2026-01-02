@@ -9,18 +9,9 @@ import {
 import LeftPanel from "@/components/chat/left-panel";
 import { useParams } from "next/navigation";
 import { useWebSocketContext } from "@/contexts/web-socket-context";
-import {
-  chatVersionOutputsTable,
-  chatVersionPromptsTable,
-  chatVersionsTable,
-} from "@repo/db";
-import { useSocketEvents } from "@/zustand-store/socket-events-store";
 
-export interface Version {
-  chat_versions: typeof chatVersionsTable.$inferSelect;
-  chat_version_prompts?: typeof chatVersionPromptsTable.$inferSelect;
-  chat_version_outputs?: typeof chatVersionOutputsTable.$inferSelect;
-}
+import { useSocketEvents } from "@/zustand-store/socket-events-store";
+import { useChatStore } from "@/zustand-store/chat-store";
 
 export type StreamingOverview = {
   versionId: string;
@@ -29,18 +20,23 @@ export type StreamingOverview = {
   response: string;
 } | null;
 const ClientView = () => {
-  const { events } = useSocketEvents();
-  const eventsArray = useMemo(() => [...events.values()], [events]);
-
   const params = useParams();
   const { sendEvent } = useWebSocketContext();
+  // chat store
+  const { events } = useSocketEvents();
+  const chatVersions = useChatStore((s) => s.chatVersions);
+  const setChatVersions = useChatStore((s) => s.setChatVersions);
+
+  // converting to the array
+  const eventsArray = useMemo(() => [...events.values()], [events]);
+
   const [streamingOverview, setStreamingOverview] =
     useState<StreamingOverview>(null);
-  const [versions, setVersions] = useState<Version[]>([]);
+
   useEffect(() => {
     for (const event of eventsArray) {
       if (event.key === "res:chat-data") {
-        setVersions(event.data.versions);
+        setChatVersions(event.data.versions);
       } else if (event.key === "res:stream-answer") {
         setStreamingOverview({
           versionId: event.data.versionId,
@@ -50,7 +46,7 @@ const ClientView = () => {
         });
       }
     }
-  }, [eventsArray]);
+  }, [eventsArray, setChatVersions]);
 
   useEffect(() => {
     sendEvent("event:joined-chat", {
@@ -69,7 +65,7 @@ const ClientView = () => {
       <div className="grid flex-1">
         <ResizablePanelGroup className="h-full">
           <LeftPanel
-            versions={versions}
+            versions={chatVersions}
             streamingOverview={streamingOverview}
           />
           <ResizableHandle />

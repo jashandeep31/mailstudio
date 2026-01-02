@@ -2,10 +2,11 @@ import { ResizablePanel } from "@repo/ui/components/resizable";
 import React from "react";
 import { Button } from "@repo/ui/components/button";
 import { Copy, PencilLine } from "lucide-react";
-import { StreamingOverview, Version } from "@/app/chat/[id]/client-view";
+import { StreamingOverview } from "@/app/chat/[id]/client-view";
+import { ChatVersionAggregate } from "@/app/chat/[id]/types";
 
 interface LeftPanel {
-  versions: Version[];
+  versions: ChatVersionAggregate[];
   streamingOverview: StreamingOverview;
 }
 export default function LeftPanel({ versions, streamingOverview }: LeftPanel) {
