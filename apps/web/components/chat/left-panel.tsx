@@ -2,8 +2,7 @@ import { ResizablePanel } from "@repo/ui/components/resizable";
 import React from "react";
 import { Button } from "@repo/ui/components/button";
 import { Copy, PencilLine } from "lucide-react";
-import { StreamingOverview } from "@/app/chat/[id]/client-view";
-import { ChatVersionAggregate } from "@/app/chat/[id]/types";
+import { ChatVersionAggregate, StreamingOverview } from "@/app/chat/[id]/types";
 
 interface LeftPanel {
   versions: ChatVersionAggregate[];

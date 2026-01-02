@@ -13,12 +13,6 @@ import { useWebSocketContext } from "@/contexts/web-socket-context";
 import { useSocketEvents } from "@/zustand-store/socket-events-store";
 import { useChatStore } from "@/zustand-store/chat-store";
 
-export type StreamingOverview = {
-  versionId: string;
-  chatId: string;
-  questionId: string;
-  response: string;
-} | null;
 const ClientView = () => {
   const params = useParams();
   const { sendEvent } = useWebSocketContext();
@@ -26,19 +20,18 @@ const ClientView = () => {
   const { events } = useSocketEvents();
   const chatVersions = useChatStore((s) => s.chatVersions);
   const setChatVersions = useChatStore((s) => s.setChatVersions);
+  const activeStream = useChatStore((s) => s.activeStream);
+  const setActiveStream = useChatStore((s) => s.setActiveStream);
 
   // converting to the array
   const eventsArray = useMemo(() => [...events.values()], [events]);
-
-  const [streamingOverview, setStreamingOverview] =
-    useState<StreamingOverview>(null);
 
   useEffect(() => {
     for (const event of eventsArray) {
       if (event.key === "res:chat-data") {
         setChatVersions(event.data.versions);
       } else if (event.key === "res:stream-answer") {
-        setStreamingOverview({
+        setActiveStream({
           versionId: event.data.versionId,
           chatId: event.data.chatId,
           questionId: event.data.questionId,
@@ -46,7 +39,7 @@ const ClientView = () => {
         });
       }
     }
-  }, [eventsArray, setChatVersions]);
+  }, [eventsArray, setActiveStream, setChatVersions]);
 
   useEffect(() => {
     sendEvent("event:joined-chat", {
@@ -64,10 +57,7 @@ const ClientView = () => {
       <Navbar />
       <div className="grid flex-1">
         <ResizablePanelGroup className="h-full">
-          <LeftPanel
-            versions={chatVersions}
-            streamingOverview={streamingOverview}
-          />
+          <LeftPanel versions={chatVersions} streamingOverview={activeStream} />
           <ResizableHandle />
           <ResizablePanel></ResizablePanel>
         </ResizablePanelGroup>
