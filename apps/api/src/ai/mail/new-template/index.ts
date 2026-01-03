@@ -1,4 +1,3 @@
-import { Type } from "@google/genai";
 import { googleGenAi } from "../../config.js";
 
 interface CreateNewMailTemplate {
@@ -12,17 +11,17 @@ export const createNewMailTemplate = async ({ prompt }: CreateNewMailTemplate) =
   const properPrompt = await getProperPrompt(prompt)
 
   const finalTemplate = await processAllAtSection(properPrompt)
-  console.log(finalTemplate)
+  return finalTemplate;
 }
 const processAllAtSection = async (content: string) => {
   const processAllAtSectionInstruction = `You are a professional email writer in the MJML format. You write emails in the proper format to be sent to clients. You have been given all the sections of the email. Please write them in proper MJML format which keeps itself responsive. Don't leave anything with temp data - always fill in demo data when you are creating content. Return ONLY the raw MJML code - no markdown formatting, no code blocks, no escape characters, just the working MJML code.`;
-
+  // TODO: handle the text repsonse properly so that if the <mjml contain some random text in teh start we can remove it 
+  //TODO: same for the end of the text if contain something beghin the </mjml>
   const layoutPlanner = await googleGenAi.models.generateContent({
     model: "models/gemini-3-pro-preview",
     contents: content!,
     config: {
       systemInstruction: processAllAtSectionInstruction,
-      // Remove responseMimeType and responseSchema to get plain text
     },
   });
 

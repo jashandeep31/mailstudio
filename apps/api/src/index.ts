@@ -33,11 +33,11 @@ app.get("/test", (req, res) => {
     session,
   });
 });
-createNewMailTemplate({
-  prompt: `create the mail tempalte for sneding to user  to verify the email `
-  , brandKitId: null,
-  media: []
-})
+// createNewMailTemplate({
+//   prompt: `create the mail tempalte for sneding to user  to verify the email `
+//   , brandKitId: null,
+//   media: []
+// })
 export const ws = new WebSocketServer({
   server,
 });

@@ -3,6 +3,7 @@ import { getQuestionOverview } from "../../ai/mail/get-question-overview.js";
 import { ProcesingVersions } from "../../state/processing-versions-state.js";
 import WebSocket from "ws";
 import mjml2html from "mjml";
+import { createNewMailTemplate } from "../../ai/mail/new-template/index.js";
 interface StreamAndHandleQuestion {
   chatQuestion: typeof chatVersionPromptsTable.$inferSelect;
   chatId: string;
@@ -14,8 +15,21 @@ export const streamAndHandleQuestion = async ({
   chatId,
   socket,
 }: StreamAndHandleQuestion) => {
+  const [overview, mjml] = await Promise.all([await StreamOverview({ socket, chatId, chatQuestion }), await createNewMailTemplate({ prompt: chatQuestion.prompt, brandKitId: null, media: [] })]
+  )
+
+  const html_code = mjml2html(mjml);
+  await db.insert(chatVersionOutputsTable).values({
+    version_id: chatQuestion.version_id,
+    overview: overview,
+    mjml_code: mjml,
+    html_code: html_code.html,
+  });
+  ProcesingVersions.delete(`${socket.userId}::${chatId}`);
+};
+
+const StreamOverview = async ({ socket, chatQuestion, chatId, }: StreamAndHandleQuestion): Promise<string> => {
   const key = `${socket.userId}::${chatId}`;
-  if (ProcesingVersions.has(key)) return;
 
   const currentStreamData = {
     chatId,
@@ -56,29 +70,6 @@ export const streamAndHandleQuestion = async ({
     }
   }
   currentStreamData.isDone = true;
-  const html_code = mjml2html(tempMjmlCode);
-  await db.insert(chatVersionOutputsTable).values({
-    version_id: chatQuestion.version_id,
-    overview: currentStreamData.overviewOutput,
-    mjml_code: tempMjmlCode,
-    html_code: html_code.html,
-  });
-  ProcesingVersions.delete(key);
-};
+  return currentStreamData.overviewOutput;
+}
 
-
-const tempMjmlCode = `<mjml>
-  <mj-body>
-    <mj-section>
-      <mj-column>
-
-        <mj-image width="100px" src="/assets/img/logo-small.png"></mj-image>
-
-        <mj-divider border-color="#F45E43"></mj-divider>
-
-        <mj-text font-size="20px" color="#F45E43" font-family="helvetica">Hello World</mj-text>
-
-      </mj-column>
-    </mj-section>
-  </mj-body>
-</mjml>`
