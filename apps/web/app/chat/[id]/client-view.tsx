@@ -9,9 +9,9 @@ import {
 import LeftPanel from "@/components/chat/left-panel";
 import { useParams } from "next/navigation";
 import { useWebSocketContext } from "@/contexts/web-socket-context";
-
 import { useSocketEvents } from "@/zustand-store/socket-events-store";
 import { useChatStore } from "@/zustand-store/chat-store";
+import { RightPanel } from "@/components/chat/right-panel"
 
 const ClientView = () => {
   const params = useParams();
@@ -59,7 +59,7 @@ const ClientView = () => {
         <ResizablePanelGroup className="h-full">
           <LeftPanel versions={chatVersions} streamingOverview={activeStream} />
           <ResizableHandle />
-          <ResizablePanel></ResizablePanel>
+          <RightPanel></RightPanel>
         </ResizablePanelGroup>
       </div>
     </div>
