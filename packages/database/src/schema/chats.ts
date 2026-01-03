@@ -86,8 +86,8 @@ export const chatVersionOutputsTable = pgTable("chat_version_outputs", {
     }),
 
   overview: text("overview"),
-
-  output_code: text("output_code").notNull(),
+  mjml_code: text().notNull(),
+  html_code: text().notNull(),
 
   created_at: timestamp("created_at", { withTimezone: true })
     .notNull()

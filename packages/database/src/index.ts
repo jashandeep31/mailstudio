@@ -7,9 +7,10 @@ export * from "drizzle-orm";
 export const db = drizzle(process.env.DATABASE_URL!, {
   schema: { usersTable, accountsTable, testTable },
 });
-await db.insert(testTable).values({
-  name: "test",
-});
+// Just for the testing purposes 
+// await db.insert(testTable).values({
+//   name: "test",
+// });
 
 export * from "./schema/accounts.js";
 export * from "./schema/users.js";

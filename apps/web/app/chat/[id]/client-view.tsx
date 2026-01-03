@@ -12,6 +12,7 @@ import { useWebSocketContext } from "@/contexts/web-socket-context";
 import { useSocketEvents } from "@/zustand-store/socket-events-store";
 import { useChatStore } from "@/zustand-store/chat-store";
 import { RightPanel } from "@/components/chat/right-panel"
+import { ChatVersionAggregate } from "./types";
 
 const ClientView = () => {
   const params = useParams();
@@ -22,14 +23,19 @@ const ClientView = () => {
   const setChatVersions = useChatStore((s) => s.setChatVersions);
   const activeStream = useChatStore((s) => s.activeStream);
   const setActiveStream = useChatStore((s) => s.setActiveStream);
-
+  const setSelectedVersion = useChatStore(s => s.setSelectedVersion);
   // converting to the array
   const eventsArray = useMemo(() => [...events.values()], [events]);
 
   useEffect(() => {
     for (const event of eventsArray) {
       if (event.key === "res:chat-data") {
-        setChatVersions(event.data.versions);
+        const versions: ChatVersionAggregate[] = event.data.versions;
+        setChatVersions(versions);
+        const lastVersion = versions.at(-1);
+        if (lastVersion) {
+          setSelectedVersion(lastVersion)
+        }
       } else if (event.key === "res:stream-answer") {
         setActiveStream({
           versionId: event.data.versionId,
