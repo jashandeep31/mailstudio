@@ -1,46 +1,67 @@
 import { ResizablePanel } from "@repo/ui/components/resizable";
-import React from "react";
+import React, { useState } from "react";
 import { Button } from "@repo/ui/components/button";
 import { Copy, PencilLine } from "lucide-react";
 import { ChatVersionAggregate, StreamingOverview } from "@/app/chat/[id]/types";
+import InputArea from "./input-area";
 
 interface LeftPanel {
   versions: ChatVersionAggregate[];
   streamingOverview: StreamingOverview;
 }
-export default function LeftPanel({ versions, streamingOverview }: LeftPanel) {
-  return (
-    <ResizablePanel className="flex flex-col p-3" defaultSize={"25%"}>
-      {versions.map((version) => (
-        <div className="flex-1" key={version.chat_versions.id}>
-          {version.chat_version_prompts && (
-            <UserChatBubble message={version.chat_version_prompts.prompt} />
-          )}
 
-          {streamingOverview?.versionId === version.chat_versions.id &&
-            !version.chat_version_outputs && (
-              <div className="mt-3">
-                <p className="text-muted-foreground text-sm font-bold">
-                  Working..
-                </p>
-                <p className="text-muted-foreground mt-1 text-sm">
-                  {streamingOverview.response}
-                </p>
-              </div>
+export default function LeftPanel({ versions, streamingOverview }: LeftPanel) {
+  const [userPrompt, setUserPrompt] = useState(
+    "create the mail template for user to verify the mail...",
+  );
+
+  const handleSumbmit = () => {};
+
+  return (
+    <ResizablePanel
+      defaultSize={"25%"}
+      className="flex h-full min-h-0 w-full flex-col p-3"
+    >
+      {/* 🔹 SCROLLABLE MESSAGES */}
+      <div className="min-h-0 flex-1 overflow-y-auto pr-2">
+        {versions.map((version) => (
+          <div key={version.chat_versions.id} className="mb-4">
+            {version.chat_version_prompts && (
+              <UserChatBubble message={version.chat_version_prompts.prompt} />
             )}
-          <div className="mt-3">
+
+            {streamingOverview?.versionId === version.chat_versions.id &&
+              !version.chat_version_outputs && (
+                <div className="mt-3">
+                  <p className="text-muted-foreground text-sm font-bold">
+                    Working..
+                  </p>
+                  <p className="text-muted-foreground mt-1 text-sm">
+                    {streamingOverview.response}
+                  </p>
+                </div>
+              )}
+
             {version.chat_version_outputs && (
-              <p className="text-muted-foreground mt-1 text-sm">
+              <p className="text-muted-foreground mt-2 text-sm">
                 {version.chat_version_outputs.overview}
               </p>
             )}
           </div>
-        </div>
-      ))}
+        ))}
+      </div>
+
+      {/* 🔹 FIXED INPUT */}
+      <div className="shrink-0 pt-3">
+        <InputArea
+          userPrompt={userPrompt}
+          setUserPrompt={setUserPrompt}
+          handleSubmit={handleSumbmit}
+        />
+      </div>
     </ResizablePanel>
   );
 }
-
 interface UserChatBubble {
   message: string;
 }

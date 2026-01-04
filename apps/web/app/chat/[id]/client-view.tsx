@@ -59,10 +59,11 @@ const ClientView = () => {
   }, [params.id, sendEvent]);
 
   return (
-    <div className="flex min-h-screen flex-col p-2">
+    <div className="flex h-screen flex-col p-2">
       <Navbar />
-      <div className="grid flex-1">
-        <ResizablePanelGroup className="h-full">
+
+      <div className="min-h-0 flex-1">
+        <ResizablePanelGroup>
           <LeftPanel versions={chatVersions} streamingOverview={activeStream} />
           <ResizableHandle />
           <RightPanel />

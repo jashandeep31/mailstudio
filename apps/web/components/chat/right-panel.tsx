@@ -16,7 +16,7 @@ import { CodeView } from "./code-view";
 import { MailTemplatePreviewer } from "./mail-template-preivewer";
 
 export const RightPanel = (props: {}) => {
-  const [view, setView] = useState<"code" | "preview">("code");
+  const [view, setView] = useState<"code" | "preview">("preview");
   // store
   const selectedVersion = useChatStore((s) => s.selectedVersion);
   const activeStream = useChatStore((s) => s.activeStream);
