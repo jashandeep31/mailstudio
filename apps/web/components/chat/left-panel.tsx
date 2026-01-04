@@ -12,7 +12,7 @@ interface LeftPanel {
 
 export default function LeftPanel({ versions, streamingOverview }: LeftPanel) {
   const [userPrompt, setUserPrompt] = useState(
-    "create the mail template for user to verify the mail...",
+    "The template is missing proper formatting please do in and make it looking little better",
   );
 
   const handleSumbmit = () => {};

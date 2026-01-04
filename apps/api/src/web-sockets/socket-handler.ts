@@ -47,8 +47,17 @@ export const SocketHandler = async (socket: WebSocket) => {
         );
         if (!ProcesingVersion) return;
         ProcesingVersion.sockets.delete(socket);
+        break;
       }
       case "event:chat-message":
+        const data = getParsedData(event, rawData);
+        //         const data: {
+        //     chatId: string;
+        //     message: string;
+        //     media: string[];
+        //     brandKitId?: string | undefined;
+        // }
+
         break;
     }
   });
