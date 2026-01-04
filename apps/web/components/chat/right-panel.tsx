@@ -16,7 +16,7 @@ import { CodeView } from "./code-view";
 import { MailTemplatePreviewer } from "./mail-template-preivewer";
 
 export const RightPanel = (props: {}) => {
-  const [view, setView] = useState<"code" | "preview">("preview");
+  const [view, setView] = useState<"code" | "preview">("code");
   // store
   const selectedVersion = useChatStore((s) => s.selectedVersion);
   const activeStream = useChatStore((s) => s.activeStream);
@@ -29,10 +29,10 @@ export const RightPanel = (props: {}) => {
     );
   };
   return (
-    <ResizablePanel>
-      <div className="flex h-full w-full flex-col justify-center">
+    <ResizablePanel defaultSize={"75%"} className="grid">
+      <div className="flex h-full flex-col justify-center">
         <ChatTopControlBar view={view} setView={setView} />
-        <div className="col flex-1 bg-red-100">
+        <div className="grid flex-1">
           {view === "preview" ? (
             <MailTemplatePreviewer
               html={selectedVersion.chat_version_outputs?.html_code}

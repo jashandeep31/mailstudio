@@ -11,7 +11,7 @@ import { useParams } from "next/navigation";
 import { useWebSocketContext } from "@/contexts/web-socket-context";
 import { useSocketEvents } from "@/zustand-store/socket-events-store";
 import { useChatStore } from "@/zustand-store/chat-store";
-import { RightPanel } from "@/components/chat/right-panel"
+import { RightPanel } from "@/components/chat/right-panel";
 import { ChatVersionAggregate } from "./types";
 
 const ClientView = () => {
@@ -23,7 +23,7 @@ const ClientView = () => {
   const setChatVersions = useChatStore((s) => s.setChatVersions);
   const activeStream = useChatStore((s) => s.activeStream);
   const setActiveStream = useChatStore((s) => s.setActiveStream);
-  const setSelectedVersion = useChatStore(s => s.setSelectedVersion);
+  const setSelectedVersion = useChatStore((s) => s.setSelectedVersion);
   // converting to the array
   const eventsArray = useMemo(() => [...events.values()], [events]);
 
@@ -34,7 +34,7 @@ const ClientView = () => {
         setChatVersions(versions);
         const lastVersion = versions.at(-1);
         if (lastVersion) {
-          setSelectedVersion(lastVersion)
+          setSelectedVersion(lastVersion);
         }
       } else if (event.key === "res:stream-answer") {
         setActiveStream({
@@ -65,7 +65,7 @@ const ClientView = () => {
         <ResizablePanelGroup className="h-full">
           <LeftPanel versions={chatVersions} streamingOverview={activeStream} />
           <ResizableHandle />
-          <RightPanel></RightPanel>
+          <RightPanel />
         </ResizablePanelGroup>
       </div>
     </div>
