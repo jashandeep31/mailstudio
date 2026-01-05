@@ -13,12 +13,13 @@ export const refineMailTemplate = async ({
   prevMjmlCode,
 }: RefineMailTemplate) => {
   const properPrompt = await rewritePromptForDownstreamModel(prompt);
-  const refinedMJMLTemplate = generateRefinedMjmlCode(
+  const refinedMJMLTemplate = await generateRefinedMjmlCode(
     properPrompt + prevMjmlCode,
   );
+  console.log(refinedMJMLTemplate);
 };
 
-export const generateRefinedMjmlCode = async (userPrompt: string) => {
+const generateRefinedMjmlCode = async (userPrompt: string) => {
   const SYSTEM_INSTRUCTION = `
 You are a professional MJML email template developer.
 
@@ -44,7 +45,7 @@ Your task:
 
   return response.text!;
 };
-export const rewritePromptForDownstreamModel = async (userPrompt: string) => {
+const rewritePromptForDownstreamModel = async (userPrompt: string) => {
   const SYSTEM_INSTRUCTION = `
 You are a professional prompt writer.
 The user provides MJML email template code and requested changes.

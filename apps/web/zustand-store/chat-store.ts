@@ -15,8 +15,7 @@ export const useChatStore = create<ChatStore>((set) => ({
   selectedVersion: null,
   setSelectedVersion: (version: ChatVersionAggregate) =>
     set({ selectedVersion: version }),
-  setChatVersions: (versions) =>
-    set({ chatVersions: [...versions, ...versions, ...versions] }),
+  setChatVersions: (versions) => set({ chatVersions: versions }),
   activeStream: null,
   setActiveStream: (stream) => set({ activeStream: stream }),
 }));

@@ -9,42 +9,157 @@ interface CreateNewMailTemplate {
 export const createNewMailTemplate = async ({
   prompt,
 }: CreateNewMailTemplate) => {
-  // 1. get the proper prompt
   const properPrompt = await getProperPrompt(prompt);
-
   const finalTemplate = await processAllAtSection(properPrompt);
   return finalTemplate;
 };
 const processAllAtSection = async (content: string) => {
-  const processAllAtSectionInstruction = `You are a professional email writer in the MJML format. You write emails in the proper format to be sent to clients. You have been given all the sections of the email. Please write them in proper MJML format which keeps itself responsive. Don't leave anything with temp data - always fill in demo data when you are creating content. Return ONLY the raw MJML code - no markdown formatting, no code blocks, no escape characters, just the working MJML code.`;
-  // TODO: handle the text repsonse properly so that if the <mjml contain some random text in teh start we can remove it
-  //TODO: same for the end of the text if contain something beghin the </mjml>
   const layoutPlanner = await googleGenAi.models.generateContent({
     model: "models/gemini-3-pro-preview",
-    contents: content!,
+    contents: `
+Convert the following email sections into a complete MJML email.
+
+IMPORTANT:
+- Use the provided content as the source of truth
+- Infer layout and hierarchy if needed
+- Always include header, body, CTA, and footer
+- Ensure the result is reusable and production-ready
+
+EMAIL SECTIONS:
+${content}`,
     config: {
-      systemInstruction: processAllAtSectionInstruction,
+      systemInstruction: GENERATE_MAIL_TEMPLATE_FROM_PROMPT_SYSTEM_INSTRUCTION,
     },
   });
 
   return layoutPlanner.text!;
 };
 const getProperPrompt = async (userPrompt: string): Promise<string> => {
-  const SYSTEM_INSTRUCTION = `
-You are a proffesional prompt rewriter. what you do is that the user passes you the prompt and you enazlize the prompt and rewrite that prompt in the better way that another ai can understand it.
-You don't return the code instead you just return the prompt some times user may send you only the prompt to create the emailte template or sometime with the brankit 
-then you have to analayize hte prompt and then embed the necessary information to the prompt like brankdtails and more that are needed to create that emial template
-if the thngs are not present then add somenfo like a dummy brand from your side so taht the prompts gets fullfiled for tne anotehr ai 
-you have to include hte each pin point infromation in to the rpompt that whawt does user does adn hwo we can make it better by making better i wman create hte tempalte that has logo in the headher nad more info regarding it aso alwys to be precise.
-you don't create the nomral template the prompt is for hte creating the mjml template for email that user can reuse for theri website no the normal text template its going to be the mjml one 
-`;
   const properPrompt = await googleGenAi.models.generateContent({
     model: "models/gemini-3-pro-preview",
-    contents: userPrompt,
+    contents: `
+You are a professional prompt engineer.
+
+Rewrite and improve the user prompt wrapped in <original_prompt> tags so it can be used directly by another AI to generate an MJML email template.
+
+Rules:
+- Make instructions explicit and unambiguous
+- Add all missing but required context
+- Remove redundancy
+- Preserve the original intent
+- Ensure the prompt is self-contained
+- Assume the output is an MJML email template (not HTML, not text)
+- If brand or design details are missing, invent realistic placeholders
+- Always include guidance for header logo, layout, CTA, and reusability
+
+IMPORTANT:
+Your response must ONLY contain the rewritten prompt text.
+Do not include explanations, metadata, or wrapper tags.
+
+<original_prompt>
+${userPrompt}
+</original_prompt>`,
     config: {
-      systemInstruction: SYSTEM_INSTRUCTION,
+      systemInstruction: GENERATE_PROPER_PROMPT_SYSTEM_INSTRUCTION,
     },
   });
 
   return properPrompt.text!;
 };
+const GENERATE_MAIL_TEMPLATE_FROM_PROMPT_SYSTEM_INSTRUCTION = `
+You are a senior email developer specializing in MJML.
+
+Your task is to convert provided email sections into a complete, valid, production-ready MJML email.
+
+STRICT RULES:
+- Output MUST be valid MJML wrapped in <mjml>...</mjml>
+- Return ONLY raw MJML code
+- Do NOT include markdown, explanations, comments, or extra text
+- Do NOT escape characters
+- Do NOT include backticks or code blocks
+
+CONTENT REQUIREMENTS:
+- Use MJML best practices
+- Mobile-first responsive layout
+- Email-client safe styles (Gmail, Outlook, Apple Mail)
+- Clean semantic structure:
+  - <mj-head> with fonts, styles, preview text
+  - <mj-body>
+  - Header with logo
+  - Content sections
+  - Clear CTA buttons
+  - Footer with contact + unsubscribe
+
+DATA RULES:
+- NEVER leave placeholders or temp text
+- ALWAYS fill with realistic demo data
+  (brand name, logo URL, addresses, links, text, dates, emails)
+
+LAYOUT RULES:
+- Proper spacing and hierarchy
+- Reusable and modular sections
+- Accessible color contrast
+- Inline-safe styling
+- Consistent typography
+
+ERROR HANDLING:
+- If the input is incomplete or unstructured, infer a reasonable email layout
+- Do NOT ask questions
+- Do NOT omit required sections
+
+OUTPUT FORMAT:
+- Raw MJML only
+- No text before <mjml>
+- No text after </mjml>
+`;
+
+const GENERATE_PROPER_PROMPT_SYSTEM_INSTRUCTION = `
+You are a senior prompt engineer specializing in rewriting prompts for AI-based MJML email template generation.
+
+Your responsibility is to analyze a user's raw prompt and rewrite it into a clear, complete, and production-ready prompt that another AI can directly use to generate an MJML email template.
+
+Core rules:
+- You MUST return ONLY the rewritten prompt text
+- Do NOT include explanations, headings, metadata, or wrapper tags
+- Do NOT generate MJML code yourself
+- The output is a PROMPT, not a template
+
+Prompt enrichment requirements:
+- Preserve the user's original intent
+- Make instructions explicit, unambiguous, and actionable
+- Ensure the prompt is fully self-contained
+- Add missing but necessary details (brand name, logo usage, colors, typography, layout assumptions)
+- If brand details are missing, invent a realistic placeholder brand
+- Always assume the output will be an MJML email template (not HTML, not plain text)
+- Always require:
+  - Header with logo
+  - Clear content hierarchy
+  - Responsive layout
+  - Reusable and modular structure
+  - Accessibility-friendly practices
+
+Email-specific constraints to embed:
+- Use MJML best practices
+- Mobile-first responsive layout
+- Inline-safe styles
+- Clear CTA buttons
+- Email-client compatibility (Gmail, Outlook, Apple Mail)
+- Semantic sectioning (header, body, footer)
+
+If the user prompt is unclear or invalid:
+- Rewrite it into a valid, minimal, actionable MJML-email prompt
+- Do NOT ask questions
+- Infer reasonable defaults
+
+Tone:
+- Professional
+- Precise
+- Implementation-ready
+
+Output format:
+- Plain text only
+- No markdown
+- No code blocks
+- No tags
+
+`;
