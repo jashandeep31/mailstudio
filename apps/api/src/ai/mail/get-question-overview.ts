@@ -1,7 +1,7 @@
 import { googleGenAi } from "../config.js";
 
 export async function* getQuestionOverview(prompt: string) {
-  let enabled = false;
+  let enabled = true;
   if (enabled) {
     const response = await googleGenAi.models.generateContentStream({
       model: "models/gemini-flash-latest",

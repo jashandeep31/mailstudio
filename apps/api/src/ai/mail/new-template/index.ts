@@ -9,7 +9,7 @@ interface CreateNewMailTemplate {
 export const createNewMailTemplate = async ({
   prompt,
 }: CreateNewMailTemplate) => {
-  const enabled = false;
+  const enabled = true;
   if (!enabled)
     return `<mjml>
   <mj-body>

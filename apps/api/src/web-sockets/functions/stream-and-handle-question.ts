@@ -75,33 +75,33 @@ const StreamOverview = async ({
     sockets: new Set<WebSocket>(),
     abortController: new AbortController(),
   };
-  // socket.send(
-  //   JSON.stringify({
-  //     key: "res:stream-answer",
-  //     data: {
-  //       versionId: chatQuestion.version_id,
-  //       chatId: chatId,
-  //       questionId: chatQuestion.id,
-  //       response: "",
-  //     },
-  //   }),
-  // );
+  socket.send(
+    JSON.stringify({
+      key: "res:stream-answer",
+      data: {
+        versionId: chatQuestion.version_id,
+        chatId: chatId,
+        questionId: chatQuestion.id,
+        response: "",
+      },
+    }),
+  );
   ProcesingVersions.set(key, currentStreamData);
   for await (const chunk of getQuestionOverview(chatQuestion.prompt)) {
     currentStreamData.overviewOutput = chunk.text || "";
     for (const socket of currentStreamData.sockets) {
       if (socket.readyState === socket.OPEN) {
-        // socket.send(
-        //   JSON.stringify({
-        //     key: "res:stream-answer",
-        //     data: {
-        //       versionId: chatQuestion.version_id,
-        //       chatId: chatId,
-        //       questionId: chatQuestion.id,
-        //       response: chunk.text,
-        //     },
-        //   }),
-        // );
+        socket.send(
+          JSON.stringify({
+            key: "res:stream-answer",
+            data: {
+              versionId: chatQuestion.version_id,
+              chatId: chatId,
+              questionId: chatQuestion.id,
+              response: chunk.text,
+            },
+          }),
+        );
       }
     }
   }
