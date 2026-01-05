@@ -5,6 +5,7 @@ import { handleQuestionEvent } from "./handlers/handle-question-event.js";
 import z from "zod";
 import { handleChatJoinEvent } from "./handlers/handle-chat-join-event.js";
 import { ProcesingVersions } from "../state/processing-versions-state.js";
+import { refineTemplateHandler } from "./handlers/refine-template-event.js";
 
 export const SocketHandler = async (socket: WebSocket) => {
   socket.on("message", async (e) => {
@@ -51,7 +52,7 @@ export const SocketHandler = async (socket: WebSocket) => {
         ProcesingVersion.sockets.delete(socket);
         break;
       }
-      case "event:chat-message":
+      case "event:refine-template-message": {
         const data = getParsedData(event, rawData);
         //         const data: {
         //     chatId: string;
@@ -60,10 +61,10 @@ export const SocketHandler = async (socket: WebSocket) => {
         //     brandKitId?: string | undefined;
         // }
 
-        // where have data here what do next ->
-        const res = handleQuestionEvent({ ...data, type: "old" }, socket);
-
+        // where have data here what do next
+        refineTemplateHandler({ data, socket });
         break;
+      }
     }
   });
 };

@@ -3,9 +3,11 @@ import { SocketEventSchemas } from "@repo/shared";
 import z from "zod";
 import { WebSocket } from "ws";
 import { streamAndHandleQuestion } from "../functions/stream-and-handle-question.js";
-const extendedZodSchema = SocketEventSchemas["event:chat-message"].extend({
-  type: z.enum(["old", "new"]),
-});
+const extendedZodSchema = SocketEventSchemas["event:first-chat-message"].extend(
+  {
+    type: z.enum(["old", "new"]),
+  },
+);
 export const handleQuestionEvent = async (
   data: z.infer<typeof extendedZodSchema>,
   socket: WebSocket,

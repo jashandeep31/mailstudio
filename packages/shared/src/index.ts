@@ -6,7 +6,7 @@ export const SocketEventSchemas = {
     media: z.array(z.string()),
     brandKitId: z.string().optional(),
   }),
-  "event:chat-message": z.object({
+  "event:first-chat-message": z.object({
     chatId: z.string(),
     message: z.string(),
     media: z.array(z.string()),
@@ -17,6 +17,12 @@ export const SocketEventSchemas = {
   }),
   "event:left-chat": z.object({
     chatId: z.string(),
+  }),
+  "event:refine-template-message": z.object({
+    chatId: z.string(),
+    message: z.string(),
+    media: z.array(z.string()),
+    brandKitId: z.string().optional(),
   }),
 } as const;
 

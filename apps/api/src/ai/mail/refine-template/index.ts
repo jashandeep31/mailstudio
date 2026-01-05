@@ -11,12 +11,12 @@ export const refineMailTemplate = async ({
   brandKit,
   media,
   prevMjmlCode,
-}: RefineMailTemplate) => {
+}: RefineMailTemplate): Promise<string> => {
   const properPrompt = await rewritePromptForDownstreamModel(prompt);
   const refinedMJMLTemplate = await generateRefinedMjmlCode(
     properPrompt + prevMjmlCode,
   );
-  console.log(refinedMJMLTemplate);
+  return refinedMJMLTemplate;
 };
 
 const generateRefinedMjmlCode = async (userPrompt: string) => {

@@ -9,6 +9,7 @@ import { ProcesingVersions } from "../../state/processing-versions-state.js";
 import WebSocket from "ws";
 import mjml2html from "mjml";
 import { createNewMailTemplate } from "../../ai/mail/new-template/index.js";
+
 interface StreamAndHandleQuestion {
   chatQuestion: typeof chatVersionPromptsTable.$inferSelect;
   chatId: string;

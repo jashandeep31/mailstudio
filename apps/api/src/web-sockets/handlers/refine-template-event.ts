@@ -1,0 +1,88 @@
+import {
+  chatVersionsTable,
+  db,
+  eq,
+  count,
+  chatVersionPromptsTable,
+  chatVersionOutputsTable,
+} from "@repo/db";
+import { SocketEventSchemas } from "@repo/shared";
+import z from "zod";
+import { v4 as uuid } from "uuid";
+import { refineMailTemplate } from "../../ai/mail/refine-template/index.js";
+import mjml2html from "mjml";
+import { WebSocket } from "ws";
+interface RefineTemplateHandler {
+  data: z.infer<(typeof SocketEventSchemas)["event:refine-template-message"]>;
+  socket: WebSocket;
+}
+export const refineTemplateHandler = async ({
+  data,
+  socket,
+}: RefineTemplateHandler) => {
+  const versionId = uuid();
+  const questionId = uuid();
+  const [refinedMJMLResponse] = await Promise.all([
+    await refineMailTemplate({
+      prevMjmlCode: "",
+      prompt: data.message,
+      media: data.media,
+      brandKit: null,
+    }),
+  ]);
+  const html_code = mjml2html(refinedMJMLResponse);
+  const { chatVersion, chatQuestion, chatOutput } = await db.transaction(
+    async (tx) => {
+      const [preVersionsCount] = await tx
+        .select({
+          count: count(),
+        })
+        .from(chatVersionsTable)
+        .where(eq(chatVersionsTable.chat_id, data.chatId));
+      const [chatVersion] = await tx
+        .insert(chatVersionsTable)
+        .values({
+          chat_id: data.chatId,
+          version_number: preVersionsCount ? preVersionsCount.count + 1 : 1,
+        })
+        .returning();
+      if (!chatVersion) throw new Error("failed to create the chat version");
+      const [chatQuestion] = await tx
+        .insert(chatVersionPromptsTable)
+        .values({
+          version_id: chatVersion.id,
+          prompt: data.message,
+          brand_kit_id: null,
+        })
+        .returning();
+      const [chatOutput] = await tx
+        .insert(chatVersionOutputsTable)
+        .values({
+          version_id: chatVersion.id,
+          overview: "overview is needed to be updated",
+          mjml_code: refinedMJMLResponse,
+          html_code: html_code.html,
+        })
+        .returning();
+      return { chatVersion, chatQuestion, chatOutput };
+    },
+  );
+  socket.send(
+    JSON.stringify({
+      key: "res:version-update",
+      data: {
+        chat_versions: chatVersion,
+        chat_version_prompts: chatQuestion,
+        chat_version_outputs: chatOutput,
+      },
+    }),
+  );
+  return;
+  // 1. Generate the version
+  // 2. Generate the question
+  // 3. Generate the overview
+  // 4. Generate the refined mjml template
+  // 5. While doing the 3 and 4 continously send the updates of the overview
+  // 6. Save the version, question and output
+  // 7. Send the final things to the client.
+};

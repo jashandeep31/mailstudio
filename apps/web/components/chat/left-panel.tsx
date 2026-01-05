@@ -20,7 +20,7 @@ export default function LeftPanel({ versions, streamingOverview }: LeftPanel) {
     "The template is missing proper formatting please do in and make it looking little better",
   );
   const handleSumbmit = () => {
-    sendEvent("event:chat-message", {
+    sendEvent("event:refine-template-message", {
       chatId: params.id as string,
       message: userPrompt,
       media: [],
