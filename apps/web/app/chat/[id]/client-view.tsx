@@ -30,16 +30,19 @@ const ClientView = () => {
   // chat store
   const events = useSocketEvents((s) => s.events);
   const deleteEvent = useSocketEvents((s) => s.deleteEvent);
-  const chatVersions = useChatStore((s) => s.chatVersions);
+  const chatVersionsMap = useChatStore((s) => s.chatVersions);
   const setChatVersions = useChatStore((s) => s.setChatVersions);
   const activeStream = useChatStore((s) => s.activeStream);
   const updateChatVersion = useChatStore((s) => s.updateChatVersion);
   const setActiveStream = useChatStore((s) => s.setActiveStream);
-  const setSelectedVersion = useChatStore((s) => s.setSelectedVersion);
+  const setSelectedVersionId = useChatStore((s) => s.setSelectedVersionId);
   const appendChatVersion = useChatStore((s) => s.appendChatVersion);
   // converting to the array
   const eventsArray = useMemo(() => [...events.values()], [events]);
-
+  const chatVersions = useMemo(
+    () => Array.from(chatVersionsMap.values()),
+    [chatVersionsMap],
+  );
   useEffect(() => {
     for (const event of eventsArray) {
       console.log(event.key);
@@ -49,7 +52,7 @@ const ClientView = () => {
         setChatVersions(versions);
         const lastVersion = versions.at(-1);
         if (lastVersion) {
-          setSelectedVersion(lastVersion);
+          setSelectedVersionId(lastVersion.chat_versions.id);
         }
       } else if (event.key === "res:stream-answer") {
         setActiveStream({
@@ -61,6 +64,7 @@ const ClientView = () => {
       } else if (event.key === "res:new-version") {
         console.log(event.data, "this is event data");
         appendChatVersion(event.data);
+        setSelectedVersionId(event.data.chat_versions.id);
       } else if (event.key === "res:version-update") {
         updateChatVersion(event.data);
       }
@@ -70,7 +74,7 @@ const ClientView = () => {
     eventsArray,
     setActiveStream,
     setChatVersions,
-    setSelectedVersion,
+    setSelectedVersionId,
     appendChatVersion,
     deleteEvent,
     updateChatVersion,

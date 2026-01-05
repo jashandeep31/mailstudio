@@ -1,11 +1,9 @@
 import { ChatVersionAggregate, StreamingOverview } from "@/app/chat/[id]/types";
-import { versions } from "process";
 import { create } from "zustand";
-
 interface ChatStore {
-  chatVersions: ChatVersionAggregate[];
-  selectedVersion: ChatVersionAggregate | null;
-  setSelectedVersion: (version: ChatVersionAggregate) => void;
+  chatVersions: Map<string, ChatVersionAggregate>;
+  selectedVersionId: string | null;
+  setSelectedVersionId: (id: string) => void;
   setChatVersions: (versions: ChatVersionAggregate[]) => void;
   appendChatVersion: (version: ChatVersionAggregate) => void;
   updateChatVersion: (version: ChatVersionAggregate) => void;
@@ -13,21 +11,28 @@ interface ChatStore {
   setActiveStream: (stream: StreamingOverview) => void;
 }
 export const useChatStore = create<ChatStore>((set) => ({
-  chatVersions: [],
-  selectedVersion: null,
-  setSelectedVersion: (version: ChatVersionAggregate) =>
-    set({ selectedVersion: version }),
-  setChatVersions: (versions) => set({ chatVersions: versions }),
+  chatVersions: new Map<string, ChatVersionAggregate>(),
+  selectedVersionId: null,
+  setSelectedVersionId: (id: string) => set({ selectedVersionId: id }),
+  setChatVersions: (versions) =>
+    set(() => ({
+      chatVersions: new Map(versions.map((v) => [v.chat_versions.id, v])),
+    })),
   activeStream: null,
   setActiveStream: (stream) => set({ activeStream: stream }),
   appendChatVersion: (version) =>
-    set((state) => ({
-      chatVersions: [...state.chatVersions, version],
-    })),
+    set((state) => {
+      const map = new Map(state.chatVersions);
+      map.set(version.chat_versions.id, version);
+      return { chatVersions: map };
+    }),
   updateChatVersion: (version: ChatVersionAggregate) =>
-    set((state) => ({
-      chatVersions: state.chatVersions.map((prev) =>
-        prev.chat_versions.id === version.chat_versions.id ? version : prev,
-      ),
-    })),
+    set((state) => {
+      if (!state.chatVersions.get(version.chat_versions.id)) {
+        return state;
+      }
+      const map = new Map(state.chatVersions);
+      map.set(version.chat_versions.id, version);
+      return { chatVersions: map };
+    }),
 }));
