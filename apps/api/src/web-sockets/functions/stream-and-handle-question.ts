@@ -37,7 +37,7 @@ export const streamAndHandleQuestion = async ({
   /*
    * Saving to the database
    */
-  const chatVersionOutput = await db
+  const [chatVersionOutput] = await db
     .insert(chatVersionOutputsTable)
     .values({
       version_id: chatQuestion.version_id,

@@ -27,7 +27,6 @@ export default function LeftPanel({ versions, streamingOverview }: LeftPanel) {
       brandKitId: undefined,
     });
   };
-  console.log(versions);
   return (
     <ResizablePanel
       defaultSize={"25%"}

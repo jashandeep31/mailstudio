@@ -33,6 +33,7 @@ const ClientView = () => {
   const chatVersions = useChatStore((s) => s.chatVersions);
   const setChatVersions = useChatStore((s) => s.setChatVersions);
   const activeStream = useChatStore((s) => s.activeStream);
+  const updateChatVersion = useChatStore((s) => s.updateChatVersion);
   const setActiveStream = useChatStore((s) => s.setActiveStream);
   const setSelectedVersion = useChatStore((s) => s.setSelectedVersion);
   const appendChatVersion = useChatStore((s) => s.appendChatVersion);
@@ -60,7 +61,8 @@ const ClientView = () => {
       } else if (event.key === "res:new-version") {
         console.log(event.data, "this is event data");
         appendChatVersion(event.data);
-        console.log(event.data);
+      } else if (event.key === "res:version-update") {
+        updateChatVersion(event.data);
       }
       deleteEvent(event.id);
     }
@@ -71,6 +73,7 @@ const ClientView = () => {
     setSelectedVersion,
     appendChatVersion,
     deleteEvent,
+    updateChatVersion,
   ]);
 
   useEffect(() => {
