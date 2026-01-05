@@ -9,16 +9,35 @@ interface CreateNewMailTemplate {
 export const createNewMailTemplate = async ({
   prompt,
 }: CreateNewMailTemplate) => {
-  const properPrompt = await getProperPrompt(prompt);
-  const finalTemplate = await processAllAtSection(properPrompt);
-  return finalTemplate;
+  const enabled = false;
+  if (!enabled)
+    return `<mjml>
+  <mj-body>
+    <mj-section>
+      <mj-column>
+
+        <mj-image width="100px" src="/assets/img/logo-small.png"></mj-image>
+
+        <mj-divider border-color="#F45E43"></mj-divider>
+
+        <mj-text font-size="20px" color="#F45E43" font-family="helvetica">Hello World</mj-text>
+
+      </mj-column>
+    </mj-section>
+  </mj-body>
+</mjml>`;
+  else {
+    const properPrompt = await getProperPrompt(prompt);
+    const finalTemplate = await processAllAtSection(properPrompt);
+    return finalTemplate;
+  }
 };
 const processAllAtSection = async (content: string) => {
   const layoutPlanner = await googleGenAi.models.generateContent({
     model: "models/gemini-3-pro-preview",
     contents: `
-Convert the following email sections into a complete MJML email.
-
+      Convert the following email sections into a complete MJML email.
+      
 IMPORTANT:
 - Use the provided content as the source of truth
 - Infer layout and hierarchy if needed

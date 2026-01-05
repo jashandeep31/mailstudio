@@ -17,12 +17,14 @@ export const SocketHandler = async (socket: WebSocket) => {
       return;
     }
 
+    console.log(event, new Date().toLocaleDateString());
     switch (event) {
       case "event:new-chat": {
         const data = getParsedData(event, rawData);
         const chat = await handleNewChatEvent(data, socket);
         await handleQuestionEvent(
           {
+            type: "new",
             ...data,
             chatId: chat.id,
           },
@@ -57,6 +59,9 @@ export const SocketHandler = async (socket: WebSocket) => {
         //     media: string[];
         //     brandKitId?: string | undefined;
         // }
+
+        // where have data here what do next ->
+        const res = handleQuestionEvent({ ...data, type: "old" }, socket);
 
         break;
     }

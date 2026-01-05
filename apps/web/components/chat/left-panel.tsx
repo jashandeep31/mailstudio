@@ -4,6 +4,8 @@ import { Button } from "@repo/ui/components/button";
 import { Copy, PencilLine } from "lucide-react";
 import { ChatVersionAggregate, StreamingOverview } from "@/app/chat/[id]/types";
 import InputArea from "./input-area";
+import { useWebSocketContext } from "@/contexts/web-socket-context";
+import { useParams } from "next/navigation";
 
 interface LeftPanel {
   versions: ChatVersionAggregate[];
@@ -11,12 +13,21 @@ interface LeftPanel {
 }
 
 export default function LeftPanel({ versions, streamingOverview }: LeftPanel) {
+  const params = useParams();
+  const { sendEvent } = useWebSocketContext();
+
   const [userPrompt, setUserPrompt] = useState(
     "The template is missing proper formatting please do in and make it looking little better",
   );
-
-  const handleSumbmit = () => {};
-
+  const handleSumbmit = () => {
+    sendEvent("event:chat-message", {
+      chatId: params.id as string,
+      message: userPrompt,
+      media: [],
+      brandKitId: undefined,
+    });
+  };
+  console.log(versions);
   return (
     <ResizablePanel
       defaultSize={"25%"}

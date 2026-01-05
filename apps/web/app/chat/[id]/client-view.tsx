@@ -1,9 +1,8 @@
 "use client";
 import Navbar from "@/components/chat/navbar";
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo } from "react";
 import {
   ResizableHandle,
-  ResizablePanel,
   ResizablePanelGroup,
 } from "@repo/ui/components/resizable";
 import LeftPanel from "@/components/chat/left-panel";
@@ -13,24 +12,39 @@ import { useSocketEvents } from "@/zustand-store/socket-events-store";
 import { useChatStore } from "@/zustand-store/chat-store";
 import { RightPanel } from "@/components/chat/right-panel";
 import { ChatVersionAggregate } from "./types";
+import {
+  chatVersionOutputsTable,
+  chatVersionPromptsTable,
+  chatVersionsTable,
+} from "@repo/db";
+
+interface SocketResposneVersion {
+  chat_versions: typeof chatVersionsTable.$inferSelect;
+  chat_version_prompts: typeof chatVersionPromptsTable.$inferSelect;
+  chat_version_outputs: typeof chatVersionOutputsTable.$inferSelect;
+}
 
 const ClientView = () => {
   const params = useParams();
   const { sendEvent } = useWebSocketContext();
   // chat store
-  const { events } = useSocketEvents();
+  const events = useSocketEvents((s) => s.events);
+  const deleteEvent = useSocketEvents((s) => s.deleteEvent);
   const chatVersions = useChatStore((s) => s.chatVersions);
   const setChatVersions = useChatStore((s) => s.setChatVersions);
   const activeStream = useChatStore((s) => s.activeStream);
   const setActiveStream = useChatStore((s) => s.setActiveStream);
   const setSelectedVersion = useChatStore((s) => s.setSelectedVersion);
+  const appendChatVersion = useChatStore((s) => s.appendChatVersion);
   // converting to the array
   const eventsArray = useMemo(() => [...events.values()], [events]);
 
   useEffect(() => {
     for (const event of eventsArray) {
+      console.log(event.key);
       if (event.key === "res:chat-data") {
-        const versions: ChatVersionAggregate[] = event.data.versions;
+        const versions: ChatVersionAggregate[] = event.data
+          .versions as SocketResposneVersion[];
         setChatVersions(versions);
         const lastVersion = versions.at(-1);
         if (lastVersion) {
@@ -43,9 +57,21 @@ const ClientView = () => {
           questionId: event.data.questionId,
           response: event.data.response,
         });
+      } else if (event.key === "res:new-version") {
+        console.log(event.data, "this is event data");
+        appendChatVersion(event.data);
+        console.log(event.data);
       }
+      deleteEvent(event.id);
     }
-  }, [eventsArray, setActiveStream, setChatVersions]);
+  }, [
+    eventsArray,
+    setActiveStream,
+    setChatVersions,
+    setSelectedVersion,
+    appendChatVersion,
+    deleteEvent,
+  ]);
 
   useEffect(() => {
     sendEvent("event:joined-chat", {
