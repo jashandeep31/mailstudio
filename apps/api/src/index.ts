@@ -2,6 +2,7 @@ import express from "express";
 import cors from "cors";
 import { env } from "./lib/env.js";
 import authRoutes from "./routes/auth-routes.js";
+import userRoutes from "./routes/user-routes.js";
 import cookiesParser from "cookie-parser";
 import { checkAuthorization } from "./middlewares/check-authorization.js";
 import { createServer } from "node:http";
@@ -21,6 +22,7 @@ const server = createServer(app);
 
 // routes of all application
 app.use("/api/v1", authRoutes);
+app.use("/api/v1", userRoutes);
 
 // Testing route of the application
 app.get("/", checkAuthorization(["all"]), (req, res, next) => {
