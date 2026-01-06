@@ -6,16 +6,10 @@ import {
   SelectContent,
   SelectGroup,
   SelectItem,
-  SelectLabel,
   SelectTrigger,
   SelectValue,
 } from "@repo/ui/components/select";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuTrigger,
-} from "@repo/ui/components/dropdown-menu";
-import { Label } from "@repo/ui/components/label";
+import { SendTestMailDropdown } from "./send-test-mail-dropdown";
 
 interface ChatTopControlBar {
   view: "preview" | "code";
@@ -71,39 +65,8 @@ export const ChatTopControlBar = ({
             </SelectGroup>
           </SelectContent>
         </Select>
-        <SendMailDropDown />
+        <SendTestMailDropdown />
       </div>
     </div>
-  );
-};
-const SendMailDropDown = () => {
-  return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button variant={"outline"}>Send Mail</Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent className="mr-3 min-w-96">
-        {/* <DropdownMenuLabel>Send Template</DropdownMenuLabel> */}
-        <div className="p-3">
-          <Label className="mb-2">Select email</Label>
-          <Select>
-            <SelectTrigger className="w-full">
-              <SelectValue placeholder="your@email.com" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectGroup>
-                <SelectLabel>select email</SelectLabel>
-                <SelectItem value="light">Light</SelectItem>
-                <SelectItem value="dark">Dark</SelectItem>
-                <SelectItem value="system">System</SelectItem>
-              </SelectGroup>
-            </SelectContent>
-          </Select>
-          <div className="mt-3 flex justify-end">
-            <Button>Send Mail</Button>
-          </div>
-        </div>
-      </DropdownMenuContent>
-    </DropdownMenu>
   );
 };

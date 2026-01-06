@@ -1,11 +1,14 @@
 "use client";
 import WebSocketProvider from "@/contexts/web-socket-context";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import React from "react";
+
+const queryClient = new QueryClient();
 
 export default function Provider({ children }: { children: React.ReactNode }) {
   return (
-    <div>
+    <QueryClientProvider client={queryClient}>
       <WebSocketProvider>{children}</WebSocketProvider>
-    </div>
+    </QueryClientProvider>
   );
 }
