@@ -20,6 +20,7 @@ export const userOtpsTable = pgTable("user_otps", {
     .notNull()
     .references(() => usersTable.id, { onDelete: "cascade" }),
   otp: varchar({ length: 255 }).notNull(),
+  verification_key: varchar({ length: 255 }).notNull(),
   used: boolean().default(false),
   used_at: timestamp().notNull().defaultNow(),
   otp_type: OtpTypeEnum(),
