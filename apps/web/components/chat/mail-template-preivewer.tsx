@@ -13,7 +13,7 @@ export const MailTemplatePreviewer = ({
   }
   return (
     <div className="bg-muted flex h-full flex-1 justify-center p-4">
-      <iframe srcDoc={html} className="h-full w-[300px] border"></iframe>
+      <iframe srcDoc={html} className="h-full w-[400px] border"></iframe>
     </div>
   );
 };

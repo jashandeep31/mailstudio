@@ -23,6 +23,7 @@ export const SocketEventSchemas = {
     message: z.string(),
     media: z.array(z.string()),
     brandKitId: z.string().optional(),
+    prevVersionId: z.string(),
   }),
 } as const;
 

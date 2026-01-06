@@ -10,6 +10,10 @@ export const RightPanel = () => {
   // store
   const selectedVersionId = useChatStore((s) => s.selectedVersionId);
   const chatVersionsMap = useChatStore((s) => s.chatVersions);
+
+  const chatVersions = useMemo(() => {
+    return Array.from(chatVersionsMap.values());
+  }, [chatVersionsMap]);
   const selectedVersion = useMemo(() => {
     if (selectedVersionId) {
       const selected = chatVersionsMap.get(selectedVersionId);
@@ -17,13 +21,18 @@ export const RightPanel = () => {
       return null;
     }
   }, [chatVersionsMap, selectedVersionId]);
+
   if (!selectedVersion) {
     return <h1>please selet the version</h1>;
   }
   return (
     <ResizablePanel defaultSize={"75%"} className="grid">
       <div className="flex h-full flex-col justify-center">
-        <ChatTopControlBar view={view} setView={setView} />
+        <ChatTopControlBar
+          chatVersions={chatVersions}
+          view={view}
+          setView={setView}
+        />
         <div className="grid flex-1">
           {view === "preview" ? (
             <MailTemplatePreviewer

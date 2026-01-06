@@ -15,18 +15,20 @@ interface LeftPanel {
 export default function LeftPanel({ versions, streamingOverview }: LeftPanel) {
   const params = useParams();
   const { sendEvent } = useWebSocketContext();
-
   const [userPrompt, setUserPrompt] = useState(
     "The template is missing proper formatting please do in and make it looking little better",
   );
+
   const handleSumbmit = () => {
     sendEvent("event:refine-template-message", {
       chatId: params.id as string,
       message: userPrompt,
       media: [],
       brandKitId: undefined,
+      prevVersionId: versions.at(-1)?.chat_versions.id || "",
     });
   };
+
   return (
     <ResizablePanel
       defaultSize={"25%"}
