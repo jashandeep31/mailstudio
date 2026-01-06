@@ -12,9 +12,7 @@ export const refineMailTemplate = async ({
   media,
   prevMjmlCode,
 }: RefineMailTemplate): Promise<string> => {
-  console.log(prevMjmlCode, `this is hte prev code of the output `);
   const properPrompt = await rewritePromptForDownstreamModel(prompt);
-  console.log(properPrompt);
   const refinedMJMLTemplate = await generateRefinedMjmlCode(
     properPrompt + prevMjmlCode,
   );
@@ -35,6 +33,7 @@ Your task:
 - Keep the structure valid MJML
 - Return ONLY the final MJML code
 - Do NOT add explanations or extra text
+- return should only contain the prue and proper mjml code only 
 `;
 
   const response = await googleGenAi.models.generateContent({
@@ -45,6 +44,7 @@ Your task:
     },
   });
 
+  console.log(response.data);
   return response.text!;
 };
 const rewritePromptForDownstreamModel = async (userPrompt: string) => {

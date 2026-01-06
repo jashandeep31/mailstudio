@@ -36,19 +36,6 @@ export const handleQuestionEvent = async (
   });
   if (!chatQuestion) throw new Error("Something went wrong");
 
-  if (data.type === "old") {
-    socket.send(
-      JSON.stringify({
-        key: "res:new-version",
-        data: {
-          chat_versions: chatVersion,
-          chat_version_prompts: chatQuestion,
-          chat_version_outputs: undefined,
-        },
-      }),
-    );
-  }
-
   streamAndHandleQuestion({
     chatQuestion: chatQuestion,
     chatId: data.chatId,

@@ -45,7 +45,6 @@ const ClientView = () => {
   );
   useEffect(() => {
     for (const event of eventsArray) {
-      console.log(event.key);
       if (event.key === "res:chat-data") {
         const versions: ChatVersionAggregate[] = event.data
           .versions as SocketResposneVersion[];
@@ -62,7 +61,6 @@ const ClientView = () => {
           response: event.data.response,
         });
       } else if (event.key === "res:new-version") {
-        console.log(event.data, "this is event data");
         appendChatVersion(event.data);
         setSelectedVersionId(event.data.chat_versions.id);
       } else if (event.key === "res:version-update") {

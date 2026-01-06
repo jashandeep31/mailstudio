@@ -5,13 +5,17 @@ import {
   count,
   chatVersionPromptsTable,
   chatVersionOutputsTable,
+  ConsoleLogWriter,
 } from "@repo/db";
 import { SocketEventSchemas } from "@repo/shared";
-import z from "zod";
+import z, { refine } from "zod";
 import { v4 as uuid } from "uuid";
 import { refineMailTemplate } from "../../ai/mail/refine-template/index.js";
 import mjml2html from "mjml";
 import { WebSocket } from "ws";
+import { getRefineTemplateOverview } from "../../ai/mail/refine-template/get-refine-template-overview.js";
+import { checkAuthorization } from "../../middlewares/check-authorization.js";
+import { streamOverview } from "../functions/stream-overview.js";
 
 interface RefineTemplateHandler {
   data: z.infer<(typeof SocketEventSchemas)["event:refine-template-message"]>;
@@ -22,9 +26,9 @@ export const refineTemplateHandler = async ({
   data,
   socket,
 }: RefineTemplateHandler) => {
+  // TODO: please store the version temp in the redis so that when user referesh can be sent to the user
   const versionId = uuid();
   const questionId = uuid();
-
   const [prevOutput] = await db
     .select()
     .from(chatVersionOutputsTable)
@@ -63,12 +67,22 @@ export const refineTemplateHandler = async ({
     }),
   );
 
-  const [refinedMJMLResponse] = await Promise.all([
-    await refineMailTemplate({
+  const [refinedMJMLResponse, overview] = await Promise.all([
+    refineMailTemplate({
       prevMjmlCode: prevOutput?.mjml_code || "",
       prompt: data.message,
       media: data.media,
       brandKit: null,
+    }),
+
+    //streaming the overview
+    streamOverview({
+      chatId: data.chatId,
+      chatQuestion: DummyQuestion,
+      version: DummyVersion,
+      generator: getRefineTemplateOverview,
+      socket: socket,
+      addCurrentSocket: true,
     }),
   ]);
 
@@ -92,7 +106,7 @@ export const refineTemplateHandler = async ({
         .insert(chatVersionOutputsTable)
         .values({
           version_id: chatVersion.id,
-          overview: "overview is needed to be updated",
+          overview: overview,
           mjml_code: refinedMJMLResponse,
           html_code: html_code.html,
         })

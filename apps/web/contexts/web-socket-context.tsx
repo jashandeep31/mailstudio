@@ -115,9 +115,7 @@ export default function WebSocketProvider({
       };
 
       ws.onerror = () => {};
-    } catch {
-      console.log(`errro is thies`);
-    }
+    } catch {}
   }, [socketOnMessageHandler]);
 
   useEffect(() => {

@@ -4,7 +4,6 @@ import { getSession } from "@/lib/get-session";
 import { redirect } from "next/navigation";
 const page = async () => {
   const session = await getSession();
-  console.log(session);
   if (session) {
     redirect("/dashboard");
   }
