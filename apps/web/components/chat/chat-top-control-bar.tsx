@@ -45,13 +45,13 @@ export const ChatTopControlBar = ({
         onValueChange={(e) => {
           setSelectedVersionId(e);
         }}
+        defaultValue={selectedVersionId!}
       >
         <SelectTrigger className="">
           <SelectValue placeholder="Select a Version" />
         </SelectTrigger>
         <SelectContent>
           <SelectGroup>
-            <SelectLabel>Versions</SelectLabel>
             {chatVersions.map((version) => (
               <SelectItem
                 key={version.chat_versions.id}

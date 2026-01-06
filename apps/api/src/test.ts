@@ -1,13 +1,19 @@
-import { refineMailTemplate } from "./ai/mail/refine-template/index.js";
+import { getRefineTemplateOverview } from "./ai/mail/refine-template/get-refine-template-overview.js";
 
 export async function test() {
-  const res = await refineMailTemplate({
-    prompt: "Please add the demo image to the template",
-    brandKit: null,
-    media: [],
-    prevMjmlCode: PREV_MTML_CODE,
-  });
-  console.log(res);
+  console.log(`Test is fired 🔥 up `);
+  // const res = await refineMailTemplate({
+  //   prompt: "Please add the demo image to the template",
+  //   brandKit: null,
+  //   media: [],
+  //   prevMjmlCode: PREV_MTML_CODE,
+  // });
+  // console.log(res);
+  // for await (const chunk of getRefineTemplateOverview(
+  //   "please add the logo to the header",
+  // )) {
+  //   console.log("STREAM:", chunk);
+  // }
 }
 
 const PREV_MTML_CODE = `<mjml>

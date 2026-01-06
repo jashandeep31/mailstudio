@@ -52,7 +52,7 @@ ws.on("connection", (socket, req) => {
   SocketHandler(socket);
 });
 
-// test()
+test();
 server.listen(env.PORT, () => {
   console.log(`Server is running at ${env.PORT}`);
 });
