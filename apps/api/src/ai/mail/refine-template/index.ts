@@ -12,7 +12,9 @@ export const refineMailTemplate = async ({
   media,
   prevMjmlCode,
 }: RefineMailTemplate): Promise<string> => {
+  console.log(prevMjmlCode, `this is hte prev code of the output `);
   const properPrompt = await rewritePromptForDownstreamModel(prompt);
+  console.log(properPrompt);
   const refinedMJMLTemplate = await generateRefinedMjmlCode(
     properPrompt + prevMjmlCode,
   );

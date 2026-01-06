@@ -1,9 +1,9 @@
 import {
+  asc,
   chatVersionOutputsTable,
   chatVersionPromptsTable,
   chatVersionsTable,
   db,
-  desc,
   eq,
 } from "@repo/db";
 import { SocketEventSchemas } from "@repo/shared";
@@ -27,7 +27,7 @@ export const handleChatJoinEvent = async (
       chatVersionOutputsTable,
       eq(chatVersionOutputsTable.version_id, chatVersionsTable.id),
     )
-    .orderBy(desc(chatVersionsTable.version_number))
+    .orderBy(asc(chatVersionsTable.created_at))
     .limit(3);
 
   // sending the chat data  to the user

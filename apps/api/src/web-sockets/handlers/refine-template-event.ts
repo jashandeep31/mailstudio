@@ -8,15 +8,16 @@ import {
 } from "@repo/db";
 import { SocketEventSchemas } from "@repo/shared";
 import z from "zod";
-import { v4 as uuid, version } from "uuid";
+import { v4 as uuid } from "uuid";
 import { refineMailTemplate } from "../../ai/mail/refine-template/index.js";
 import mjml2html from "mjml";
 import { WebSocket } from "ws";
-import { ka } from "zod/locales";
+
 interface RefineTemplateHandler {
   data: z.infer<(typeof SocketEventSchemas)["event:refine-template-message"]>;
   socket: WebSocket;
 }
+
 export const refineTemplateHandler = async ({
   data,
   socket,
@@ -24,6 +25,10 @@ export const refineTemplateHandler = async ({
   const versionId = uuid();
   const questionId = uuid();
 
+  const [prevOutput] = await db
+    .select()
+    .from(chatVersionOutputsTable)
+    .where(eq(chatVersionOutputsTable.version_id, data.prevVersionId));
   const [preVersionsCount] = await db
     .select({
       count: count(),
@@ -60,7 +65,7 @@ export const refineTemplateHandler = async ({
 
   const [refinedMJMLResponse] = await Promise.all([
     await refineMailTemplate({
-      prevMjmlCode: "",
+      prevMjmlCode: prevOutput?.mjml_code || "",
       prompt: data.message,
       media: data.media,
       brandKit: null,
@@ -92,6 +97,7 @@ export const refineTemplateHandler = async ({
           html_code: html_code.html,
         })
         .returning();
+
       return { chatVersion, chatQuestion, chatOutput };
     },
   );
