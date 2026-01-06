@@ -14,7 +14,7 @@ import {
   SelectItem,
 } from "@repo/ui/components/select";
 import { Label } from "@repo/ui/components/label";
-import { useUserTestMails } from "@/app/hooks/use-user-test-mail";
+import { useUserTestMails } from "@/hooks/use-user-test-mail";
 interface Mail {
   id: string;
   mail: string;
