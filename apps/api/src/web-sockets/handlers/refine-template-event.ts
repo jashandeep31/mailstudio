@@ -23,12 +23,14 @@ export const refineTemplateHandler = async ({
 }: RefineTemplateHandler) => {
   const versionId = uuid();
   const questionId = uuid();
+
   const [preVersionsCount] = await db
     .select({
       count: count(),
     })
     .from(chatVersionsTable)
     .where(eq(chatVersionsTable.chat_id, data.chatId));
+
   const DummyVersion: typeof chatVersionsTable.$inferSelect = {
     id: versionId,
     chat_id: data.chatId,
@@ -36,6 +38,7 @@ export const refineTemplateHandler = async ({
     created_at: new Date(),
     updated_at: new Date(),
   };
+
   const DummyQuestion: typeof chatVersionPromptsTable.$inferSelect = {
     id: questionId,
     version_id: versionId,
@@ -43,6 +46,7 @@ export const refineTemplateHandler = async ({
     brand_kit_id: null,
     created_at: new Date(),
   };
+
   socket.send(
     JSON.stringify({
       key: "res:new-version",
@@ -62,28 +66,23 @@ export const refineTemplateHandler = async ({
       brandKit: null,
     }),
   ]);
+
   const html_code = mjml2html(refinedMJMLResponse);
+
   const { chatVersion, chatQuestion, chatOutput } = await db.transaction(
     async (tx) => {
-      const [preVersionsCount] = await tx
-        .select({
-          count: count(),
-        })
-        .from(chatVersionsTable)
-        .where(eq(chatVersionsTable.chat_id, data.chatId));
       const [chatVersion] = await tx
         .insert(chatVersionsTable)
-        .values({
-          ...DummyVersion,
-        })
+        .values(DummyVersion)
         .returning();
+
       if (!chatVersion) throw new Error("failed to create the chat version");
+
       const [chatQuestion] = await tx
         .insert(chatVersionPromptsTable)
-        .values({
-          ...DummyQuestion,
-        })
+        .values(DummyQuestion)
         .returning();
+
       const [chatOutput] = await tx
         .insert(chatVersionOutputsTable)
         .values({
@@ -96,6 +95,7 @@ export const refineTemplateHandler = async ({
       return { chatVersion, chatQuestion, chatOutput };
     },
   );
+
   socket.send(
     JSON.stringify({
       key: "res:version-update",
@@ -106,12 +106,4 @@ export const refineTemplateHandler = async ({
       },
     }),
   );
-  return;
-  // 1. Generate the version
-  // 2. Generate the question
-  // 3. Generate the overview
-  // 4. Generate the refined mjml template
-  // 5. While doing the 3 and 4 continously send the updates of the overview
-  // 6. Save the version, question and output
-  // 7. Send the final things to the client.
 };

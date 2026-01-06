@@ -33,6 +33,7 @@ export const SocketHandler = async (socket: WebSocket) => {
         );
         break;
       }
+
       case "event:joined-chat": {
         const data = getParsedData(event, rawData);
         await handleChatJoinEvent(data, socket);
@@ -43,6 +44,7 @@ export const SocketHandler = async (socket: WebSocket) => {
         ProcesingVersion.sockets.add(socket);
         break;
       }
+
       case "event:left-chat": {
         const data = getParsedData(event, rawData);
         const ProcesingVersion = ProcesingVersions.get(
@@ -52,16 +54,9 @@ export const SocketHandler = async (socket: WebSocket) => {
         ProcesingVersion.sockets.delete(socket);
         break;
       }
+
       case "event:refine-template-message": {
         const data = getParsedData(event, rawData);
-        //         const data: {
-        //     chatId: string;
-        //     message: string;
-        //     media: string[];
-        //     brandKitId?: string | undefined;
-        // }
-
-        // where have data here what do next
         refineTemplateHandler({ data, socket });
         break;
       }

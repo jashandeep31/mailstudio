@@ -10,6 +10,7 @@ import { SocketHandler } from "./web-sockets/socket-handler.js";
 import cookie from "cookie";
 import { createNewMailTemplate } from "./ai/mail/new-template/index.js";
 import { refineMailTemplate } from "./ai/mail/refine-template/index.js";
+
 // app config.
 const app = express();
 app.use(express.json());
