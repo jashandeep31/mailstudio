@@ -61,7 +61,11 @@ const ClientView = () => {
           response: event.data.response,
         });
       } else if (event.key === "res:new-version") {
-        appendChatVersion(event.data);
+        const eventData: ChatVersionAggregate = event.data;
+        appendChatVersion(eventData);
+        if (eventData.chat_versions.id === activeStream?.versionId) {
+          setActiveStream(null);
+        }
         setSelectedVersionId(event.data.chat_versions.id);
       } else if (event.key === "res:version-update") {
         updateChatVersion(event.data);
@@ -76,6 +80,7 @@ const ClientView = () => {
     appendChatVersion,
     deleteEvent,
     updateChatVersion,
+    activeStream?.versionId,
   ]);
 
   useEffect(() => {
