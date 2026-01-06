@@ -9,6 +9,7 @@ export const getUserTestMails = catchAsync(
       .select({
         id: userTestMailsTable.id,
         mail: userTestMailsTable.mail,
+        verified: userTestMailsTable.verified,
       })
       .from(userTestMailsTable)
       .where(eq(userTestMailsTable.user_id, req.user?.id));

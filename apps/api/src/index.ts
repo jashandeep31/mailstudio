@@ -16,13 +16,18 @@ const RANDOM_CODE = Math.floor(Math.random() * 100);
 // app config.
 const app = express();
 app.use(express.json());
-app.use(cors());
+app.use(
+  cors({
+    origin: "http://localhost:3000",
+    credentials: true,
+  }),
+);
 app.use(cookiesParser());
 const server = createServer(app);
 
 // routes of all application
 app.use("/api/v1", authRoutes);
-app.use("/api/v1", userRoutes);
+app.use("/api/v1/user", userRoutes);
 
 // Testing route of the application
 app.get("/", checkAuthorization(["all"]), (req, res, next) => {
