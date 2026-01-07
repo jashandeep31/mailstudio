@@ -53,11 +53,12 @@ export default function LeftPanel({ versions, streamingOverview }: LeftPanel) {
               </div>
             )}
 
-            {version.chat_version_outputs && (
-              <p className="text-muted-foreground mt-2 text-sm">
-                {version.chat_version_outputs.overview}
-              </p>
-            )}
+            {version.chat_version_outputs &&
+              streamingOverview?.versionId !== version.chat_versions.id && (
+                <p className="text-muted-foreground mt-2 text-sm">
+                  {version.chat_version_outputs.overview}
+                </p>
+              )}
           </div>
         ))}
       </div>
