@@ -13,4 +13,5 @@ export const errorHandler = (
     status: "error",
     message: err.message || "Internal Server Error",
   });
+  return;
 };

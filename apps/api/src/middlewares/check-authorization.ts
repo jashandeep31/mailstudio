@@ -19,6 +19,7 @@ export const checkAuthorization =
       res.status(400).json({
         error: "Please login with you creds",
       });
+      return;
     }
     const parsedSession = sessionSchema.parse(JSON.parse(session));
     req["user"] = parsedSession;

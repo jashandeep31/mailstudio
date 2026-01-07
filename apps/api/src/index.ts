@@ -44,7 +44,7 @@ app.get("/test", (req, res) => {
   });
 });
 // GLOBAL ERROR HANDLING
-app.use(errorHandler);
+// app.use(errorHandler);
 const ws = new WebSocketServer({
   server,
 });
@@ -56,7 +56,15 @@ ws.on("connection", (socket, req) => {
     return;
   }
   const parsedCookie = cookie.parse(req.headers.cookie!);
-  const session = JSON.parse(decodeURIComponent(parsedCookie.session!));
+  if (!parsedCookie.session) return;
+
+  let session;
+  try {
+    session = JSON.parse(decodeURIComponent(parsedCookie.session));
+  } catch {
+    return;
+  }
+
   socket.userId = session.id;
   SocketHandler(socket);
 });
