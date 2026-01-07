@@ -57,7 +57,7 @@ export const ChatTopControlBar = ({
             <Button
               variant={"ghost"}
               size={"sm"}
-              onClick={() => setIframeWidth(300)}
+              onClick={() => setIframeWidth(350)}
             >
               <Smartphone />
             </Button>

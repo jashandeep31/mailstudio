@@ -7,7 +7,7 @@ import { MailTemplatePreviewer } from "./mail-template-previewer";
 
 export const RightPanel = () => {
   const [view, setView] = useState<"code" | "preview">("preview");
-  const [iframeWidth, setIframeWidth] = useState<number>(300);
+  const [iframeWidth, setIframeWidth] = useState<number>(350);
 
   // store
   const selectedVersionId = useChatStore((s) => s.selectedVersionId);
