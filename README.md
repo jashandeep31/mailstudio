@@ -1,135 +1,102 @@
-# Turborepo starter
+# MailStudio
 
-This Turborepo starter is maintained by the Turborepo core team.
+MailStudio is a modern, comprehensive email design and management platform. Built as a monorepo, it combines a powerful Next.js frontend with a robust Express.js backend to deliver real-time email editing capabilities using MJML and AI-powered content generation.
 
-## Using this example
+## Project Structure
 
-Run the following command:
+This project uses [Turbo](https://turbo.build/) for monorepo management and includes the following workspaces:
 
-```sh
-npx create-turbo@latest
+### Applications
+
+- **apps/web**: The frontend application built with [Next.js 16](https://nextjs.org/). It features a rich UI for email composition, utilizing React 19, Zustand for state management, and React Query for data fetching.
+- **apps/api**: The backend server built with [Express.js](https://expressjs.com/). It handles business logic, provides real-time updates via WebSockets, and integrates with Google GenAI for intelligent features.
+
+### Packages
+
+- **packages/database**: Database schema and connection configuration using [Drizzle ORM](https://orm.drizzle.team/) and PostgreSQL.
+- **packages/ui**: A shared UI component library.
+- **packages/shared**: Shared utilities and types used across the application.
+- **packages/eslint-config**: Shared ESLint configurations.
+- **packages/typescript-config**: Shared TypeScript configurations.
+
+## Requirements
+
+Before starting, ensure you have the following installed:
+
+- **Node.js**: Version 18 or higher
+- **pnpm**: Package manager (install via `npm install -g pnpm`)
+- **PostgreSQL**: A running PostgreSQL database instance
+
+## Getting Started
+
+Follow these steps to set up and run the project locally.
+
+### 1. Clone the Repository
+
+```bash
+git clone <repository-url>
+cd mailstudio
 ```
 
-## What's inside?
+### 2. Install Dependencies
 
-This Turborepo includes the following packages/apps:
+Install all dependencies for the monorepo using pnpm:
 
-### Apps and Packages
-
-- `docs`: a [Next.js](https://nextjs.org/) app
-- `web`: another [Next.js](https://nextjs.org/) app
-- `@repo/ui`: a stub React component library shared by both `web` and `docs` applications
-- `@repo/eslint-config`: `eslint` configurations (includes `eslint-config-next` and `eslint-config-prettier`)
-- `@repo/typescript-config`: `tsconfig.json`s used throughout the monorepo
-
-Each package/app is 100% [TypeScript](https://www.typescriptlang.org/).
-
-### Utilities
-
-This Turborepo has some additional tools already setup for you:
-
-- [TypeScript](https://www.typescriptlang.org/) for static type checking
-- [ESLint](https://eslint.org/) for code linting
-- [Prettier](https://prettier.io) for code formatting
-
-### Build
-
-To build all apps and packages, run the following command:
-
-```
-cd my-turborepo
-
-# With [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation) installed (recommended)
-turbo build
-
-# Without [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation), use your package manager
-npx turbo build
-yarn dlx turbo build
-pnpm exec turbo build
+```bash
+pnpm install
 ```
 
-You can build a specific package by using a [filter](https://turborepo.com/docs/crafting-your-repository/running-tasks#using-filters):
+### 3. Environment Configuration
 
-```
-# With [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation) installed (recommended)
-turbo build --filter=docs
+You need to configure environment variables for the database and API.
 
-# Without [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation), use your package manager
-npx turbo build --filter=docs
-yarn exec turbo build --filter=docs
-pnpm exec turbo build --filter=docs
-```
+**Database:**
 
-### Develop
+1. Navigate to `packages/database`.
+2. Create or update the `.env` file.
+3. Add your database connection string:
+   ```env
+   DATABASE_URL="postgresql://user:password@localhost:5432/mailstudio"
+   ```
 
-To develop all apps and packages, run the following command:
+**API:**
 
-```
-cd my-turborepo
+1. Navigate to `apps/api`.
+2. Create or update the `.env` file.
+3. Configure necessary variables (e.g., Google GenAI keys, Database URL if needed directly, Port, etc.).
 
-# With [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation) installed (recommended)
-turbo dev
+### 4. Database Setup
 
-# Without [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation), use your package manager
-npx turbo dev
-yarn exec turbo dev
-pnpm exec turbo dev
-```
+Initialize the database schema using Drizzle Kit:
 
-You can develop a specific package by using a [filter](https://turborepo.com/docs/crafting-your-repository/running-tasks#using-filters):
-
-```
-# With [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation) installed (recommended)
-turbo dev --filter=web
-
-# Without [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation), use your package manager
-npx turbo dev --filter=web
-yarn exec turbo dev --filter=web
-pnpm exec turbo dev --filter=web
+```bash
+# From the root directory
+pnpm --filter @repo/db drizzle:push
 ```
 
-### Remote Caching
+### 5. Run the Application
 
-> [!TIP]
-> Vercel Remote Cache is free for all plans. Get started today at [vercel.com](https://vercel.com/signup?/signup?utm_source=remote-cache-sdk&utm_campaign=free_remote_cache).
+Start the development servers for all applications:
 
-Turborepo can use a technique known as [Remote Caching](https://turborepo.com/docs/core-concepts/remote-caching) to share cache artifacts across machines, enabling you to share build caches with your team and CI/CD pipelines.
-
-By default, Turborepo will cache locally. To enable Remote Caching you will need an account with Vercel. If you don't have an account you can [create one](https://vercel.com/signup?utm_source=turborepo-examples), then enter the following commands:
-
-```
-cd my-turborepo
-
-# With [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation) installed (recommended)
-turbo login
-
-# Without [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation), use your package manager
-npx turbo login
-yarn exec turbo login
-pnpm exec turbo login
+```bash
+pnpm dev
 ```
 
-This will authenticate the Turborepo CLI with your [Vercel account](https://vercel.com/docs/concepts/personal-accounts/overview).
+This command will start:
 
-Next, you can link your Turborepo to your Remote Cache by running the following command from the root of your Turborepo:
+- The **Web** application (usually at `http://localhost:3000`)
+- The **API** server (usually at `http://localhost:3001` or similar, check logs)
 
-```
-# With [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation) installed (recommended)
-turbo link
+## Development Commands
 
-# Without [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation), use your package manager
-npx turbo link
-yarn exec turbo link
-pnpm exec turbo link
-```
+- **`pnpm build`**: Build all applications and packages.
+- **`pnpm lint`**: Run linting across the monorepo.
+- **`pnpm check-types`**: Run TypeScript type checking.
+- **`pnpm format`**: Format code using Prettier.
 
-## Useful Links
+## Technologies Used
 
-Learn more about the power of Turborepo:
-
-- [Tasks](https://turborepo.com/docs/crafting-your-repository/running-tasks)
-- [Caching](https://turborepo.com/docs/crafting-your-repository/caching)
-- [Remote Caching](https://turborepo.com/docs/core-concepts/remote-caching)
-- [Filtering](https://turborepo.com/docs/crafting-your-repository/running-tasks#using-filters)
-- [Configuration Options](https://turborepo.com/docs/reference/configuration)
-- [CLI Usage](https://turborepo.com/docs/reference/command-line-reference)
+- **Frontend**: Next.js 16, React 19, Tailwind CSS, MJML, Zustand, React Query
+- **Backend**: Express.js, WebSockets (ws), Google GenAI SDK
+- **Database**: PostgreSQL, Drizzle ORM
+- **Monorepo Tooling**: Turbo, pnpm
