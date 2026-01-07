@@ -3,7 +3,7 @@ import { ResizablePanel } from "@repo/ui/components/resizable";
 import { useMemo, useState } from "react";
 import { ChatTopControlBar } from "./chat-top-control-bar";
 import { CodeView } from "./code-view";
-import { MailTemplatePreviewer } from "./mail-template-preivewer";
+import { MailTemplatePreviewer } from "./mail-template-previewer";
 
 export const RightPanel = () => {
   const [view, setView] = useState<"code" | "preview">("preview");
