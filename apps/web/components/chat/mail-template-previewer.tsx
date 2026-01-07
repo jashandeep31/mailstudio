@@ -1,12 +1,14 @@
 import { Resizable } from "re-resizable";
-import { useState } from "react";
-
+interface MailTemplatePreviewer {
+  html: string | undefined;
+  width: number;
+  setWidth: React.Dispatch<React.SetStateAction<number>>;
+}
 export const MailTemplatePreviewer = ({
   html,
-}: {
-  html: string | undefined;
-}) => {
-  const [width, setWidth] = useState(300);
+  width,
+  setWidth,
+}: MailTemplatePreviewer) => {
   console.log(width);
   if (!html) {
     return (
@@ -17,7 +19,7 @@ export const MailTemplatePreviewer = ({
     );
   }
   return (
-    <div className="bg-muted flex h-full flex-1 flex-col justify-center p-4">
+    <div className="bg-muted flex h-full flex-1 flex-col justify-center overflow-x-auto">
       <p className="pb-2 text-center">Size:{width}px </p>
       <div className="flex w-full flex-1 justify-center">
         <Resizable

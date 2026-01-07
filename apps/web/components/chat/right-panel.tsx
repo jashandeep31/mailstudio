@@ -7,6 +7,8 @@ import { MailTemplatePreviewer } from "./mail-template-previewer";
 
 export const RightPanel = () => {
   const [view, setView] = useState<"code" | "preview">("preview");
+  const [iframeWidth, setIframeWidth] = useState<number>(300);
+
   // store
   const selectedVersionId = useChatStore((s) => s.selectedVersionId);
   const chatVersionsMap = useChatStore((s) => s.chatVersions);
@@ -32,11 +34,15 @@ export const RightPanel = () => {
           chatVersions={chatVersions}
           view={view}
           setView={setView}
+          iframeWidth={iframeWidth}
+          setIframeWidth={setIframeWidth}
         />
         <div className="grid flex-1">
           {view === "preview" ? (
             <MailTemplatePreviewer
               html={selectedVersion.chat_version_outputs?.html_code}
+              width={iframeWidth}
+              setWidth={setIframeWidth}
             />
           ) : (
             <CodeView html={selectedVersion.chat_version_outputs?.html_code} />
