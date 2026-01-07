@@ -50,48 +50,55 @@ export const ChatTopControlBar = ({
           </Button>
         </div>
       </div>
+
       <div>
-        <div className="inline-flex rounded-md p-1">
-          <Button
-            variant={"ghost"}
-            size={"sm"}
-            onClick={() => setIframeWidth(300)}
-          >
-            <Smartphone />
-          </Button>
-          <Button
-            variant={"ghost"}
-            size={"sm"}
-            onClick={() => setIframeWidth(700)}
-          >
-            <Monitor />
-          </Button>
-        </div>
+        {view === "preview" && (
+          <div className="inline-flex rounded-md p-1">
+            <Button
+              variant={"ghost"}
+              size={"sm"}
+              onClick={() => setIframeWidth(300)}
+            >
+              <Smartphone />
+            </Button>
+            <Button
+              variant={"ghost"}
+              size={"sm"}
+              onClick={() => setIframeWidth(700)}
+            >
+              <Monitor />
+            </Button>
+          </div>
+        )}
       </div>
       <div className="flex flex-1 items-center justify-end gap-2">
-        <Select
-          onValueChange={(e) => {
-            setSelectedVersionId(e);
-          }}
-          defaultValue={selectedVersionId!}
-        >
-          <SelectTrigger className="">
-            <SelectValue placeholder="Select a Version" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectGroup>
-              {chatVersions.map((version) => (
-                <SelectItem
-                  key={version.chat_versions.id}
-                  value={version.chat_versions.id}
-                >
-                  V{version.chat_versions.version_number}
-                </SelectItem>
-              ))}
-            </SelectGroup>
-          </SelectContent>
-        </Select>
-        <SendTestMailDropdown />
+        {view === "preview" && (
+          <>
+            <Select
+              onValueChange={(e) => {
+                setSelectedVersionId(e);
+              }}
+              defaultValue={selectedVersionId!}
+            >
+              <SelectTrigger className="">
+                <SelectValue placeholder="Select a Version" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  {chatVersions.map((version) => (
+                    <SelectItem
+                      key={version.chat_versions.id}
+                      value={version.chat_versions.id}
+                    >
+                      V{version.chat_versions.version_number}
+                    </SelectItem>
+                  ))}
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+            <SendTestMailDropdown />
+          </>
+        )}
       </div>
     </div>
   );
