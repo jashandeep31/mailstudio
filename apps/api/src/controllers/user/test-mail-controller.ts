@@ -67,7 +67,7 @@ export const sendTemplateToTestMail = catchAsync(
 
     await sendMailWithResend({ html: template.html_code, to: [mail.mail] });
     res.status(200).json({
-      message: "We have mailed the template",
+      message: "Test mail sent successfully",
     });
   },
 );

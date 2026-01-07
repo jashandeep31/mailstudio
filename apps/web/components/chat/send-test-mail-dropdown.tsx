@@ -52,7 +52,7 @@ export const SendTestMailDropdown = () => {
   );
   useEffect(() => {
     if (error) {
-      toast.error("Failed to load mails");
+      toast.error(error.response?.data?.message || "Failed to load mails");
     }
   }, [error]);
 
@@ -66,16 +66,14 @@ export const SendTestMailDropdown = () => {
       { mailId: selectedMailId, versionId: selectedVersionId },
       {
         onSuccess: (data) => {
-          if (data.status === "ok") {
-            toast.success("Test mail sent successfully!");
-            setOpen(false);
-            setSelectedMailId("");
-          } else {
-            toast.error(data.message || "Failed to send test mail");
-          }
+          toast.success(data.message);
+          setOpen(false);
+          setSelectedMailId("");
         },
-        onError: () => {
-          toast.error("Failed to send test mail");
+        onError: (error: any) => {
+          toast.error(
+            error.response?.data?.message || "Failed to send test mail",
+          );
         },
       },
     );

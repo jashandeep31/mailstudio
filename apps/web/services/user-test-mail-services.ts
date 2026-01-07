@@ -18,20 +18,12 @@ export const getUserTestMails = async (): Promise<UserTestMail[]> => {
 };
 
 export const sendTemplateOnTestMail = async (data: unknown) => {
-  const res = await axios.post(
+  const res = await axios.post<{ message: string }>(
     `${BASE_URL}/api/v1/user/test-mails/send-template`,
     data,
     {
       withCredentials: true,
     },
   );
-  if (res.status !== 200)
-    return {
-      status: "error",
-      message: "Something went wrong ",
-    };
-  return {
-    status: "ok",
-    data: null,
-  };
+  return res.data;
 };
