@@ -7,6 +7,7 @@ export const env = {
   GOOGLE_AUTH_SECRET_KEY: process.env.GOOGLE_AUTH_SECRET_KEY!,
   GOOGLE_AUTH_REDIRECT_URI: process.env.GOOGLE_AUTH_REDIRECT_URI!,
   GEMINI_API_KEY: process.env.GEMINI_API_KEY!,
+  RESEND_BEARER_TOKEN: process.env.RESEND_BEARER_TOKEN,
 } as const;
 
 // Validate env variables

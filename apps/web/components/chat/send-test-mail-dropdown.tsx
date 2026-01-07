@@ -14,15 +14,28 @@ import {
   SelectItem,
 } from "@repo/ui/components/select";
 import { Label } from "@repo/ui/components/label";
-import { useUserTestMails } from "@/hooks/use-user-test-mail";
-interface Mail {
-  id: string;
-  mail: string;
-  verified: boolean;
-}
+import {
+  useUserTestMails,
+  useSendTemplateOnTestMail,
+  type UserTestMail,
+} from "@/hooks/use-user-test-mail";
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
+import { useChatStore } from "@/zustand-store/chat-store";
 export const SendTestMailDropdown = () => {
-  const { data: mails } = useUserTestMails();
+  const selectedVersionId = useChatStore((s) => s.selectedVersionId);
 
+  const [open, setOpen] = useState<boolean>(false);
+  const [selectedMailId, setSelectedMailId] = useState<string>("");
+  const {
+    data: mails,
+    isLoading,
+    isError,
+    error,
+  } = useUserTestMails({ enabled: open });
+
+  const { mutate: sendTestMail, isPending: isSending } =
+    useSendTemplateOnTestMail();
   const { verifiedMails, notVerifiedMails } = (mails ?? []).reduce(
     (acc, mail) => {
       if (mail.verified) {
@@ -33,22 +46,63 @@ export const SendTestMailDropdown = () => {
       return acc;
     },
     {
-      verifiedMails: [] as Mail[],
-      notVerifiedMails: [] as Mail[],
+      verifiedMails: [] as UserTestMail[],
+      notVerifiedMails: [] as UserTestMail[],
     },
   );
+  useEffect(() => {
+    if (error) {
+      toast.error("Failed to load mails");
+    }
+  }, [error]);
+
+  const handleSendMail = () => {
+    if (!selectedMailId) {
+      toast.error("Please select an email");
+      return;
+    }
+
+    sendTestMail(
+      { mailId: selectedMailId, versionId: selectedVersionId },
+      {
+        onSuccess: (data) => {
+          if (data.status === "ok") {
+            toast.success("Test mail sent successfully!");
+            setOpen(false);
+            setSelectedMailId("");
+          } else {
+            toast.error(data.message || "Failed to send test mail");
+          }
+        },
+        onError: () => {
+          toast.error("Failed to send test mail");
+        },
+      },
+    );
+  };
 
   return (
-    <DropdownMenu>
+    <DropdownMenu
+      onOpenChange={(e) => {
+        setOpen(e);
+      }}
+      open={open}
+    >
       <DropdownMenuTrigger asChild>
         <Button variant={"outline"}>Send Mail</Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="mr-3 min-w-96">
         <div className="p-3">
           <Label className="mb-2">Select email</Label>
-          <Select>
+          <Select
+            disabled={isLoading || isError}
+            value={selectedMailId}
+            onValueChange={setSelectedMailId}
+          >
             <SelectTrigger className="w-full">
-              <SelectValue placeholder="your@email.com" />
+              <SelectValue
+                placeholder={isLoading ? "Loading..." : "your@email.com"}
+              />
             </SelectTrigger>
             <SelectContent>
               <SelectGroup>
@@ -78,7 +132,12 @@ export const SendTestMailDropdown = () => {
           </Select>
           <div className="mt-3 flex justify-between gap-4">
             <Button variant={"link"}>Manage Mails</Button>
-            <Button>Send Mail</Button>
+            <Button
+              onClick={handleSendMail}
+              disabled={isSending || !selectedMailId}
+            >
+              {isSending ? "Sending..." : "Send Mail"}
+            </Button>
           </div>
         </div>
       </DropdownMenuContent>

@@ -39,3 +39,8 @@ export type SocketEventKey = keyof typeof SocketEventSchemas;
 export type SocketEventPayload<K extends SocketEventKey> = z.infer<
   (typeof SocketEventSchemas)[K]
 >;
+
+export const sendTemplateToTestMailSchema = z.object({
+  versionId: z.string(),
+  mailId: z.string(),
+});
