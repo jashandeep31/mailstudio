@@ -10,6 +10,8 @@ import { WebSocketServer } from "ws";
 import { SocketHandler } from "./web-sockets/socket-handler.js";
 import cookie from "cookie";
 import { test } from "./test.js";
+import { errorHandler } from "./middlewares/error-hanlder.js";
+import { AppError } from "./lib/app-error.js";
 
 const RANDOM_CODE = Math.floor(Math.random() * 100);
 
@@ -31,6 +33,7 @@ app.use("/api/v1/user", userRoutes);
 
 // Testing route of the application
 app.get("/", checkAuthorization(["all"]), (req, res, next) => {
+  throw new AppError("Testing the error ", 500);
   res.status(200).json({ message: "hello" });
 });
 
@@ -42,7 +45,8 @@ app.get("/test", (req, res) => {
     session,
   });
 });
-
+// GLOBAL ERROR HANDLING
+app.use(errorHandler);
 const ws = new WebSocketServer({
   server,
 });
@@ -58,7 +62,6 @@ ws.on("connection", (socket, req) => {
   socket.userId = session.id;
   SocketHandler(socket);
 });
-
 test();
 server.listen(env.PORT, () => {
   console.log(`Server is running at ${env.PORT}`);
