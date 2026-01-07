@@ -14,7 +14,7 @@ export default function InputArea({
   handleSubmit,
 }: InputArea) {
   return (
-    <div className="rounded-md border p-3 shadow">
+    <div className="bg-background rounded-md border p-3 shadow">
       <textarea
         value={userPrompt}
         onChange={(e) => {

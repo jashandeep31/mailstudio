@@ -15,7 +15,7 @@ const ClientView = () => {
     });
   };
   return (
-    <div>
+    <div className="bg-muted rounded-tl-md border-t border-l">
       <div className="mt-12 flex items-center justify-center lg:mt-36">
         <div className="min-w-[50%]">
           <div className="mb-6">
@@ -34,6 +34,12 @@ const ClientView = () => {
         <h2 className="text-md font-bold md:text-lg lg:text-xl">
           Explore Templates
         </h2>
+        <div className="mt-6 grid grid-cols-1 gap-6 md:grid-cols-3 lg:grid-cols-4">
+          <div className="bg-background h-64 w-full rounded-md border"></div>
+          <div className="bg-background h-64 w-full rounded-md border"></div>
+          <div className="bg-background h-64 w-full rounded-md border"></div>
+          <div className="bg-background h-64 w-full rounded-md border"></div>
+        </div>
       </div>
     </div>
   );

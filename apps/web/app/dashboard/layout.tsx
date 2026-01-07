@@ -1,13 +1,20 @@
-import DashboardNavbar from "@/components/dashboard-navbar";
 import React from "react";
+import DashboardNavbar from "@/components/dashboard-navbar";
+import { SidebarProvider } from "@repo/ui/components/sidebar";
+import { DashboardSidebar } from "@/components/dashboard-sidebar";
 
 const layout = ({ children }: { children: React.ReactNode }) => {
   return (
     <div>
-      <header>
+      <header className="bg-background sticky top-0 z-50">
         <DashboardNavbar />
       </header>
-      <main>{children}</main>
+      <div className="relative">
+        <SidebarProvider>
+          <DashboardSidebar />
+          <main className="grid w-full">{children}</main>
+        </SidebarProvider>
+      </div>
     </div>
   );
 };
