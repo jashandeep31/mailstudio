@@ -14,8 +14,8 @@ import { Monitor, Smartphone } from "lucide-react";
 import React from "react";
 
 interface ChatTopControlBar {
-  view: "preview" | "code";
-  setView: React.Dispatch<React.SetStateAction<"code" | "preview">>;
+  view: "preview" | "code" | "edit";
+  setView: React.Dispatch<React.SetStateAction<"code" | "preview" | "edit">>;
   chatVersions: ChatVersionAggregate[];
   iframeWidth: number;
   setIframeWidth: React.Dispatch<React.SetStateAction<number>>;
@@ -47,6 +47,13 @@ export const ChatTopControlBar = ({
             onClick={() => setView("code")}
           >
             Code
+          </Button>
+          <Button
+            variant={view === "edit" ? "default" : "ghost"}
+            size={"sm"}
+            onClick={() => setView("edit")}
+          >
+            Edit
           </Button>
         </div>
       </div>

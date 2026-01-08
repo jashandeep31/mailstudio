@@ -5,8 +5,11 @@ import { ChatTopControlBar } from "./chat-top-control-bar";
 import { CodeView } from "./code-view";
 import { MailTemplatePreviewer } from "./mail-template-previewer";
 
-export const RightPanel = () => {
-  const [view, setView] = useState<"code" | "preview">("preview");
+interface RightPanel {
+  view: "code" | "preview" | "edit";
+  setView: React.Dispatch<React.SetStateAction<"code" | "preview" | "edit">>;
+}
+export const RightPanel = ({ view, setView }: RightPanel) => {
   const [iframeWidth, setIframeWidth] = useState<number>(350);
 
   // store
@@ -44,9 +47,9 @@ export const RightPanel = () => {
               width={iframeWidth}
               setWidth={setIframeWidth}
             />
-          ) : (
+          ) : view === "code" ? (
             <CodeView html={selectedVersion.chat_version_outputs?.html_code} />
-          )}
+          ) : null}
         </div>
       </div>
     </ResizablePanel>
