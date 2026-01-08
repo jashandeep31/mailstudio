@@ -5,12 +5,12 @@ import { DashboardSidebar } from "@/components/dashboard-sidebar";
 
 const layout = ({ children }: { children: React.ReactNode }) => {
   return (
-    <div>
+    <div className="flex h-screen flex-col">
       <header className="bg-background sticky top-0 z-50">
         <DashboardNavbar />
       </header>
-      <div className="relative">
-        <SidebarProvider>
+      <div className="relative flex-1">
+        <SidebarProvider className="h-full min-h-0">
           <DashboardSidebar />
           <main className="grid w-full">{children}</main>
         </SidebarProvider>

@@ -2,6 +2,7 @@
 import React, { useState } from "react";
 import InputArea from "@/components/chat/input-area";
 import { useWebSocketContext } from "@/contexts/web-socket-context";
+import { MailTemplateCard } from "@/components/mail-template-card";
 const ClientView = () => {
   const { sendEvent } = useWebSocketContext();
 
@@ -35,10 +36,10 @@ const ClientView = () => {
           Explore Templates
         </h2>
         <div className="mt-6 grid grid-cols-1 gap-6 md:grid-cols-3 lg:grid-cols-4">
-          <div className="bg-background h-64 w-full rounded-md border"></div>
-          <div className="bg-background h-64 w-full rounded-md border"></div>
-          <div className="bg-background h-64 w-full rounded-md border"></div>
-          <div className="bg-background h-64 w-full rounded-md border"></div>
+          <MailTemplateCard />
+          <MailTemplateCard />
+          <MailTemplateCard />
+          <MailTemplateCard />
         </div>
       </div>
     </div>

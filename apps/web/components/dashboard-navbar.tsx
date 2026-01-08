@@ -1,6 +1,11 @@
 "use client";
 import { Mail } from "lucide-react";
 import React from "react";
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from "@repo/ui/components/avatar";
 
 const DashboardNavbar = () => {
   return (
@@ -15,7 +20,12 @@ const DashboardNavbar = () => {
           </h2>
           <div className="flex items-center gap-6"></div>
         </div>
-        <div className="flex items-center gap-3"></div>
+        <div className="flex items-center gap-3">
+          <Avatar>
+            <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
+            <AvatarFallback>CN</AvatarFallback>
+          </Avatar>
+        </div>
       </div>
     </div>
   );
