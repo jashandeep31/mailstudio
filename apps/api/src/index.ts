@@ -3,6 +3,7 @@ import cors from "cors";
 import { env } from "./lib/env.js";
 import authRoutes from "./routes/auth-routes.js";
 import userRoutes from "./routes/user-routes.js";
+import chatRoutes from "./routes/chat-routes.js";
 import cookiesParser from "cookie-parser";
 import { checkAuthorization } from "./middlewares/check-authorization.js";
 import { createServer } from "node:http";
@@ -29,7 +30,7 @@ const server = createServer(app);
 // routes of all application
 app.use("/api/v1", authRoutes);
 app.use("/api/v1/user", userRoutes);
-
+app.use("/api/v1/chats", chatRoutes);
 // Testing route of the application
 app.get("/", checkAuthorization(["all"]), (req, res, next) => {
   res.status(200).json({ message: "hello" });
@@ -44,7 +45,7 @@ app.get("/test", (req, res) => {
   });
 });
 // GLOBAL ERROR HANDLING
-// app.use(errorHandler);
+app.use(errorHandler);
 const ws = new WebSocketServer({
   server,
 });
