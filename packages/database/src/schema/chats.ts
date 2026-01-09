@@ -35,7 +35,11 @@ export const chatVersionsTable = pgTable("chat_versions", {
     .references(() => chatsTable.id, {
       onDelete: "cascade",
     }),
-
+  user_id: uuid("user_id")
+    .notNull()
+    .references(() => usersTable.id, {
+      onDelete: "cascade",
+    }),
   version_number: integer("version_number").notNull(),
   created_at: timestamp("created_at", { withTimezone: true })
     .notNull()

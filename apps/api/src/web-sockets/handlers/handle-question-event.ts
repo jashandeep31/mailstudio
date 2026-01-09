@@ -18,6 +18,7 @@ export const handleQuestionEvent = async (
       .values({
         chat_id: data.chatId,
         version_number: 1,
+        user_id: socket.userId,
       })
       .returning();
 

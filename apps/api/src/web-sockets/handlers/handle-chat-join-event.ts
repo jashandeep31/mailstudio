@@ -1,4 +1,5 @@
 import {
+  and,
   chatVersionOutputsTable,
   chatVersionPromptsTable,
   chatVersionsTable,
@@ -9,7 +10,6 @@ import {
 import { SocketEventSchemas } from "@repo/shared";
 import WebSocket from "ws";
 import z from "zod";
-import { streamAndHandleQuestion } from "../functions/stream-and-handle-question.js";
 
 export const handleChatJoinEvent = async (
   data: z.infer<(typeof SocketEventSchemas)["event:joined-chat"]>,
@@ -18,7 +18,12 @@ export const handleChatJoinEvent = async (
   const versions = await db
     .select()
     .from(chatVersionsTable)
-    .where(eq(chatVersionsTable.chat_id, data.chatId))
+    .where(
+      and(
+        eq(chatVersionsTable.chat_id, data.chatId),
+        eq(chatVersionsTable.user_id, socket.userId),
+      ),
+    )
     .leftJoin(
       chatVersionPromptsTable,
       eq(chatVersionPromptsTable.version_id, chatVersionsTable.id),

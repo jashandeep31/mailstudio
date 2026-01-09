@@ -73,6 +73,9 @@ export default function WebSocketProvider({
         case "res:new-chat":
           router.push(`${data.redirectUrl}`);
           break;
+        case "error:no-chat":
+          router.push(`/dashboard`);
+          break;
         default:
           addEvent({
             id: uuid(),
@@ -115,7 +118,9 @@ export default function WebSocketProvider({
       };
 
       ws.onerror = () => {};
-    } catch {}
+    } catch {
+      console.log(`error in the ws`);
+    }
   }, [socketOnMessageHandler]);
 
   useEffect(() => {

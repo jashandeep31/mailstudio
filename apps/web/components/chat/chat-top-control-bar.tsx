@@ -48,13 +48,13 @@ export const ChatTopControlBar = ({
           >
             Code
           </Button>
-          <Button
+          {/* <Button
             variant={view === "edit" ? "default" : "ghost"}
             size={"sm"}
             onClick={() => setView("edit")}
           >
             Edit
-          </Button>
+          </Button> */}
         </div>
       </div>
 
