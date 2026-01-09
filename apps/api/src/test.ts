@@ -4,7 +4,7 @@ import fs from "node:fs";
 
 export async function test() {
   console.log(`Test is fired 🔥 up `);
-  fs.writeFileSync("test.json", JSON.stringify(mjml2html(PREV_MTML_CODE).json));
+  // fs.writeFileSync("test.json", JSON.stringify(mjml2html(PREV_MTML_CODE).json));
 
   // const res = await refineMailTemplate({
   //   prompt: "Please add the demo image to the template",

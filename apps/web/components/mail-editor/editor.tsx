@@ -46,6 +46,8 @@ const MainEditor = ({ html }: { html: string }) => {
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const [currentSelectedElement, setCurrentSelectedElement] =
     useState<null | HTMLElement>(null);
+  const [inputValue, setInputValue] = useState("");
+
   useEffect(() => {
     const iframe = iframeRef.current;
     if (!iframe) return;
@@ -64,6 +66,7 @@ const MainEditor = ({ html }: { html: string }) => {
       selectedEl = target;
       target.classList.add("selected");
       setCurrentSelectedElement(target);
+      setInputValue(target.innerHTML); // Update input value when element is selected
 
       // Remove outline from previously outlined element
       if (outlinedEl) {
@@ -98,7 +101,16 @@ const MainEditor = ({ html }: { html: string }) => {
   return (
     <div className="flex h-full">
       <div className="h-full w-[300px] border-r">
-        {currentSelectedElement?.getAttribute("src")}
+        <input
+          type="text"
+          value={inputValue}
+          onChange={(e) => {
+            setInputValue(e.target.value);
+            if (currentSelectedElement) {
+              currentSelectedElement.innerHTML = e.target.value;
+            }
+          }}
+        />
       </div>
       <div className="flex flex-1 justify-center">
         <iframe
