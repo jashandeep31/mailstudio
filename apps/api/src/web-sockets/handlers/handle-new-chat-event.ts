@@ -2,6 +2,7 @@ import { z } from "zod";
 import { SocketEventSchemas } from "@repo/shared";
 import { chatsTable, db } from "@repo/db";
 import WebSocket from "ws";
+import { redis } from "../../lib/db.js";
 export const handleNewChatEvent = async (
   data: z.infer<(typeof SocketEventSchemas)["event:new-chat"]>,
   socket: WebSocket,
@@ -26,5 +27,6 @@ export const handleNewChatEvent = async (
       },
     }),
   );
+  redis.set(chat.id, socket.userId);
   return chat;
 };
