@@ -54,7 +54,6 @@ export const SocketHandler = async (socket: WebSocket) => {
         const ProcesingVersion = ProcesingVersions.get(
           `${socket.userId}::${data.chatId}`,
         );
-        console.log(ProcesingVersion);
         if (!ProcesingVersion) return;
         socket.send(
           JSON.stringify({

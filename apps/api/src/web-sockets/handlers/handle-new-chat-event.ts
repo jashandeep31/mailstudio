@@ -13,7 +13,7 @@ export const handleNewChatEvent = async (
     .insert(chatsTable)
     .values({
       user_id: userId,
-      name: message.slice(0, 10),
+      name: message.slice(0, 10) + "this is tset ",
       public: false,
     })
     .returning();
