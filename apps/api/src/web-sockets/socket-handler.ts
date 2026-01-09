@@ -6,6 +6,8 @@ import z from "zod";
 import { handleChatJoinEvent } from "./handlers/handle-chat-join-event.js";
 import { ProcesingVersions } from "../state/processing-versions-state.js";
 import { refineTemplateHandler } from "./handlers/refine-template-event.js";
+import { checkChatAuth } from "../lib/redis/check-chat-auth.js";
+import { auth } from "google-auth-library";
 
 export const SocketHandler = async (socket: WebSocket) => {
   socket.on("message", async (e) => {
@@ -35,6 +37,19 @@ export const SocketHandler = async (socket: WebSocket) => {
 
       case "event:joined-chat": {
         const data = getParsedData(event, rawData);
+        const authStatus = await checkChatAuth({
+          userId: socket.userId,
+          chatId: data.chatId,
+        });
+        if (authStatus.status !== "ok") {
+          socket.send(
+            JSON.stringify({
+              key: "error:no-chat",
+              data: null,
+            }),
+          );
+          return;
+        }
         await handleChatJoinEvent(data, socket);
         const ProcesingVersion = ProcesingVersions.get(
           `${socket.userId}::${data.chatId}`,
@@ -68,6 +83,18 @@ export const SocketHandler = async (socket: WebSocket) => {
 
       case "event:refine-template-message": {
         const data = getParsedData(event, rawData);
+        const authStatus = await checkChatAuth({
+          userId: socket.userId,
+          chatId: data.chatId,
+        });
+        if (authStatus.status !== "ok") {
+          socket.send(
+            JSON.stringify({
+              key: "error:no-chat",
+              data: null,
+            }),
+          );
+        }
         refineTemplateHandler({ data, socket });
         break;
       }

@@ -3,6 +3,7 @@ import { catchAsync } from "../../lib/catch-async.js";
 import {
   and,
   chatVersionOutputsTable,
+  chatVersionsTable,
   db,
   eq,
   userTestMailsTable,
@@ -11,6 +12,7 @@ import { z } from "zod";
 import { AppError } from "../../lib/app-error.js";
 import { sendTemplateToTestMailSchema } from "@repo/shared";
 import { sendMailWithResend } from "../../services/send-mail.js";
+import { Socket } from "dgram";
 
 export const getUserTestMails = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
@@ -49,10 +51,20 @@ export const sendTemplateToTestMail = catchAsync(
     if (!req.user) throw new AppError("Authentication is required", 400);
     const parsedData = sendTemplateToTestMailSchema.parse(req.body);
     //TODO: please also verify using the user id
+
     const [template] = await db
       .select()
       .from(chatVersionOutputsTable)
-      .where(eq(chatVersionOutputsTable.version_id, parsedData.versionId));
+      .innerJoin(
+        chatVersionsTable,
+        eq(chatVersionOutputsTable.version_id, chatVersionsTable.id),
+      )
+      .where(
+        and(
+          eq(chatVersionOutputsTable.version_id, parsedData.versionId),
+          eq(chatVersionsTable.user_id, req.user.id),
+        ),
+      );
     const [mail] = await db
       .select()
       .from(userTestMailsTable)
@@ -65,7 +77,10 @@ export const sendTemplateToTestMail = catchAsync(
 
     if (!mail || !template) throw new AppError("Internal server error", 404);
 
-    await sendMailWithResend({ html: template.html_code, to: [mail.mail] });
+    await sendMailWithResend({
+      html: template.chat_version_outputs.html_code,
+      to: [mail.mail],
+    });
     res.status(200).json({
       message: "Test mail sent successfully",
     });
