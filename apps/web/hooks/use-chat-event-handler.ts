@@ -27,6 +27,7 @@ export const useChatEventHandler = () => {
           setSelectedVersionId(lastVersion.chat_versions.id);
         }
       } else if (event.key === "res:stream-answer") {
+        console.log(event.data, "res:stream-answer");
         setActiveStream({
           versionId: event.data.versionId,
           chatId: event.data.chatId,

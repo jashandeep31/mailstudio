@@ -26,11 +26,12 @@ export const streamOverview = async ({
   addCurrentSocket,
 }: streamOverview): Promise<string> => {
   const ProcesingVersionKey = `${socket.userId}::${chatId}`;
-
+  const isProcessing = ProcesingVersions.get(ProcesingVersionKey);
   const streamDataTemplate = {
     chatId,
     questionId: chatQuestion.id,
-    overviewOutput: "",
+    versionId: version.id,
+    overviewOutput: isProcessing?.overviewOutput || "",
     isDone: false,
     sockets: new Set<WebSocket>(),
     abortController: new AbortController(),
@@ -46,7 +47,7 @@ export const streamOverview = async ({
         versionId: version.id,
         chatId: chatId,
         questionId: chatQuestion.id,
-        response: "",
+        response: isProcessing?.overviewOutput || "",
       },
     }),
   );
@@ -74,6 +75,5 @@ export const streamOverview = async ({
 
   // updating the state of the processing version
   streamDataTemplate.isDone = true;
-  ProcesingVersions.delete(ProcesingVersionKey);
   return streamDataTemplate.overviewOutput;
 };

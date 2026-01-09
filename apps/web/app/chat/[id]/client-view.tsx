@@ -11,13 +11,12 @@ import { useWebSocketContext } from "@/contexts/web-socket-context";
 import { useChatStore } from "@/zustand-store/chat-store";
 import { RightPanel } from "@/components/chat/right-panel";
 import { useChatEventHandler } from "@/hooks/use-chat-event-handler";
-import Editor from "@/components/mail-editor/editor";
 
 const ClientView = () => {
   // hook to handle incoming events
   useChatEventHandler();
   const params = useParams();
-  const [view, setView] = useState<"code" | "preview" | "edit">("edit");
+  const [view, setView] = useState<"code" | "preview" | "edit">("preview");
   const { sendEvent } = useWebSocketContext();
   const chatVersionsMap = useChatStore((s) => s.chatVersions);
   const activeStream = useChatStore((s) => s.activeStream);
@@ -50,7 +49,7 @@ const ClientView = () => {
             <RightPanel view={view} setView={setView} />
           </ResizablePanelGroup>
         )}
-        {view === "edit" && <Editor />}
+        {/* {view === "edit" && <Editor />} */}
       </div>
     </div>
   );

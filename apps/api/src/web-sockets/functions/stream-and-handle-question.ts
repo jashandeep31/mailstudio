@@ -9,6 +9,7 @@ import { ProcesingVersions } from "../../state/processing-versions-state.js";
 import WebSocket from "ws";
 import mjml2html from "mjml";
 import { createNewMailTemplate } from "../../ai/mail/new-template/index.js";
+import { streamOverview } from "./stream-overview.js";
 
 interface StreamAndHandleQuestion {
   chatQuestion: typeof chatVersionPromptsTable.$inferSelect;
@@ -26,7 +27,14 @@ export const streamAndHandleQuestion = async ({
   chatVersion,
 }: StreamAndHandleQuestion) => {
   const [overview, mjml] = await Promise.all([
-    await StreamOverview({ socket, chatId, chatQuestion, type, chatVersion }),
+    await streamOverview({
+      generator: getQuestionOverview,
+      socket,
+      chatQuestion,
+      version: chatVersion,
+      chatId,
+      addCurrentSocket: false,
+    }),
     await createNewMailTemplate({
       prompt: chatQuestion.prompt,
       brandKitId: null,
@@ -47,65 +55,22 @@ export const streamAndHandleQuestion = async ({
       html_code: html_code.html,
     })
     .returning();
-
-  socket.send(
-    JSON.stringify({
-      key: "res:version-update",
-      data: {
-        chat_versions: chatVersion,
-        chat_version_prompts: chatQuestion,
-        chat_version_outputs: chatVersionOutput,
-      },
-    }),
+  const processingVersion = ProcesingVersions.get(
+    `${socket.userId}::${chatVersion.chat_id}`,
   );
-  ProcesingVersions.delete(`${socket.userId}::${chatId}`);
-};
-
-const StreamOverview = async ({
-  socket,
-  chatQuestion,
-  chatId,
-}: StreamAndHandleQuestion): Promise<string> => {
-  const key = `${socket.userId}::${chatId}`;
-
-  const currentStreamData = {
-    chatId,
-    questionId: chatQuestion.id,
-    overviewOutput: "",
-    isDone: false,
-    sockets: new Set<WebSocket>(),
-    abortController: new AbortController(),
-  };
-  socket.send(
-    JSON.stringify({
-      key: "res:stream-answer",
-      data: {
-        versionId: chatQuestion.version_id,
-        chatId: chatId,
-        questionId: chatQuestion.id,
-        response: "",
-      },
-    }),
-  );
-  ProcesingVersions.set(key, currentStreamData);
-  for await (const chunk of getQuestionOverview(chatQuestion.prompt)) {
-    currentStreamData.overviewOutput = chunk.text || "";
-    for (const socket of currentStreamData.sockets) {
-      if (socket.readyState === socket.OPEN) {
-        socket.send(
-          JSON.stringify({
-            key: "res:stream-answer",
-            data: {
-              versionId: chatQuestion.version_id,
-              chatId: chatId,
-              questionId: chatQuestion.id,
-              response: chunk.text,
-            },
-          }),
-        );
-      }
+  if (processingVersion) {
+    for (const localSocket of processingVersion.sockets) {
+      localSocket.send(
+        JSON.stringify({
+          key: "res:version-update",
+          data: {
+            chat_versions: chatVersion,
+            chat_version_prompts: chatQuestion,
+            chat_version_outputs: chatVersionOutput,
+          },
+        }),
+      );
     }
   }
-  currentStreamData.isDone = true;
-  return currentStreamData.overviewOutput;
+  ProcesingVersions.delete(`${socket.userId}::${chatId}`);
 };

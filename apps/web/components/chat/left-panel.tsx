@@ -42,23 +42,23 @@ export default function LeftPanel({ versions, streamingOverview }: LeftPanel) {
               <UserChatBubble message={version.chat_version_prompts.prompt} />
             )}
 
-            {streamingOverview?.versionId === version.chat_versions.id && (
-              <div className="mt-3">
-                <p className="text-muted-foreground text-sm font-bold">
-                  Working..
-                </p>
-                <p className="text-muted-foreground mt-1 text-sm">
-                  {streamingOverview.response}
-                </p>
-              </div>
-            )}
-
-            {version.chat_version_outputs &&
-              streamingOverview?.versionId !== version.chat_versions.id && (
-                <p className="text-muted-foreground mt-2 text-sm">
-                  {version.chat_version_outputs.overview}
-                </p>
+            {streamingOverview?.versionId === version.chat_versions.id &&
+              !version.chat_version_outputs && (
+                <div className="mt-3">
+                  <p className="text-muted-foreground text-sm font-bold">
+                    Working..
+                  </p>
+                  <p className="text-muted-foreground mt-1 text-sm">
+                    {streamingOverview.response}
+                  </p>
+                </div>
               )}
+
+            {version.chat_version_outputs && (
+              <p className="text-muted-foreground mt-2 text-sm">
+                {version.chat_version_outputs.overview}
+              </p>
+            )}
           </div>
         ))}
       </div>
