@@ -1,5 +1,5 @@
 "use client";
-import { useChats } from "@/hooks/use-chats";
+import { useChats, useDeleteChat } from "@/hooks/use-chats";
 import {
   Sidebar,
   SidebarContent,
@@ -8,11 +8,28 @@ import {
   SidebarGroupLabel,
   SidebarHeader,
   SidebarMenu,
+  SidebarMenuAction,
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@repo/ui/components/sidebar";
-import { LucideIcon, Search, Home, Sparkles, Inbox } from "lucide-react";
+import {
+  LucideIcon,
+  Search,
+  Home,
+  Sparkles,
+  Inbox,
+  MoreHorizontal,
+  Trash2,
+  Pencil,
+} from "lucide-react";
 import Link from "next/link";
+import {
+  DropdownMenu,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuSeparator,
+} from "@repo/ui/components/dropdown-menu";
 const mainNav = [
   {
     title: "Search Templates",
@@ -39,6 +56,7 @@ const mainNav = [
 
 export function DashboardSidebar() {
   const chatsRes = useChats();
+  const { mutate: deleteChat } = useDeleteChat();
   return (
     <Sidebar className="mt-16 border-0 group-data-[side=left]:border-0">
       <SidebarHeader className="bg-background">
@@ -57,6 +75,30 @@ export function DashboardSidebar() {
                 >
                   <Link href={`/chat/${chat.id}`}>{chat.name}</Link>
                 </SidebarMenuButton>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <SidebarMenuAction showOnHover>
+                      <MoreHorizontal />
+                      <span className="sr-only">More</span>
+                    </SidebarMenuAction>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent
+                    className="w-56 rounded-lg"
+                    // side={isMobile ? "bottom" : "right"}
+                    // align={isMobile ? "end" : "start"}
+                  >
+                    <DropdownMenuItem>
+                      <Pencil className="text-muted-foreground" />
+                      <span>Rename</span>
+                    </DropdownMenuItem>
+
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem onClick={() => deleteChat(chat.id)}>
+                      <Trash2 className="text-muted-foreground" />
+                      <span>Delete</span>
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
               </SidebarMenuItem>
             ))}
           </SidebarMenu>

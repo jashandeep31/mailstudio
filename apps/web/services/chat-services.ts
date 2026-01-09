@@ -10,3 +10,10 @@ export const getChats = async (): Promise<
   });
   return res.data.data;
 };
+
+export const deleteChat = async (chatId: string) => {
+  const res = await axios.delete(`${BASE_URL}/api/v1/chats/${chatId}`, {
+    withCredentials: true,
+  });
+  return res.data.data;
+};
