@@ -2,7 +2,7 @@ import { z } from "zod";
 
 export const SocketEventSchemas = {
   "event:new-chat": z.object({
-    message: z.string(),
+    message: z.string().min(10),
     media: z.array(z.string()),
     brandKitId: z.string().optional(),
   }),
@@ -20,7 +20,7 @@ export const SocketEventSchemas = {
   }),
   "event:refine-template-message": z.object({
     chatId: z.string(),
-    message: z.string(),
+    message: z.string().min(10),
     media: z.array(z.string()),
     brandKitId: z.string().optional(),
     prevVersionId: z.string(),

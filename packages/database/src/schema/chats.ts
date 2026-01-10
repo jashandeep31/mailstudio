@@ -28,6 +28,7 @@ export const chatsTable = pgTable("chats", {
   })
     .notNull()
     .default("0"),
+  like_count: integer("like_count").notNull().default(0),
   category_id: uuid("category_id").references(() => chatCategoriesTable.id, {
     onDelete: "cascade",
   }),
