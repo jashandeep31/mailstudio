@@ -6,9 +6,11 @@ import {
   text,
   boolean,
   integer,
+  numeric,
 } from "drizzle-orm/pg-core";
 import { usersTable } from "./users.js";
 import { brandKitsTable } from "./brand-kits.js";
+import { chatCategoriesTable } from "./chat-categories.js";
 
 export const chatsTable = pgTable("chats", {
   id: uuid("id").defaultRandom().primaryKey(),
@@ -20,6 +22,15 @@ export const chatsTable = pgTable("chats", {
   name: varchar("name", { length: 255 }).notNull(),
   thumbnail: text("thumbnail"),
   public: boolean("public").notNull().default(false),
+  price: numeric("price", {
+    precision: 5,
+    scale: 2,
+  })
+    .notNull()
+    .default("0"),
+  category_id: uuid("category_id").references(() => chatCategoriesTable.id, {
+    onDelete: "cascade",
+  }),
   created_at: timestamp("created_at", { withTimezone: true })
     .notNull()
     .defaultNow(),

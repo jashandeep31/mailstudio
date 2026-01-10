@@ -63,7 +63,7 @@ export default function InputArea({
         </Button>
         <div className="flex items-end gap-2">
           <div className="flex flex-col text-right">
-            <div className="border-border bg-muted/80 text-foreground dark:border-border/60 dark:bg-muted/40 dark:text-foreground mt-1 inline-flex items-center gap-1 rounded-full border px-3 py-1 text-[11px] font-medium shadow-inner">
+            <div className="text-foreground mt-1 inline-flex items-center gap-1 px-3 py-1 text-[11px] font-medium">
               <Command className="h-3 w-3" />
               <span>+</span>
               <CornerDownLeft className="h-3 w-3" />
