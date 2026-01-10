@@ -20,6 +20,7 @@ const ClientView = () => {
   const { sendEvent } = useWebSocketContext();
   const chatVersionsMap = useChatStore((s) => s.chatVersions);
   const activeStream = useChatStore((s) => s.activeStream);
+  const resetChat = useChatStore((s) => s.resetChat);
   const chatVersions = useMemo(
     () => Array.from(chatVersionsMap.values()),
     [chatVersionsMap],
@@ -32,8 +33,9 @@ const ClientView = () => {
       sendEvent("event:left-chat", {
         chatId: params.id! as string,
       });
+      resetChat();
     };
-  }, [params.id, sendEvent]);
+  }, [params.id, sendEvent, resetChat]);
 
   return (
     <div className="flex h-screen flex-col p-2">

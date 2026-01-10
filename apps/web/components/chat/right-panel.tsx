@@ -15,6 +15,7 @@ export const RightPanel = ({ view, setView }: RightPanel) => {
   // store
   const selectedVersionId = useChatStore((s) => s.selectedVersionId);
   const chatVersionsMap = useChatStore((s) => s.chatVersions);
+  const activeStream = useChatStore((s) => s.activeStream);
 
   const chatVersions = useMemo(() => {
     return Array.from(chatVersionsMap.values());
@@ -27,31 +28,49 @@ export const RightPanel = ({ view, setView }: RightPanel) => {
     }
   }, [chatVersionsMap, selectedVersionId]);
 
-  if (!selectedVersion) {
-    return <h1>please selet the version</h1>;
-  }
+  const isStreamingCurrentVersion =
+    !!selectedVersion &&
+    activeStream?.versionId === selectedVersion.chat_versions.id &&
+    !selectedVersion.chat_version_outputs?.html_code;
+
   return (
     <ResizablePanel defaultSize={"75%"} className="grid">
-      <div className="flex h-full flex-col justify-center">
-        <ChatTopControlBar
-          chatVersions={chatVersions}
-          view={view}
-          setView={setView}
-          iframeWidth={iframeWidth}
-          setIframeWidth={setIframeWidth}
-        />
-        <div className="grid flex-1">
-          {view === "preview" ? (
-            <MailTemplatePreviewer
-              html={selectedVersion.chat_version_outputs?.html_code}
-              width={iframeWidth}
-              setWidth={setIframeWidth}
-            />
-          ) : view === "code" ? (
-            <CodeView html={selectedVersion.chat_version_outputs?.html_code} />
-          ) : null}
+      {selectedVersion ? (
+        <div className="flex h-full flex-col justify-center">
+          <ChatTopControlBar
+            chatVersions={chatVersions}
+            view={view}
+            setView={setView}
+            iframeWidth={iframeWidth}
+            setIframeWidth={setIframeWidth}
+          />
+          <div className="grid flex-1">
+            {view === "preview" ? (
+              <MailTemplatePreviewer
+                html={selectedVersion.chat_version_outputs?.html_code}
+                width={iframeWidth}
+                setWidth={setIframeWidth}
+                isStreaming={isStreamingCurrentVersion}
+                streamingMessage={activeStream?.response}
+              />
+            ) : view === "code" ? (
+              <CodeView
+                html={selectedVersion.chat_version_outputs?.html_code}
+              />
+            ) : null}
+          </div>
         </div>
-      </div>
+      ) : (
+        <div className="flex h-full flex-col items-center justify-center gap-3">
+          <div className="animate-pulse rounded-md border border-dashed px-6 py-4 text-center">
+            <p className="text-lg font-semibold">Preparing chat space</p>
+            <p className="text-muted-foreground text-sm">
+              We&apos;re syncing the latest conversation. This panel will update
+              automatically.
+            </p>
+          </div>
+        </div>
+      )}
     </ResizablePanel>
   );
 };

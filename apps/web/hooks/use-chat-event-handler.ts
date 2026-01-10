@@ -14,6 +14,7 @@ export const useChatEventHandler = () => {
   const setActiveStream = useChatStore((s) => s.setActiveStream);
   const setSelectedVersionId = useChatStore((s) => s.setSelectedVersionId);
   const appendChatVersion = useChatStore((s) => s.appendChatVersion);
+  const resetChat = useChatStore((s) => s.resetChat);
 
   const eventsArray = useMemo(() => [...events.values()], [events]);
 
@@ -46,6 +47,9 @@ export const useChatEventHandler = () => {
       }
       deleteEvent(event.id);
     }
+    return () => {
+      resetChat();
+    };
   }, [
     eventsArray,
     setActiveStream,
@@ -55,5 +59,6 @@ export const useChatEventHandler = () => {
     deleteEvent,
     updateChatVersion,
     activeStream?.versionId,
+    resetChat,
   ]);
 };

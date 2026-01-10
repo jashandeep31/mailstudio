@@ -12,7 +12,11 @@ const layout = ({ children }: { children: React.ReactNode }) => {
       <div className="relative flex-1">
         <SidebarProvider className="h-full min-h-0">
           <DashboardSidebar />
-          <main className="grid w-full">{children}</main>
+          <main className="grid w-full">
+            <div className="bg-muted rounded-tl-md border-t border-l">
+              {children}
+            </div>
+          </main>
         </SidebarProvider>
       </div>
     </div>

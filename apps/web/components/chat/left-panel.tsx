@@ -9,7 +9,7 @@ import { useParams } from "next/navigation";
 
 interface LeftPanel {
   versions: ChatVersionAggregate[];
-  streamingOverview: StreamingOverview;
+  streamingOverview: StreamingOverview | null;
 }
 
 export default function LeftPanel({ versions, streamingOverview }: LeftPanel) {
@@ -36,31 +36,48 @@ export default function LeftPanel({ versions, streamingOverview }: LeftPanel) {
     >
       {/* 🔹 SCROLLABLE MESSAGES */}
       <div className="min-h-0 flex-1 overflow-y-auto pr-2">
-        {versions.map((version) => (
-          <div key={version.chat_versions.id} className="mb-4">
-            {version.chat_version_prompts && (
-              <UserChatBubble message={version.chat_version_prompts.prompt} />
-            )}
-
-            {streamingOverview?.versionId === version.chat_versions.id &&
-              !version.chat_version_outputs && (
-                <div className="mt-3">
-                  <p className="text-muted-foreground text-sm font-bold">
-                    Working..
-                  </p>
-                  <p className="text-muted-foreground mt-1 text-sm">
-                    {streamingOverview.response}
-                  </p>
-                </div>
+        {versions.length ? (
+          versions.map((version) => (
+            <div key={version.chat_versions.id} className="mb-4">
+              {version.chat_version_prompts && (
+                <UserChatBubble message={version.chat_version_prompts.prompt} />
               )}
 
-            {version.chat_version_outputs && (
-              <p className="text-muted-foreground mt-2 text-sm">
-                {version.chat_version_outputs.overview}
-              </p>
-            )}
+              {streamingOverview?.versionId === version.chat_versions.id &&
+                !version.chat_version_outputs && (
+                  <div className="mt-3">
+                    <p className="text-muted-foreground text-sm font-bold">
+                      Working..
+                    </p>
+                    <p className="text-muted-foreground mt-1 text-sm">
+                      {streamingOverview.response}
+                    </p>
+                  </div>
+                )}
+
+              {version.chat_version_outputs && (
+                <p className="text-muted-foreground mt-2 text-sm">
+                  {version.chat_version_outputs.overview}
+                </p>
+              )}
+            </div>
+          ))
+        ) : (
+          <div className="flex flex-1 flex-col gap-4">
+            {Array.from({ length: 3 }).map((_, idx) => (
+              <div key={idx} className="flex flex-col items-end gap-2">
+                <div className="bg-muted/60 h-16 w-3/4 animate-pulse rounded-md" />
+                <div className="flex justify-end gap-2">
+                  <div className="bg-muted/50 h-8 w-8 animate-pulse rounded-md" />
+                  <div className="bg-muted/50 h-8 w-8 animate-pulse rounded-md" />
+                </div>
+              </div>
+            ))}
+            <p className="text-muted-foreground text-sm">
+              Waiting for the latest conversation to load…
+            </p>
           </div>
-        ))}
+        )}
       </div>
 
       {/* 🔹 FIXED INPUT */}

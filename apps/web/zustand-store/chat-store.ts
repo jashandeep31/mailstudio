@@ -9,6 +9,7 @@ interface ChatStore {
   updateChatVersion: (version: ChatVersionAggregate) => void;
   activeStream: StreamingOverview | null;
   setActiveStream: (stream: StreamingOverview) => void;
+  resetChat: () => void;
 }
 export const useChatStore = create<ChatStore>((set) => ({
   chatVersions: new Map<string, ChatVersionAggregate>(),
@@ -34,5 +35,11 @@ export const useChatStore = create<ChatStore>((set) => ({
       const map = new Map(state.chatVersions);
       map.set(version.chat_versions.id, version);
       return { chatVersions: map };
+    }),
+  resetChat: () =>
+    set({
+      chatVersions: new Map<string, ChatVersionAggregate>(),
+      selectedVersionId: null,
+      activeStream: null,
     }),
 }));
