@@ -82,10 +82,10 @@ export const ChatTopControlBar = ({
         {view === "preview" && (
           <>
             <Select
+              value={selectedVersionId ?? undefined}
               onValueChange={(e) => {
                 setSelectedVersionId(e);
               }}
-              defaultValue={selectedVersionId!}
             >
               <SelectTrigger className="">
                 <SelectValue placeholder="Select a Version" />

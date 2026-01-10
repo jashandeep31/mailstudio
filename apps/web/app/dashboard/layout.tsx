@@ -9,11 +9,11 @@ const layout = ({ children }: { children: React.ReactNode }) => {
       <header className="bg-background sticky top-0 z-50">
         <DashboardNavbar />
       </header>
-      <div className="relative flex-1">
+      <div className="relative flex-1 overflow-auto">
         <SidebarProvider className="h-full min-h-0">
           <DashboardSidebar />
           <main className="grid w-full">
-            <div className="bg-muted rounded-tl-md border-t border-l">
+            <div className="bg-muted gid overflow-auto rounded-tl-md border-t border-l">
               {children}
             </div>
           </main>

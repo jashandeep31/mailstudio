@@ -16,7 +16,7 @@ const ClientView = () => {
     });
   };
   return (
-    <>
+    <div className="mb-12">
       <div className="mt-12 flex items-center justify-center lg:mt-36">
         <div className="min-w-[50%]">
           <div className="mb-6">
@@ -42,7 +42,7 @@ const ClientView = () => {
           <MailTemplateCard />
         </div>
       </div>
-    </>
+    </div>
   );
 };
 

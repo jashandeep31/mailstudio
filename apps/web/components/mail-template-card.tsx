@@ -4,7 +4,7 @@ export const MailTemplateCard = () => {
   return (
     <div className="bg-background w-full overflow-clip rounded-md border">
       <img
-        src="https://mailstudio-testing-public.s3.us-east-1.amazonaws.com/response.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIATCKAN5R3NGQPGZ7K%2F20260110%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260110T121830Z&X-Amz-Expires=604800&X-Amz-Signature=ed283d6e325f9965f29317bc106af3e029ff3548ffd8338e59713c249cf42215&X-Amz-SignedHeaders=host&x-amz-checksum-mode=ENABLED&x-id=GetObject"
+        src="https://mailstudio-testing-public.s3.us-east-1.amazonaws.com/response.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIATCKAN5R3NGQPGZ7K%2F20260110%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260110T122756Z&X-Amz-Expires=604800&X-Amz-Signature=784645376291a9ce91f160fd9571ece0124d40d192ee377af334b61f01e384b8&X-Amz-SignedHeaders=host&x-amz-checksum-mode=ENABLED&x-id=GetObject"
         alt=""
       />
       <div className="p-2">

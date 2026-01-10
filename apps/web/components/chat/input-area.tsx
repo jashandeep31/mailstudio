@@ -34,6 +34,13 @@ export default function InputArea({
     textarea.style.overflowY = scrollHeight > maxHeight ? "auto" : "hidden";
   }, [userPrompt, baseHeight, maxHeight]);
 
+  const submitHandler = () => {
+    if (isPromptValid) {
+      handleSubmit();
+      setUserPrompt("");
+    }
+  };
+
   return (
     <div
       className={`bg-background rounded-md border p-3 shadow transition-colors ${
@@ -51,7 +58,7 @@ export default function InputArea({
         onKeyDown={(e) => {
           if (e.key === "Enter" && (e.ctrlKey || e.metaKey) && isPromptValid) {
             e.preventDefault();
-            handleSubmit();
+            submitHandler();
           }
         }}
         style={{
@@ -76,7 +83,7 @@ export default function InputArea({
           </div>
           <Button
             disabled={!isPromptValid}
-            onClick={handleSubmit}
+            onClick={submitHandler}
             className="gap-1"
           >
             <ArrowUp className="h-4 w-4" />
