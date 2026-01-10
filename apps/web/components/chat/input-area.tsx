@@ -17,6 +17,11 @@ export default function InputArea({
   const textareaRef = React.useRef<HTMLTextAreaElement>(null);
   const baseHeight = 100;
   const maxHeight = baseHeight * 1.5;
+  const isPromptValid = React.useMemo(() => {
+    const trimmed = userPrompt.trim();
+    if (!trimmed) return false;
+    return trimmed.split(/\s+/).filter(Boolean).length >= 5;
+  }, [userPrompt]);
 
   React.useEffect(() => {
     const textarea = textareaRef.current;
@@ -44,7 +49,7 @@ export default function InputArea({
         onFocus={() => setIsFocused(true)}
         onBlur={() => setIsFocused(false)}
         onKeyDown={(e) => {
-          if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) {
+          if (e.key === "Enter" && (e.ctrlKey || e.metaKey) && isPromptValid) {
             e.preventDefault();
             handleSubmit();
           }
@@ -63,14 +68,14 @@ export default function InputArea({
         </Button>
         <div className="flex items-end gap-2">
           <div className="flex flex-col text-right">
-            <div className="text-foreground mt-1 inline-flex items-center gap-1 px-3 py-1 text-[11px] font-medium">
+            <div className="text-muted-foreground mt-1 inline-flex items-center gap-1 px-3 py-1 text-[11px] font-medium">
               <Command className="h-3 w-3" />
               <span>+</span>
               <CornerDownLeft className="h-3 w-3" />
             </div>
           </div>
           <Button
-            disabled={!userPrompt}
+            disabled={!isPromptValid}
             onClick={handleSubmit}
             className="gap-1"
           >
