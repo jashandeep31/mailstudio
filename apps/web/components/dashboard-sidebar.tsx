@@ -6,34 +6,34 @@ import {
   SidebarFooter,
   SidebarHeader,
 } from "@repo/ui/components/sidebar";
-import { Search, Mail, Radio, ShoppingBag } from "lucide-react";
+import { Search, Mail, Radio, ShoppingBag, Hexagon } from "lucide-react";
 import { MainNav } from "./dashboard-sidebar/main-nav";
 import { ChatList } from "./dashboard-sidebar/chat-list";
 
 const mainNav = [
   {
     title: "Search Templates",
-    url: "#",
+    url: "/dashboard",
     icon: Search,
   },
   {
     title: "My Templates",
-    url: "#",
+    url: "/dashboard/templates",
     icon: Mail,
   },
   {
     title: "Brand Kits",
-    url: "#",
-    icon: Mail,
+    url: "/dashboard/brand-kits",
+    icon: Hexagon,
   },
   {
     title: "Broadcast",
-    url: "#",
+    url: "/dashboard/broadcast",
     icon: Radio,
   },
   {
     title: "Marketplace",
-    url: "#",
+    url: "/dashboard/marketplace",
     icon: ShoppingBag,
     badge: "10",
   },
