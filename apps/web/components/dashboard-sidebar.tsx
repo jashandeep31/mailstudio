@@ -6,7 +6,7 @@ import {
   SidebarFooter,
   SidebarHeader,
 } from "@repo/ui/components/sidebar";
-import { Search, Home, Sparkles, Inbox } from "lucide-react";
+import { Search, Mail, Radio, ShoppingBag } from "lucide-react";
 import { MainNav } from "./dashboard-sidebar/main-nav";
 import { ChatList } from "./dashboard-sidebar/chat-list";
 
@@ -19,17 +19,17 @@ const mainNav = [
   {
     title: "My Templates",
     url: "#",
-    icon: Sparkles,
+    icon: Mail,
   },
   {
     title: "Broadcast",
     url: "#",
-    icon: Home,
+    icon: Radio,
   },
   {
     title: "Marketplace",
     url: "#",
-    icon: Inbox,
+    icon: ShoppingBag,
     badge: "10",
   },
 ];

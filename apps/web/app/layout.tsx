@@ -4,6 +4,7 @@ import "./globals.css";
 import "@repo/ui/globals.css";
 import Provider from "./provider";
 import { Toaster } from "sonner";
+import { ThemeProvider } from "./provider";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -62,8 +63,17 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
-        <Toaster richColors />
-        <Provider>{children}</Provider>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <>
+            <Toaster richColors />
+            <Provider>{children}</Provider>
+          </>
+        </ThemeProvider>
       </body>
     </html>
   );
