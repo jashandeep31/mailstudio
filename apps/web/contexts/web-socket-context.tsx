@@ -47,22 +47,32 @@ export default function WebSocketProvider({
   const addEvent = useSocketEvents((s) => s.addEvent);
   const router = useRouter();
   const [socket, setSocket] = useState<WebSocket | null>(null);
+  const socketRef = useRef<WebSocket | null>(null);
   const reconnectAttemptCountRef = useRef(0);
   const [isConnected, setIsConnected] = useState<boolean>(false);
+  const isConnectedRef = useRef(false);
   const pendingMessagesRef = useRef<Array<string>>([]);
 
-  const sendEvent: SendEvent = (event, payload) => {
+  const sendEvent = useCallback<SendEvent>((event, payload) => {
     const parsed = SocketEventSchemas[event].parse(payload);
     const payloadString = JSON.stringify({
       event,
       data: parsed,
     });
-    if (!isConnected || !socket) {
+    if (!isConnectedRef.current || !socketRef.current) {
       pendingMessagesRef.current.push(payloadString);
       return;
     }
-    socket.send(payloadString);
-  };
+    socketRef.current.send(payloadString);
+  }, []);
+
+  useEffect(() => {
+    socketRef.current = socket;
+  }, [socket]);
+
+  useEffect(() => {
+    isConnectedRef.current = isConnected;
+  }, [isConnected]);
 
   const socketOnMessageHandler = useCallback(
     (e: MessageEvent<string>) => {
@@ -91,6 +101,8 @@ export default function WebSocketProvider({
       const ws = new WebSocket("ws://localhost:8000");
 
       ws.onopen = () => {
+        socketRef.current = ws;
+        isConnectedRef.current = true;
         setIsConnected(true);
         setSocket(ws);
         // Reseting for the next retry
@@ -105,6 +117,8 @@ export default function WebSocketProvider({
         socketOnMessageHandler(e);
       };
       ws.onclose = () => {
+        socketRef.current = null;
+        isConnectedRef.current = false;
         setSocket(null);
         setIsConnected(false);
 

@@ -22,6 +22,11 @@ const mainNav = [
     icon: Mail,
   },
   {
+    title: "Brand Kits",
+    url: "#",
+    icon: Mail,
+  },
+  {
     title: "Broadcast",
     url: "#",
     icon: Radio,
