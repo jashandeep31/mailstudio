@@ -32,8 +32,7 @@ export const handleChatJoinEvent = async (
       chatVersionOutputsTable,
       eq(chatVersionOutputsTable.version_id, chatVersionsTable.id),
     )
-    .orderBy(desc(chatVersionsTable.created_at))
-    .limit(3);
+    .orderBy(desc(chatVersionsTable.created_at));
 
   // sending the chat data  to the user
   socket.send(

@@ -11,7 +11,7 @@ export const getAllUserChats = catchAsync(
       .select()
       .from(chatsTable)
       .where(eq(chatsTable.user_id, req.user.id))
-      .orderBy(desc(chatsTable.created_at))
+      .orderBy(desc(chatsTable.updated_at))
       .limit(10);
     res.status(200).json({
       data: chats,

@@ -97,7 +97,7 @@ interface UserChatBubble {
 const UserChatBubble = ({ message }: UserChatBubble) => {
   return (
     <div className="flex flex-col items-end gap-1">
-      <div className="bg-muted max-w-[75%] rounded-md border p-2 text-sm">
+      <div className="bg-muted hidden-scrollbar max-w-[75%] overflow-auto rounded-md border p-2 text-sm">
         {message}
       </div>
       <div className="flex justify-end gap-1">

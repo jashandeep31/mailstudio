@@ -12,12 +12,10 @@ export const CodeView = ({ html }: { html: string | undefined }) => {
   }
 
   return (
-    <div className="grid overflow-hidden">
-      <div className="Code">
-        <pre className="m-0 h-full w-full overflow-auto">
-          <code className={`language-html`}>{html}</code>
-        </pre>
-      </div>
+    <div className="grid">
+      <pre className="m-0 grid max-h-[99vh] w-full overflow-y-auto pb-12">
+        <code className="language-html">{html}</code>
+      </pre>
     </div>
   );
 };
