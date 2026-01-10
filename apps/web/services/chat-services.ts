@@ -17,3 +17,10 @@ export const deleteChat = async (chatId: string) => {
   });
   return res.data.data;
 };
+
+export const updateChat = async (data: unknown) => {
+  const res = await axios.post(`${BASE_URL}/api/v1/chats`, data, {
+    withCredentials: true,
+  });
+  return res.data.data;
+};

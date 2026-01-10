@@ -41,3 +41,30 @@ export const deleteUserChat = catchAsync(
     return;
   },
 );
+
+const updateChatSchema = z.object({
+  chatId: z.string(),
+  name: z.string(),
+});
+export const updateChat = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    if (!req.user) throw new AppError("Authentication failed", 400);
+    const parsedData = updateChatSchema.parse(req.body);
+    await db
+      .update(chatsTable)
+      .set({
+        name: parsedData.name,
+      })
+      .where(
+        and(
+          eq(chatsTable.id, parsedData.chatId),
+          eq(chatsTable.user_id, req.user.id),
+        ),
+      );
+
+    res.status(200).json({
+      message: "Chat is updated",
+    });
+    return;
+  },
+);
