@@ -13,7 +13,7 @@ export const handleNewChatEvent = async (
     .insert(chatsTable)
     .values({
       user_id: userId,
-      name: message.slice(0, 10) + "this is tset ",
+      name: "Chat",
       public: false,
     })
     .returning();
@@ -27,6 +27,7 @@ export const handleNewChatEvent = async (
       },
     }),
   );
+
   redis.set(chat.id, socket.userId);
   return chat;
 };

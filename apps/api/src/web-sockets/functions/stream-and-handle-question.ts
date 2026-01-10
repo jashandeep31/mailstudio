@@ -1,8 +1,10 @@
 import {
+  chatsTable,
   chatVersionOutputsTable,
   chatVersionPromptsTable,
   chatVersionsTable,
   db,
+  eq,
 } from "@repo/db";
 import { getQuestionOverview } from "../../ai/mail/get-question-overview.js";
 import { ProcesingVersions } from "../../state/processing-versions-state.js";
@@ -10,6 +12,7 @@ import WebSocket from "ws";
 import mjml2html from "mjml";
 import { createNewMailTemplate } from "../../ai/mail/new-template/index.js";
 import { streamOverview } from "./stream-overview.js";
+import { getTemplateName } from "../../ai/mail/get-template-name.js";
 
 interface StreamAndHandleQuestion {
   chatQuestion: typeof chatVersionPromptsTable.$inferSelect;
@@ -27,7 +30,7 @@ export const streamAndHandleQuestion = async ({
   chatVersion,
 }: StreamAndHandleQuestion) => {
   const [overview, mjml] = await Promise.all([
-    await streamOverview({
+    streamOverview({
       generator: getQuestionOverview,
       socket,
       chatQuestion,
@@ -35,11 +38,17 @@ export const streamAndHandleQuestion = async ({
       chatId,
       addCurrentSocket: false,
     }),
-    await createNewMailTemplate({
+    createNewMailTemplate({
       prompt: chatQuestion.prompt,
       brandKitId: null,
       media: [],
     }),
+    streamTemplateName(
+      chatQuestion.prompt,
+      socket,
+      chatId,
+      chatVersion.chat_id,
+    ),
   ]);
 
   const html_code = mjml2html(mjml);
@@ -55,6 +64,7 @@ export const streamAndHandleQuestion = async ({
       html_code: html_code.html,
     })
     .returning();
+
   const processingVersion = ProcesingVersions.get(
     `${socket.userId}::${chatVersion.chat_id}`,
   );
@@ -73,4 +83,22 @@ export const streamAndHandleQuestion = async ({
     }
   }
   ProcesingVersions.delete(`${socket.userId}::${chatId}`);
+};
+
+const streamTemplateName = async (
+  prompt: string,
+  socket: WebSocket,
+  chatId: string,
+  chatDbId: string,
+) => {
+  let name = "";
+  for await (const chunk of getTemplateName(prompt)) {
+    name += chunk;
+  }
+  // Update DB immediately when name is ready, don't wait for other operations
+  db.update(chatsTable)
+    .set({ name })
+    .where(eq(chatsTable.id, chatDbId))
+    .then(() => {})
+    .catch(console.error);
 };
