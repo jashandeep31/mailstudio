@@ -24,6 +24,7 @@ import {
   AvatarFallback,
   AvatarImage,
 } from "@repo/ui/components/avatar";
+import { useUserMetadata } from "@/hooks/use-user";
 
 const ProfileDropdown = () => {
   const { theme, setTheme } = useTheme();
@@ -31,6 +32,8 @@ const ProfileDropdown = () => {
   const toggleTheme = () => {
     setTheme(theme === "dark" ? "light" : "dark");
   };
+
+  const { data, isLoading } = useUserMetadata();
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -44,9 +47,9 @@ const ProfileDropdown = () => {
       <DropdownMenuContent className="w-56" align="end" forceMount>
         <DropdownMenuLabel className="font-normal">
           <div className="flex flex-col space-y-1">
-            <p className="text-sm leading-none font-medium">User Name</p>
-            <p className="text-muted-foreground text-xs leading-none">
-              user@example.com
+            <p className="text-sm leading-none font-medium">
+              Credits:{" "}
+              <span className="text-foreground text-sm">${data?.balance}</span>
             </p>
           </div>
         </DropdownMenuLabel>
