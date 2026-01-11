@@ -1,4 +1,5 @@
 import { pgTable, uuid, varchar, timestamp, pgEnum } from "drizzle-orm/pg-core";
+import { planTypeEnum } from "./plans.js";
 
 export const userRoleEnum = pgEnum("user_role", ["user", "admin"]);
 export const usersTable = pgTable("users", {
@@ -9,6 +10,8 @@ export const usersTable = pgTable("users", {
   email: varchar({ length: 255 }).notNull().unique(),
   password: varchar({ length: 255 }),
   role: userRoleEnum().default("user"),
+
+  plan_type: planTypeEnum().default("free"),
 
   updated_at: timestamp().notNull().defaultNow(),
   created_at: timestamp().defaultNow().notNull(),
