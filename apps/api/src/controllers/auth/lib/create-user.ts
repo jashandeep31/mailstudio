@@ -1,8 +1,11 @@
 import {
   accountProviderEnum,
   accountsTable,
+  creditWalletsTable,
   db,
   eq,
+  plansTable,
+  planTypeEnum,
   usersTable,
 } from "@repo/db";
 interface CreateUser {
@@ -62,11 +65,31 @@ export const createUser = async ({
       .returning();
 
     if (!user) throw new Error("Unable to create the user");
+    // creating the user account
     await tx.insert(accountsTable).values({
       user_id: user.id,
       provider,
       last_login: new Date(),
     });
+
+    // creating the user wallet
+    await tx.insert(creditWalletsTable).values({
+      user_id: user.id,
+      balance: "0",
+    });
+
+    await tx.insert(plansTable).values({
+      user_id: user.id,
+      plan_type: "free",
+      active: true,
+      subscription_id: null,
+      price: "0.00",
+      currency: "USD",
+      active_from: new Date(),
+      renew_at: new Date(),
+      ends_at: new Date(),
+    });
+    // creating user plan
     return user;
   });
   return user;
