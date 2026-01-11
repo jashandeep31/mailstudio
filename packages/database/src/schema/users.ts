@@ -9,6 +9,7 @@ export const usersTable = pgTable("users", {
   avatar: varchar({ length: 255 }).notNull(),
   email: varchar({ length: 255 }).notNull().unique(),
   password: varchar({ length: 255 }),
+
   role: userRoleEnum().default("user"),
 
   plan_type: planTypeEnum().default("free"),
