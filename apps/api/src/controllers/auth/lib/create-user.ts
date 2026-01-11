@@ -83,7 +83,6 @@ export const createUser = async ({
       active: true,
       subscription_id: null,
       price: "0.00",
-      currency: "USD",
       active_from: new Date(),
       renew_at: new Date(),
       ends_at: new Date(),
