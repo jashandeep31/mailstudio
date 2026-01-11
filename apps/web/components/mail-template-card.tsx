@@ -1,4 +1,4 @@
-import { CircleDollarSign, Heart, Users } from "lucide-react";
+import { CircleDollarSign, Heart } from "lucide-react";
 
 export const MailTemplateCard = () => {
   return (
@@ -20,10 +20,6 @@ export const MailTemplateCard = () => {
           </div>
 
           <div className="mt-1 flex items-center gap-3 text-xs text-zinc-500">
-            <span className="flex items-center gap-1">
-              <Users className="h-3.5 w-3.5" />
-              4.5
-            </span>
             <span className="flex items-center gap-1">
               <Heart className="h-3.5 w-3.5" />5
             </span>

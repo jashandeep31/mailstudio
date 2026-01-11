@@ -5,6 +5,7 @@ import authRoutes from "./routes/auth-routes.js";
 import userRoutes from "./routes/user-routes.js";
 import chatRoutes from "./routes/chat-routes.js";
 import internalRoutes from "./routes/internal-routes.js";
+import paymentRoutes from "./routes/payment-routes.js";
 import cookiesParser from "cookie-parser";
 import { checkAuthorization } from "./middlewares/check-authorization.js";
 import { createServer } from "node:http";
@@ -33,6 +34,7 @@ app.use("/api/v1", authRoutes);
 app.use("/api/v1/user", userRoutes);
 app.use("/api/v1/chats", chatRoutes);
 app.use("/api/v1/internal", internalRoutes);
+app.use("/api/v1/payments", paymentRoutes);
 // Testing route of the application
 app.get("/", checkAuthorization(["all"]), (req, res, next) => {
   res.status(200).json({ message: "hello" });
