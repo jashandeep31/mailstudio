@@ -5,7 +5,6 @@ import {
   db,
   eq,
   plansTable,
-  planTypeEnum,
   usersTable,
 } from "@repo/db";
 interface CreateUser {

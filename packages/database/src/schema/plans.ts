@@ -9,7 +9,6 @@ import {
 import { usersTable } from "./users.js";
 
 export const planTypeEnum = pgEnum("plan_type", ["free", "starter_pack"]);
-export const currencyEnum = pgEnum("currency", ["USD", "EUR", "GBP"]);
 
 export const plansTable = pgTable("plans", {
   id: uuid("id").defaultRandom().primaryKey(),
@@ -23,7 +22,6 @@ export const plansTable = pgTable("plans", {
   subscription_id: uuid("subscription_id"),
 
   price: numeric("price").notNull(),
-  currency: currencyEnum("currency").notNull(),
 
   active_from: timestamp("active_from").notNull(),
   renew_at: timestamp("renew_at").notNull(),
