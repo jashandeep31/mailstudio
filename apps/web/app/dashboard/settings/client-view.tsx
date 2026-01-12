@@ -18,6 +18,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@repo/ui/components/card";
+import { Skeleton } from "@repo/ui/components/skeleton";
 import { SettingsNav } from "@/components/settings/settings-nav";
 import {
   Select,
@@ -26,7 +27,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@repo/ui/components/select";
-import { useUserPlan } from "@/hooks/use-user";
+import { useUserMetadata, useUserPlan } from "@/hooks/use-user";
 import { getProSubscriptionUrl } from "@/services/user-services";
 
 const ClientView = () => {
@@ -40,13 +41,6 @@ const ClientView = () => {
     avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=john",
   };
 
-  const credits = {
-    balance: 750.5,
-    monthlyLimit: 1000,
-    used: 249.5,
-    lastTransaction: "2024-01-10",
-  };
-
   const handleLogout = () => {
     // TODO: Implement logout logic
     console.log("Logout clicked");
@@ -57,7 +51,8 @@ const ClientView = () => {
   }, []);
 
   const planRes = useUserPlan();
-  console.log(planRes.data);
+  const userMetadata = useUserMetadata();
+
   return (
     <div className="mx-auto max-w-6xl px-6 py-8">
       <h1 className="text-3xl font-semibold tracking-tight">Settings</h1>
@@ -129,7 +124,34 @@ const ClientView = () => {
         </div>
 
         {/* Current Plan Section - Card */}
-        {planRes.isLoading && <div></div>}
+        {planRes.isLoading && (
+          <Card>
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-3">
+                  <Skeleton className="h-8 w-8 rounded-lg" />
+                  <div className="space-y-2">
+                    <Skeleton className="h-5 w-32" />
+                    <Skeleton className="h-3 w-40" />
+                  </div>
+                </div>
+                <Skeleton className="h-9 w-28" />
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="bg-muted/50 rounded-lg border p-4">
+                <div className="mb-3 flex items-center justify-between">
+                  <Skeleton className="h-5 w-24" />
+                  <Skeleton className="h-5 w-20" />
+                </div>
+                <div className="space-y-2">
+                  <Skeleton className="h-3 w-full" />
+                  <Skeleton className="h-3 w-3/4" />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        )}
         {planRes.data && (
           <Card>
             <CardHeader>
@@ -139,7 +161,7 @@ const ClientView = () => {
                     <CreditCard className="text-primary h-4 w-4" />
                   </div>
                   <div>
-                    <CardTitle>
+                    <CardTitle className="text-base">
                       {planRes.data.plan_type
                         .toUpperCase()
                         .split("_")
@@ -161,30 +183,48 @@ const ClientView = () => {
                     Upgrade plan
                   </Button>
                 ) : (
-                  <Button variant="destructive">Cancel Plan</Button>
+                  <Button size="sm" variant="destructive">
+                    Cancel Plan
+                  </Button>
                 )}
               </div>
             </CardHeader>
-            <CardContent className="h-full">
-              <div className="bg-muted/50 h-full rounded-lg border p-4">
-                <div className="mb-2 flex items-center justify-between">
-                  <h4 className="text-foreground font-medium">
+            <CardContent>
+              <div className="bg-muted/50 rounded-lg border p-4">
+                <div className="mb-3 flex items-center justify-between">
+                  <h4 className="text-foreground text-sm font-medium">
                     {planRes.data.plan_type === "starter_pack"
                       ? "Starter Pack"
                       : "Free Plan"}
                   </h4>
-                  <span className="text-primary font-medium">
-                    {planRes.data.price}/month
+                  <span className="text-primary text-lg font-semibold">
+                    ${planRes.data.price}
+                    <span className="text-muted-foreground text-xs font-normal">
+                      /month
+                    </span>
                   </span>
                 </div>
-                <ul className="text-muted-foreground space-y-1 text-xs">
-                  {/* {planRes.data.features.map((feature, index) => (
-                    <li key={index} className="flex items-center gap-2">
-                      <ChevronRight className="h-3 w-3" />
-                      {feature}
+                {planRes.data.plan_type === "starter_pack" && (
+                  <ul className="text-muted-foreground space-y-2 text-xs">
+                    <li className="flex items-center gap-2">
+                      <ChevronRight className="h-3 w-3 shrink-0" />
+                      <span>Get 10 credits each month</span>
                     </li>
-                  ))} */}
-                </ul>
+                    <li className="flex items-center gap-2">
+                      <ChevronRight className="h-3 w-3 shrink-0" />
+                      <span>Create or buy templates.</span>
+                    </li>
+
+                    <li className="flex items-center gap-2">
+                      <ChevronRight className="h-3 w-3 shrink-0" />
+                      <span>Create up to 5 brand kits</span>
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <ChevronRight className="h-3 w-3 shrink-0" />
+                      <span>500 test mails to your own email ids.</span>
+                    </li>
+                  </ul>
+                )}
               </div>
             </CardContent>
           </Card>
@@ -200,7 +240,12 @@ const ClientView = () => {
               <div>
                 <CardTitle>Credits</CardTitle>
                 <p className="text-muted-foreground text-xs">
-                  Last transaction: {credits.lastTransaction}
+                  Last updated:{" "}
+                  {userMetadata.data?.updated_at
+                    ? new Date(
+                        userMetadata.data.updated_at,
+                      ).toLocaleDateString()
+                    : "N/A"}
                 </p>
               </div>
             </div>
@@ -213,40 +258,8 @@ const ClientView = () => {
                     Current Balance
                   </span>
                   <span className="text-primary text-2xl font-bold">
-                    {credits.balance}
+                    {userMetadata.data?.balance || "0.00"}
                   </span>
-                </div>
-
-                <div className="space-y-2">
-                  <div className="flex justify-between text-xs">
-                    <span className="text-muted-foreground">
-                      Used this month
-                    </span>
-                    <span className="text-foreground font-medium">
-                      {credits.used}
-                    </span>
-                  </div>
-                  <div className="flex justify-between text-xs">
-                    <span className="text-muted-foreground">Monthly limit</span>
-                    <span className="text-foreground font-medium">
-                      {credits.monthlyLimit}
-                    </span>
-                  </div>
-                </div>
-
-                <div className="mt-3">
-                  <div className="bg-border h-2 w-full rounded-full">
-                    <div
-                      className="bg-primary h-2 rounded-full"
-                      style={{
-                        width: `${(credits.used / credits.monthlyLimit) * 100}%`,
-                      }}
-                    />
-                  </div>
-                  <p className="text-muted-foreground mt-1 text-xs">
-                    {Math.round((credits.used / credits.monthlyLimit) * 100)}%
-                    of monthly limit used
-                  </p>
                 </div>
               </div>
 

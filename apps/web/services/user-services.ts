@@ -1,10 +1,10 @@
 import { BASE_URL } from "@/lib/contants";
-import { plansTable } from "@repo/db";
+import { creditWalletsTable, plansTable } from "@repo/db";
 import axios from "axios";
 
-export const getUserMetadata = async (): Promise<{
-  balance: string;
-}> => {
+export const getUserMetadata = async (): Promise<
+  typeof creditWalletsTable.$inferSelect
+> => {
   const res = await axios.get(`${BASE_URL}/api/v1/user/metadata`, {
     withCredentials: true,
   });
