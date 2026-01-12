@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useCallback } from "react";
 import {
   Moon,
   Sun,
@@ -9,7 +9,6 @@ import {
   Settings,
   ChevronRight,
   Monitor,
-  Palette,
 } from "lucide-react";
 import { useTheme } from "next-themes";
 import { Button } from "@repo/ui/components/button";
@@ -28,6 +27,7 @@ import {
   SelectValue,
 } from "@repo/ui/components/select";
 import { useUserPlan } from "@/hooks/use-user";
+import { getProSubscriptionUrl } from "@/services/user-services";
 
 const ClientView = () => {
   const { theme, setTheme } = useTheme();
@@ -38,13 +38,6 @@ const ClientView = () => {
     lastName: "Doe",
     email: "john.doe@example.com",
     avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=john",
-  };
-
-  const currentPlan = {
-    type: "starter_pack",
-    price: "$9.99",
-    renewAt: "2024-02-15",
-    features: ["1000 credits/month", "Advanced features", "Priority support"],
   };
 
   const credits = {
@@ -58,11 +51,10 @@ const ClientView = () => {
     // TODO: Implement logout logic
     console.log("Logout clicked");
   };
-
-  const handleManagePlan = () => {
-    // TODO: Navigate to plan management
-    console.log("Manage plan clicked");
-  };
+  const handlePlanUpgrade = useCallback(async () => {
+    const res = await getProSubscriptionUrl();
+    window.location.href = res.url;
+  }, []);
 
   const planRes = useUserPlan();
   return (
@@ -148,35 +140,42 @@ const ClientView = () => {
                   <div>
                     <CardTitle>Current Plan</CardTitle>
                     <p className="text-muted-foreground text-xs">
-                      Renews on {currentPlan.renewAt}
+                      Renewal date:{" "}
+                      {new Date(planRes.data.renew_at).toLocaleDateString()}
                     </p>
                   </div>
                 </div>
-                <Button size="sm" onClick={handleManagePlan} className="gap-2">
-                  <Settings className="h-4 w-4" />
-                  Manage Plan
-                </Button>
+                {planRes.data.plan_type == "free" && (
+                  <Button
+                    size="sm"
+                    className="gap-2"
+                    onClick={handlePlanUpgrade}
+                  >
+                    <Settings className="h-4 w-4" />
+                    Upgrade plan
+                  </Button>
+                )}
               </div>
             </CardHeader>
-            <CardContent>
-              <div className="bg-muted/50 rounded-lg border p-4">
+            <CardContent className="h-full">
+              <div className="bg-muted/50 h-full rounded-lg border p-4">
                 <div className="mb-2 flex items-center justify-between">
                   <h4 className="text-foreground font-medium">
-                    {currentPlan.type === "starter_pack"
+                    {planRes.data.plan_type === "starter_pack"
                       ? "Starter Pack"
                       : "Free Plan"}
                   </h4>
                   <span className="text-primary font-medium">
-                    {currentPlan.price}/month
+                    {planRes.data.price}/month
                   </span>
                 </div>
                 <ul className="text-muted-foreground space-y-1 text-xs">
-                  {currentPlan.features.map((feature, index) => (
+                  {/* {planRes.data.features.map((feature, index) => (
                     <li key={index} className="flex items-center gap-2">
                       <ChevronRight className="h-3 w-3" />
                       {feature}
                     </li>
-                  ))}
+                  ))} */}
                 </ul>
               </div>
             </CardContent>

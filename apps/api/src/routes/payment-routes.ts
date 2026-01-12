@@ -1,6 +1,11 @@
 import { Response, Router, Request } from "express";
 
 import DodoPayments from "dodopayments";
+import { checkAuthorization } from "../middlewares/check-authorization.js";
+import {
+  getProSubscriptonUrl,
+  handleDodoPaymentWebhook,
+} from "../controllers/payments/dodo-payments.js";
 
 const client = new DodoPayments({
   bearerToken: process.env.DODO_PAYMENTS_API_KEY,
@@ -8,26 +13,8 @@ const client = new DodoPayments({
 });
 
 const routes: Router = Router();
+routes.route("/upgrade").get(checkAuthorization(["all"]), getProSubscriptonUrl);
 
-routes.route("/test").get(async (req: Request, res: Response) => {
-  const session = await client.checkoutSessions.create({
-    product_cart: [{ product_id: "pdt_0NW3JXP572Os6xSYT6Hio", quantity: 1 }],
-    subscription_data: {},
-    customer: {
-      email: "subscriber@example.com",
-      name: "Jane Doe",
-    },
-    return_url: "https://example.com/success",
-  });
-  console.log(session.checkout_url);
-  res.status(200).json({
-    url: session.checkout_url,
-  });
-});
-
-routes.route("/dodo-webhoook").post(async (req: Request, res: Response) => {
-  console.log(req.body);
-  return;
-});
+routes.route("/dodo-webhoook").post(handleDodoPaymentWebhook);
 
 export default routes;
