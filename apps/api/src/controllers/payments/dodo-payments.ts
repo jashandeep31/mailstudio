@@ -148,37 +148,40 @@ export const handleDodoPaymentWebhook = catchAsync(
         if (!oldWallet) {
           throw new AppError("Wallet not found", 500);
         }
+
+        const oldBalance = Number(oldWallet.balance);
+        const newCredits = subscripton.recurring_pre_tax_amount / 100;
+        const carriedOverBalance = Math.min(oldBalance, 10);
+        const expiredAmount = oldBalance > 10 ? oldBalance - 10 : 0;
+        const newBalance = carriedOverBalance + newCredits;
+
         await tx
           .update(creditWalletsTable)
           .set({
             updated_at: new Date(),
-            balance: String(
-              Number(oldWallet.balance) +
-                subscripton.recurring_pre_tax_amount / 100,
-            ),
+            balance: String(newBalance),
           })
           .where(eq(creditWalletsTable.user_id, bodyData.data.metadata.user_id))
           .returning();
-        if (Number(oldWallet.balance) > 0) {
+
+        if (expiredAmount > 0) {
           await tx.insert(creditTransactionsTable).values({
             user_id: bodyData.data.metadata.user_id,
             wallet_id: oldWallet.id,
-            amount: String(subscripton.recurring_pre_tax_amount / 100),
-            after_balance: "0.00",
+            amount: String(expiredAmount),
+            after_balance: String(carriedOverBalance),
             before_balance: oldWallet.balance,
             type: "expire",
-            reason: "Previous Plan Upgrade",
+            reason: "Previous Plan Upgrade - Balance exceeds 10 credits",
           });
         }
+
         await tx.insert(creditTransactionsTable).values({
           user_id: bodyData.data.metadata.user_id,
           wallet_id: oldWallet.id,
-          amount: String(subscripton.recurring_pre_tax_amount / 100),
-          after_balance: String(
-            Number(oldWallet.balance) +
-              subscripton.recurring_pre_tax_amount / 100,
-          ),
-          before_balance: oldWallet.balance,
+          amount: String(newCredits),
+          after_balance: String(newBalance),
+          before_balance: String(carriedOverBalance),
           type: "grant",
           reason: "Plan Upgrade",
         });

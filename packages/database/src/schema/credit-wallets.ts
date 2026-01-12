@@ -46,11 +46,11 @@ export const creditTransactionsTable = pgTable("credit_transactions", {
     precision: 10,
     scale: 2,
   }),
-  after_balance: numeric("balance", {
+  after_balance: numeric("after_balance", {
     precision: 10,
     scale: 2,
   }),
-  before_balance: numeric("balance", {
+  before_balance: numeric("before_balance", {
     precision: 10,
     scale: 2,
   }),
