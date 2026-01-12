@@ -20,7 +20,7 @@ const DashboardNavbar = () => {
           <div className="flex items-center gap-6"></div>
         </div>
         <div className="flex items-center gap-3">
-          <ProfileDropdown />:
+          <ProfileDropdown />
         </div>
       </div>
     </div>

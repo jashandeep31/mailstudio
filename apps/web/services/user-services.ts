@@ -9,3 +9,11 @@ export const getUserMetadata = async (): Promise<{
   });
   return res.data.data;
 };
+
+export const getUserPlan = async () => {
+  const res = await axios.get(`${BASE_URL}/api/v1/user/plan`, {
+    withCredentials: true,
+  });
+
+  return res.data.data;
+};

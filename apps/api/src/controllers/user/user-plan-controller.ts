@@ -10,7 +10,7 @@ export const getUserPlan = catchAsync(async (req: Request, res: Response) => {
     .from(plansTable)
     .where(eq(plansTable.user_id, req.user.id));
   res.status(200).json({
-    data: plan,
+    data: { ...plan },
   });
   return;
 });
