@@ -76,6 +76,7 @@ export const createUser = async ({
       user_id: user.id,
       balance: "0",
     });
+    const today = new Date();
 
     await tx.insert(plansTable).values({
       user_id: user.id,
@@ -84,8 +85,9 @@ export const createUser = async ({
       subscription_id: null,
       price: "0.00",
       active_from: new Date(),
-      renew_at: new Date(),
-      ends_at: new Date(),
+      renew_at: new Date(today.setMonth(today.getMonth() + 1)),
+      ends_at: null,
+      cancel_at_next_billing_date: false,
     });
     // creating user plan
     return user;

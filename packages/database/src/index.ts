@@ -19,6 +19,7 @@ export * from "./schema/brand-kits.js";
 export * from "./schema/chat-media.js";
 export * from "./schema/user-test-mails.js";
 export * from "./schema/user-otps.js";
-
 export * from "./schema/credit-wallets.js";
 export * from "./schema/plans.js";
+export * from "./schema/payments.js";
+export * from "./schema/billings.js";

@@ -57,6 +57,7 @@ const ClientView = () => {
   }, []);
 
   const planRes = useUserPlan();
+  console.log(planRes.data);
   return (
     <div className="mx-auto max-w-6xl px-6 py-8">
       <h1 className="text-3xl font-semibold tracking-tight">Settings</h1>
@@ -138,14 +139,19 @@ const ClientView = () => {
                     <CreditCard className="text-primary h-4 w-4" />
                   </div>
                   <div>
-                    <CardTitle>Current Plan</CardTitle>
+                    <CardTitle>
+                      {planRes.data.plan_type
+                        .toUpperCase()
+                        .split("_")
+                        .join(" ")}
+                    </CardTitle>
                     <p className="text-muted-foreground text-xs">
                       Renewal date:{" "}
                       {new Date(planRes.data.renew_at).toLocaleDateString()}
                     </p>
                   </div>
                 </div>
-                {planRes.data.plan_type == "free" && (
+                {planRes.data.plan_type == "free" ? (
                   <Button
                     size="sm"
                     className="gap-2"
@@ -154,6 +160,8 @@ const ClientView = () => {
                     <Settings className="h-4 w-4" />
                     Upgrade plan
                   </Button>
+                ) : (
+                  <Button variant="destructive">Cancel Plan</Button>
                 )}
               </div>
             </CardHeader>

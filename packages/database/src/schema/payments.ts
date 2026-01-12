@@ -23,13 +23,6 @@ export const paymentProviderEnum = pgEnum("payment_provider", [
   "lemonsqueezy",
 ]);
 
-export const paymentMethodEnum = pgEnum("payment_method", [
-  "upi",
-  "card",
-  "netbanking",
-  "wallet",
-]);
-
 export const paymentTransactionsTable = pgTable("payment_transactions", {
   id: uuid("id").defaultRandom().primaryKey(),
   user_id: uuid("user_id").references(() => usersTable.id, {
@@ -38,7 +31,7 @@ export const paymentTransactionsTable = pgTable("payment_transactions", {
   provider: paymentProviderEnum("provider").notNull(),
 
   payment_id: varchar("payment_id", { length: 255 }).notNull(), // pay_*
-  invoice_id: varchar("invoice_id", { length: 255 }), // inv_*
+  invoice_id: varchar("invoice_id", { length: 255 }).notNull().unique(), // inv_*
   subscription_id: varchar("subscription_id", { length: 255 }), // sub_*
   checkout_session_id: varchar("checkout_session_id", { length: 255 }),
 
@@ -52,8 +45,7 @@ export const paymentTransactionsTable = pgTable("payment_transactions", {
     scale: 2,
   }),
 
-  payment_method: paymentMethodEnum("payment_method"),
-  payment_method_type: varchar("payment_method_type", { length: 50 }),
+  payment_method: varchar({ length: 200 }),
   card_last_four: varchar("card_last_four", { length: 4 }),
   card_network: varchar("card_network", { length: 50 }),
   card_type: varchar("card_type", { length: 50 }),
@@ -64,6 +56,6 @@ export const paymentTransactionsTable = pgTable("payment_transactions", {
 
   provider_metadata: jsonb("provider_metadata"),
 
-  created_at: timestamp("created_at").notNull(),
-  updated_at: timestamp("updated_at"),
+  created_at: timestamp("created_at").notNull().defaultNow(),
+  updated_at: timestamp("updated_at").defaultNow().notNull(),
 });
