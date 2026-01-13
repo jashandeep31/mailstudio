@@ -12,15 +12,15 @@ export const r2Client = new S3Client({
 });
 
 export const r2GetSignedUrl = async ({
-  key,
+  uniqueKey,
   contentType,
 }: {
-  key: string;
+  uniqueKey: string;
   contentType: string;
 }) => {
   const command = new PutObjectCommand({
     Bucket: env.CLOUDFLARE_R2_BUCKET_NAME,
-    Key: key,
+    Key: uniqueKey,
     ContentType: contentType,
   });
   return await getSignedUrl(r2Client, command, { expiresIn: 60 });
