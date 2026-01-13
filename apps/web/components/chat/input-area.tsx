@@ -2,38 +2,53 @@ import { Button } from "@repo/ui/components/button";
 import { ArrowUp, Command, CornerDownLeft, X } from "lucide-react";
 import React from "react";
 import AddButtonDropdown from "./add-button-dropdown";
-import { getPresignedUrl } from "@/services/util-services";
+import { useUploadMedia } from "@/hooks/use-media-upload";
 
-interface InputArea {
+interface InputAreaProps {
   userPrompt: string;
   setUserPrompt: React.Dispatch<React.SetStateAction<string>>;
-  handleSubmit: () => void;
+  onSubmit: (data: { mediaIds: string[]; brandKit?: string }) => void;
+}
+
+interface UploadingFile {
+  file: File;
+  percentage: number;
+}
+
+interface UploadedFile {
+  id: string;
+  name: string;
 }
 
 export default function InputArea({
   userPrompt,
   setUserPrompt,
-  handleSubmit,
-}: InputArea) {
+  onSubmit,
+}: InputAreaProps) {
   const [isFocused, setIsFocused] = React.useState(false);
   const [selectedBrand, setSelectedBrand] = React.useState<
     string | undefined
   >();
-  const [selectedFiles, setSelectedFiles] = React.useState<File[]>([]);
+  const [uploadQueue, setUploadQueue] = React.useState<File[]>([]);
+  const [uploadingFile, setUploadingFile] =
+    React.useState<UploadingFile | null>(null);
+  const [uploadedFiles, setUploadedFiles] = React.useState<UploadedFile[]>([]);
   const textareaRef = React.useRef<HTMLTextAreaElement>(null);
   const fileInputRef = React.useRef<HTMLInputElement>(null);
+  const { uploadState, uploadMedia } = useUploadMedia();
   const baseHeight = 100;
   const maxHeight = baseHeight * 1.5;
+
   const isPromptValid = React.useMemo(() => {
     const trimmed = userPrompt.trim();
     if (!trimmed) return false;
     return trimmed.split(/\s+/).filter(Boolean).length >= 5;
   }, [userPrompt]);
 
+  // Handle textarea auto-resize
   React.useEffect(() => {
     const textarea = textareaRef.current;
     if (!textarea) return;
-
     textarea.style.height = `${baseHeight}px`;
     const scrollHeight = textarea.scrollHeight;
     const nextHeight = Math.min(scrollHeight, maxHeight);
@@ -41,46 +56,88 @@ export default function InputArea({
     textarea.style.overflowY = scrollHeight > maxHeight ? "auto" : "hidden";
   }, [userPrompt, baseHeight, maxHeight]);
 
+  // Start uploading next file from queue
+  const startNextUpload = React.useCallback(() => {
+    if (uploadQueue.length > 0 && !uploadingFile) {
+      const nextFile = uploadQueue[0];
+      if (nextFile) {
+        setUploadingFile({ file: nextFile, percentage: 0 });
+        setUploadQueue((prev) => prev.slice(1));
+        uploadMedia(nextFile);
+      }
+    }
+  }, [uploadQueue, uploadingFile, uploadMedia]);
+
+  // Monitor upload state changes
+  React.useEffect(() => {
+    if (uploadState.state === "uploading" && uploadingFile) {
+      setUploadingFile((prev) =>
+        prev ? { ...prev, percentage: uploadState.percentage } : null,
+      );
+    } else if (uploadState.state === "uploaded" && uploadingFile) {
+      setUploadedFiles((prev) => [
+        ...prev,
+        { id: uploadState.id, name: uploadingFile.file.name },
+      ]);
+      setUploadingFile(null);
+    }
+  }, [uploadState, uploadingFile]);
+
+  // Start next upload when current finishes
+  React.useEffect(() => {
+    if (!uploadingFile && uploadQueue.length > 0) {
+      startNextUpload();
+    }
+  }, [uploadingFile, uploadQueue, startNextUpload]);
+
   const submitHandler = () => {
     if (isPromptValid) {
-      handleSubmit();
+      const mediaIds = uploadedFiles.map((file) => file.id);
+      onSubmit({ mediaIds, brandKit: selectedBrand });
       setUserPrompt("");
+      setUploadedFiles([]);
+      setSelectedBrand(undefined);
     }
   };
 
   const handleAddPhotos = () => {
-    // Trigger file input click to open file manager Nothing to do with the uplaoding or something else
     if (fileInputRef.current) {
       fileInputRef.current.click();
     }
   };
-  const handleFileSelect = async (
-    event: React.ChangeEvent<HTMLInputElement>,
-  ) => {
+
+  const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
     if (files && files.length > 0) {
       const newFiles = Array.from(files);
-      setSelectedFiles((prev) => [...prev, ...newFiles]);
+      setUploadQueue((prev) => [...prev, ...newFiles]);
+    }
+    // Reset input so same file can be selected again
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
     }
   };
 
-  const handleRemoveFile = (index: number) => {
-    setSelectedFiles((prev) => prev.filter((_, i) => i !== index));
+  const handleRemoveFromQueue = (index: number) => {
+    setUploadQueue((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  const handleRemoveUploadedFile = (index: number) => {
+    setUploadedFiles((prev) => prev.filter((_, i) => i !== index));
   };
 
   const handleAddBrandKit = (brand?: string) => {
     if (brand) {
       setSelectedBrand(brand);
-      // TODO: Send brand selection to server
-      console.log("Brand selected for server:", brand);
     }
   };
 
   const handleRemoveBrand = () => {
     setSelectedBrand(undefined);
-    // TODO: Notify server about brand removal
-    console.log("Brand selection removed");
   };
+
+  const hasAttachments =
+    uploadQueue.length > 0 || uploadingFile || uploadedFiles.length > 0;
 
   return (
     <>
@@ -89,11 +146,42 @@ export default function InputArea({
           isFocused ? "border-secondary" : "border-border"
         }`}
       >
-        {selectedFiles.length > 0 && (
+        {hasAttachments && (
           <div className="mb-2 flex flex-wrap gap-1">
-            {selectedFiles.map((file, index) => (
+            {/* Uploaded files - green */}
+            {uploadedFiles.map((file, index) => (
               <div
-                key={index}
+                key={file.id}
+                className="flex items-center gap-1 rounded bg-green-100 px-2 py-1 text-xs text-green-800"
+              >
+                <span className="max-w-24 truncate">{file.name}</span>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="h-auto p-0 text-green-800 hover:bg-transparent"
+                  onClick={() => handleRemoveUploadedFile(index)}
+                >
+                  <X className="h-2 w-2" />
+                </Button>
+              </div>
+            ))}
+
+            {/* Currently uploading file - animated */}
+            {uploadingFile && (
+              <div className="relative flex animate-pulse items-center gap-1 overflow-hidden rounded bg-blue-50 px-2 py-1 text-xs">
+                <span className="max-w-24 truncate">
+                  {uploadingFile.file.name}
+                </span>
+                <span className="font-medium text-blue-600">
+                  {uploadingFile.percentage}%
+                </span>
+              </div>
+            )}
+
+            {/* Queued files - gray */}
+            {uploadQueue.map((file, index) => (
+              <div
+                key={`queue-${index}`}
                 className="bg-muted text-muted-foreground flex items-center gap-1 rounded px-2 py-1 text-xs"
               >
                 <span className="max-w-24 truncate">{file.name}</span>
@@ -101,7 +189,7 @@ export default function InputArea({
                   variant="ghost"
                   size="sm"
                   className="text-muted-foreground h-auto p-0 hover:bg-transparent"
-                  onClick={() => handleRemoveFile(index)}
+                  onClick={() => handleRemoveFromQueue(index)}
                 >
                   <X className="h-2 w-2" />
                 </Button>

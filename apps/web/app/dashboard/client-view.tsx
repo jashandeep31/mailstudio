@@ -3,18 +3,21 @@ import React, { useState } from "react";
 import InputArea from "@/components/chat/input-area";
 import { useWebSocketContext } from "@/contexts/web-socket-context";
 import { MailTemplateCard } from "@/components/mail-template-card";
+
 const ClientView = () => {
   const { sendEvent } = useWebSocketContext();
-
   const [userPrompt, setUserPrompt] = useState(
     "create the mail template for user to verify the mail by clicking the button below he has the new signup on our platform. If he doesn't done it then don't perform any action we will auto delete on the no verification",
   );
-  const handleSumbmit = () => {
+
+  const handleSubmit = (data: { mediaIds: string[]; brandKitId?: string }) => {
     sendEvent("event:new-chat", {
       message: userPrompt,
-      media: [],
+      media: data.mediaIds,
+      brandKitId: data.brandKitId,
     });
   };
+
   return (
     <div className="mb-12">
       <div className="mt-12 flex items-center justify-center lg:mt-36">
@@ -27,7 +30,7 @@ const ClientView = () => {
           <InputArea
             userPrompt={userPrompt}
             setUserPrompt={setUserPrompt}
-            handleSubmit={handleSumbmit}
+            onSubmit={handleSubmit}
           />
         </div>
       </div>
