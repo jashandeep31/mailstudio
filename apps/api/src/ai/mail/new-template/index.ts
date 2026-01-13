@@ -1,51 +1,75 @@
+import axios from "axios";
 import { googleGenAi } from "../../config.js";
-
+import path from "path";
+import { ContentListUnion, createPartFromUri } from "@google/genai";
+import fs from "fs";
 interface CreateNewMailTemplate {
   prompt: string;
   brandKitId: string | null;
-  media: string[];
+  mediaUrls: string[];
 }
 
 export const createNewMailTemplate = async ({
   prompt,
+  mediaUrls,
 }: CreateNewMailTemplate) => {
-  const enabled = true;
-  if (!enabled)
-    return `<mjml>
-  <mj-body>
-    <mj-section>
-      <mj-column>
+  const uploadedFiles = [];
+  for (const mediaUrl of [
+    "https://r2.devsradar.com/attachments/75fc1204-7b22-4d57-8900-100aa8e6b4d5-response.png",
+  ]) {
+    const response = await axios.get(mediaUrl, {
+      responseType: "arraybuffer",
+    });
 
-        <mj-image width="100px" src="/assets/img/logo-small.png"></mj-image>
+    const buffer = Buffer.from(response.data);
+    const mimeType = response.headers["content-type"] || "image/png";
+    const blob = new Blob([buffer], { type: mimeType });
 
-        <mj-divider border-color="#F45E43"></mj-divider>
-
-        <mj-text font-size="20px" color="#F45E43" font-family="helvetica">Hello World</mj-text>
-
-      </mj-column>
-    </mj-section>
-  </mj-body>
-</mjml>`;
-  else {
-    const properPrompt = await getProperPrompt(prompt);
-    const finalTemplate = await processAllAtSection(properPrompt);
-    return finalTemplate;
+    const fileNameFromUrl =
+      path.basename(new URL(mediaUrl).pathname) || "media-file";
+    console.log(fileNameFromUrl);
+    const file = await googleGenAi.files.upload({
+      file: blob,
+      config: {
+        displayName: fileNameFromUrl,
+        mimeType,
+      },
+    });
+    uploadedFiles.push(file);
   }
+
+  for (const file of uploadedFiles) {
+    let getFile = await googleGenAi.files.get({ name: file.name as string });
+    while (getFile.state === "PROCESSING") {
+      getFile = await googleGenAi.files.get({ name: file.name as string });
+      await new Promise((resolve) => {
+        setTimeout(resolve, 5000);
+      });
+    }
+  }
+  const content: ContentListUnion = [prompt];
+  for (const file of uploadedFiles) {
+    if (file.uri && file.mimeType) {
+      const fileContent = createPartFromUri(file.uri, file.mimeType);
+      content.push(fileContent);
+    }
+  }
+  const properPrompt = await getProperPrompt(content);
+  const newContent: ContentListUnion = [properPrompt];
+  for (const file of uploadedFiles) {
+    if (file.uri && file.mimeType) {
+      const fileContent = createPartFromUri(file.uri, file.mimeType);
+      newContent.push(fileContent);
+    }
+  }
+  const finalTemplate = await processAllAtSection(newContent);
+  return finalTemplate;
 };
-const processAllAtSection = async (content: string) => {
+
+const processAllAtSection = async (content: ContentListUnion) => {
   const layoutPlanner = await googleGenAi.models.generateContent({
     model: "models/gemini-3-pro-preview",
-    contents: `
-      Convert the following email sections into a complete MJML email.
-      
-IMPORTANT:
-- Use the provided content as the source of truth
-- Infer layout and hierarchy if needed
-- Always include header, body, CTA, and footer
-- Ensure the result is reusable and production-ready
-
-EMAIL SECTIONS:
-${content}`,
+    contents: content,
     config: {
       systemInstruction: GENERATE_MAIL_TEMPLATE_FROM_PROMPT_SYSTEM_INSTRUCTION,
     },
@@ -53,38 +77,21 @@ ${content}`,
 
   return layoutPlanner.text!;
 };
-const getProperPrompt = async (userPrompt: string): Promise<string> => {
+const getProperPrompt = async (
+  userPrompt: ContentListUnion,
+): Promise<string> => {
   const properPrompt = await googleGenAi.models.generateContent({
     model: "models/gemini-3-pro-preview",
-    contents: `
-You are a professional prompt engineer.
-
-Rewrite and improve the user prompt wrapped in <original_prompt> tags so it can be used directly by another AI to generate an MJML email template.
-
-Rules:
-- Make instructions explicit and unambiguous
-- Add all missing but required context
-- Remove redundancy
-- Preserve the original intent
-- Ensure the prompt is self-contained
-- Assume the output is an MJML email template (not HTML, not text)
-- If brand or design details are missing, invent realistic placeholders
-- Always include guidance for header logo, layout, CTA, and reusability
-
-IMPORTANT:
-Your response must ONLY contain the rewritten prompt text.
-Do not include explanations, metadata, or wrapper tags.
-
-<original_prompt>
-${userPrompt}
-</original_prompt>`,
+    contents: userPrompt,
     config: {
       systemInstruction: GENERATE_PROPER_PROMPT_SYSTEM_INSTRUCTION,
     },
   });
 
+  fs.writeFileSync("prompt.txt", properPrompt.text!);
   return properPrompt.text!;
 };
+
 const GENERATE_MAIL_TEMPLATE_FROM_PROMPT_SYSTEM_INSTRUCTION = `
 You are a senior email developer specializing in MJML.
 

@@ -8,7 +8,6 @@ import { uploadRegistry } from "../../lib/configs/upload-registery.js";
 import { db, uploadMediaTable } from "@repo/db";
 import { getPreSignedUrlSchema } from "@repo/shared";
 import { env } from "../../lib/env.js";
-import { extname } from "path";
 
 export const getPreSignedUrl = catchAsync(
   async (req: Request, res: Response) => {
@@ -39,8 +38,7 @@ export const getPreSignedUrl = catchAsync(
       uniqueKey: mediaAccessPath,
       contentType,
     });
-
-    const exactUrl = `${env.CLOUDFLARE_R2_BUCKET_NAME}/${mediaAccessPath}`;
+    const exactUrl = `${env.CLOUDFLARE_R2_PUBLIC_DOMAIN}/${mediaAccessPath}`;
     const [media] = await db
       .insert(uploadMediaTable)
       .values({

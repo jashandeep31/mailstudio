@@ -1,4 +1,5 @@
 import {
+  chatMediaTable,
   chatsTable,
   chatVersionOutputsTable,
   chatVersionPromptsTable,
@@ -16,6 +17,7 @@ import { getTemplateName } from "../../ai/mail/get-template-name.js";
 
 interface StreamAndHandleQuestion {
   chatQuestion: typeof chatVersionPromptsTable.$inferSelect;
+  chatMedia: (typeof chatMediaTable.$inferSelect)[];
   chatId: string;
   chatVersion: typeof chatVersionsTable.$inferSelect;
   socket: WebSocket;
@@ -26,6 +28,7 @@ export const streamAndHandleQuestion = async ({
   chatQuestion,
   chatId,
   socket,
+  chatMedia,
   type,
   chatVersion,
 }: StreamAndHandleQuestion) => {
@@ -41,7 +44,7 @@ export const streamAndHandleQuestion = async ({
     createNewMailTemplate({
       prompt: chatQuestion.prompt,
       brandKitId: null,
-      media: [],
+      mediaUrls: chatMedia.map((media) => media.storage_path),
     }),
     streamTemplateName(
       chatQuestion.prompt,
