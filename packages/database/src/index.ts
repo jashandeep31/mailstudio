@@ -23,3 +23,4 @@ export * from "./schema/credit-wallets.js";
 export * from "./schema/plans.js";
 export * from "./schema/payments.js";
 export * from "./schema/billings.js";
+export * from "./schema/upload-media.js";

@@ -2,6 +2,7 @@ import { Button } from "@repo/ui/components/button";
 import { ArrowUp, Command, CornerDownLeft, X } from "lucide-react";
 import React from "react";
 import AddButtonDropdown from "./add-button-dropdown";
+import { getPresignedUrl } from "@/services/util-services";
 
 interface InputArea {
   userPrompt: string;
@@ -48,20 +49,18 @@ export default function InputArea({
   };
 
   const handleAddPhotos = () => {
-    // Trigger file input click to open file manager
+    // Trigger file input click to open file manager Nothing to do with the uplaoding or something else
     if (fileInputRef.current) {
       fileInputRef.current.click();
     }
   };
-
-  const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileSelect = async (
+    event: React.ChangeEvent<HTMLInputElement>,
+  ) => {
     const files = event.target.files;
     if (files && files.length > 0) {
       const newFiles = Array.from(files);
       setSelectedFiles((prev) => [...prev, ...newFiles]);
-      // TODO: Process selected files for upload to server
-      console.log("Selected files:", newFiles);
-      // You can add file upload logic here
     }
   };
 

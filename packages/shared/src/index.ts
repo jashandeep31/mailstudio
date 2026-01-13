@@ -44,3 +44,10 @@ export const sendTemplateToTestMailSchema = z.object({
   versionId: z.string(),
   mailId: z.string(),
 });
+
+export const getPreSignedUrlSchema = z.object({
+  key: z.enum(["attachment"]),
+  contentType: z.string(),
+  fileName: z.string(),
+  size: z.number(),
+});
