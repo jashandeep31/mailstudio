@@ -263,6 +263,14 @@ const ClientView = () => {
                 </div>
               </div>
 
+              <p className="text-muted-foreground p-2 text-xs">
+                Currently, we don&apos;t officially support carrying over
+                credits from previous months. However, for now, we are allowing
+                unused credits to roll over to the next month. Please note that
+                this is a temporary policy, and we will update you soon on
+                whether this feature will continue or not.
+              </p>
+
               {/* <Button className="w-full">Purchase More Credits</Button> */}
             </div>
           </CardContent>

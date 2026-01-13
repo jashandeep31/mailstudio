@@ -9,6 +9,7 @@ import {
   LogOut,
   User,
 } from "lucide-react";
+import Link from "next/link";
 import { useTheme } from "next-themes";
 import { Button } from "@repo/ui/components/button";
 import {
@@ -59,22 +60,19 @@ const ProfileDropdown = () => {
           <Moon className="mr-2 hidden h-4 w-4 dark:block" />
           <span>Toggle theme</span>
         </DropdownMenuItem>
-        <DropdownMenuItem>
-          <User className="mr-2 h-4 w-4" />
-          <span>Profile</span>
+        <DropdownMenuItem asChild>
+          <Link href="/dashboard/settings">
+            <Settings className="mr-2 h-4 w-4" />
+            <span>Settings</span>
+          </Link>
         </DropdownMenuItem>
-        <DropdownMenuItem>
-          <Settings className="mr-2 h-4 w-4" />
-          <span>Settings</span>
+        <DropdownMenuItem asChild>
+          <Link href="/dashboard/settings/billings">
+            <CreditCard className="mr-2 h-4 w-4" />
+            <span>Billing</span>
+          </Link>
         </DropdownMenuItem>
-        <DropdownMenuItem>
-          <CreditCard className="mr-2 h-4 w-4" />
-          <span>Billing</span>
-        </DropdownMenuItem>
-        <DropdownMenuItem>
-          <Package className="mr-2 h-4 w-4" />
-          <span>Plans</span>
-        </DropdownMenuItem>
+
         <DropdownMenuSeparator />
         <DropdownMenuItem>
           <LogOut className="mr-2 h-4 w-4" />

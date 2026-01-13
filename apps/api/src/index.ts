@@ -55,23 +55,23 @@ const ws = new WebSocketServer({
 });
 
 ws.on("connection", (socket, req) => {
-  const cookies = req.headers.cookie;
-  if (!cookies) {
-    console.log(`not authenticated `);
-    return;
-  }
-  const parsedCookie = cookie.parse(req.headers.cookie!);
-  if (!parsedCookie.session) return;
-
-  let session;
   try {
+    const cookies = req.headers.cookie;
+    if (!cookies) {
+      console.log(`not authenticated `);
+      return;
+    }
+    const parsedCookie = cookie.parse(req.headers.cookie!);
+    if (!parsedCookie.session) return;
+
+    let session;
     session = JSON.parse(decodeURIComponent(parsedCookie.session));
+
+    socket.userId = session.id;
+    SocketHandler(socket);
   } catch {
     return;
   }
-
-  socket.userId = session.id;
-  SocketHandler(socket);
 });
 test();
 server.listen(env.PORT, () => {
