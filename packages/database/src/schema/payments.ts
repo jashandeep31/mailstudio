@@ -33,6 +33,7 @@ export const paymentTransactionsTable = pgTable("payment_transactions", {
   payment_id: varchar("payment_id", { length: 255 }).notNull(), // pay_*
   invoice_id: varchar("invoice_id", { length: 255 }).notNull().unique(), // inv_*
   subscription_id: varchar("subscription_id", { length: 255 }), // sub_*
+  customer_id: varchar("customer_id", { length: 255 }), // sub_*
   checkout_session_id: varchar("checkout_session_id", { length: 255 }),
 
   settlement_amount: numeric("settlement_amount", {

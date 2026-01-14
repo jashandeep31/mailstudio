@@ -34,7 +34,18 @@ export const getProSubscriptonUrl = catchAsync(
       product_cart: [{ product_id: env.DODO_STARTER_PRODUCT_ID, quantity: 1 }],
       subscription_data: {},
       customer: {
-        email: req.user.email,
+        // TODO: remove this while moving to the production
+        email: (() => {
+          if (env.DODO_PAYMENTS_ENVIRONMENT == "test_mode") {
+            return (
+              req.user.email.split("@")[0]! +
+              Math.floor(Math.random() * 1000) +
+              "@" +
+              req.user.email.split("@")[1]!
+            );
+          }
+          return req.user.email;
+        })(),
 
         name: (user.firstName + " " + user.lastName).trim(),
       },
@@ -53,6 +64,28 @@ export const getProSubscriptonUrl = catchAsync(
       },
     });
 
+    return;
+  },
+);
+
+export const dodoCustomerSession = catchAsync(
+  async (req: Request, res: Response) => {
+    if (!req.user) throw new AppError("Authentication is required", 400);
+    const [userPlan] = await db
+      .select()
+      .from(plansTable)
+      .where(eq(plansTable.user_id, req.user.id));
+    if (!userPlan || !userPlan.customer_id) {
+      throw new AppError("Feature is not accesible for a time being ", 500);
+    }
+    const customerPortalSession = await client.customers.customerPortal.create(
+      userPlan.customer_id,
+    );
+    res.status(200).json({
+      data: {
+        url: customerPortalSession.link,
+      },
+    });
     return;
   },
 );
@@ -76,6 +109,7 @@ export const handleDodoPaymentWebhook = catchAsync(
     const userId = paymentData.metadata.user_id;
     const orderId = paymentData.metadata.order_id;
     const subscriptionId = paymentData.subscription_id;
+    const customerId = paymentData.customer.customer_id;
 
     if (!userId || !orderId || !subscriptionId) {
       console.error("Missing required metadata in webhook payload");
@@ -118,6 +152,7 @@ export const handleDodoPaymentWebhook = catchAsync(
           invoice_id: orderId,
           payment_id: paymentData.payment_id,
           subscription_id: subscriptionId,
+          customer_id: customerId,
           checkout_session_id: paymentData.checkout_session_id,
           settlement_amount: String(settlementAmount),
           tax_amount: String(taxAmount),
@@ -149,6 +184,7 @@ export const handleDodoPaymentWebhook = catchAsync(
           updated_at: new Date(),
           plan_type: "starter_pack",
           subscription_id: subscriptionId,
+          customer_id: customerId,
           active: true,
           price: String(newCredits),
           active_from: new Date(subscription.created_at),

@@ -21,6 +21,7 @@ export const plansTable = pgTable("plans", {
 
   active: boolean("active").notNull(),
   subscription_id: varchar("subscription_id"),
+  customer_id: varchar("customer_id", { length: 255 }), // sub_*
 
   price: numeric("price").notNull(),
 
@@ -28,7 +29,6 @@ export const plansTable = pgTable("plans", {
   renew_at: timestamp("renew_at").notNull(),
   ends_at: timestamp("ends_at"),
   cancel_at_next_billing_date: boolean("cancel_at_next_billing_date").notNull(),
-
   created_at: timestamp("created_at").defaultNow(),
   updated_at: timestamp("updated_at").defaultNow(),
 });

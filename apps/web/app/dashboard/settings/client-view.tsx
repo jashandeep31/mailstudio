@@ -28,7 +28,10 @@ import {
   SelectValue,
 } from "@repo/ui/components/select";
 import { useUserMetadata, useUserPlan } from "@/hooks/use-user";
-import { getProSubscriptionUrl } from "@/services/user-services";
+import {
+  getProSubscriptionUrl,
+  getSubsriptionManagementUrl,
+} from "@/services/user-services";
 
 const ClientView = () => {
   const { theme, setTheme } = useTheme();
@@ -50,6 +53,10 @@ const ClientView = () => {
     window.location.href = res.url;
   }, []);
 
+  const handleSubscriptionManagement = useCallback(async () => {
+    const res = await getSubsriptionManagementUrl();
+    window.location.href = res.url;
+  }, []);
   const planRes = useUserPlan();
   const userMetadata = useUserMetadata();
 
@@ -183,8 +190,12 @@ const ClientView = () => {
                     Upgrade plan
                   </Button>
                 ) : (
-                  <Button size="sm" variant="destructive">
-                    Cancel Plan
+                  <Button
+                    size="sm"
+                    variant="secondary"
+                    onClick={handleSubscriptionManagement}
+                  >
+                    Manage Plan
                   </Button>
                 )}
               </div>
