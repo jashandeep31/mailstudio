@@ -19,12 +19,12 @@ export default function LeftPanel({ versions, streamingOverview }: LeftPanel) {
     "The template is missing proper formatting please do in and make it looking little better",
   );
 
-  const handleSumbmit = () => {
+  const handleSubmit = (data: { mediaIds: string[]; brandKit?: string }) => {
     sendEvent("event:refine-template-message", {
       chatId: params.id as string,
       message: userPrompt,
-      media: [],
-      brandKitId: undefined,
+      media: data.mediaIds,
+      brandKitId: data.brandKit,
       prevVersionId: versions.at(-1)?.chat_versions.id || "",
     });
   };
@@ -85,7 +85,7 @@ export default function LeftPanel({ versions, streamingOverview }: LeftPanel) {
         <InputArea
           userPrompt={userPrompt}
           setUserPrompt={setUserPrompt}
-          handleSubmit={handleSumbmit}
+          onSubmit={handleSubmit}
         />
       </div>
     </ResizablePanel>

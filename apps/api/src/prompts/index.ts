@@ -11,6 +11,20 @@ export const prompts = {
 
   "system.newTemplate.generation": (): string =>
     getFileText("system.new-template.generation.txt"),
+
+  "system.refineTemplate.rewrite": () =>
+    getFileText("system.refine-template.rewrite.txt"),
+
+  "system.refineTemplate.applyChanges": () =>
+    getFileText("system.refine-template.apply-changes.txt"),
+
+  "system.getTemplateName": () => getFileText("system.get-template-name.txt"),
+
+  "system.getQuestionOverview": () =>
+    getFileText("system.get-question-overview.txt"),
+
+  "system.refineTemplate.overview": () =>
+    getFileText("system.refine-template.overview.txt"),
 } as const;
 
 const getFileText = (fileName: string): string => {

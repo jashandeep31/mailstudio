@@ -1,4 +1,5 @@
 import { googleGenAi } from "../../config.js";
+import { prompts } from "../../../prompts/index.js";
 
 interface RefineMailTemplate {
   prompt: string;
@@ -20,27 +21,11 @@ export const refineMailTemplate = async ({
 };
 
 const generateRefinedMjmlCode = async (userPrompt: string) => {
-  const SYSTEM_INSTRUCTION = `
-You are a professional MJML email template developer.
-
-The user provides:
-- An existing MJML email template
-- A list of requested changes
-
-Your task:
-- Apply the requested changes correctly to the MJML template
-- Modify only what is required
-- Keep the structure valid MJML
-- Return ONLY the final MJML code
-- Do NOT add explanations or extra text
-- return should only contain the prue and proper mjml code only 
-`;
-
   const response = await googleGenAi.models.generateContent({
     model: "models/gemini-3-pro-preview",
     contents: userPrompt,
     config: {
-      systemInstruction: SYSTEM_INSTRUCTION,
+      systemInstruction: prompts["system.refineTemplate.applyChanges"](),
     },
   });
 
@@ -48,23 +33,11 @@ Your task:
   return response.text!;
 };
 const rewritePromptForDownstreamModel = async (userPrompt: string) => {
-  const SYSTEM_INSTRUCTION = `
-You are a professional prompt writer.
-The user provides MJML email template code and requested changes.
-
-Your task:
-- Analyze the MJML code
-- Rewrite the user's request into very explicit, step-by-step instructions
-- Mention exactly WHERE (sections / lines / components) changes must be applied
-- Describe WHAT to add, remove, or modify
-- Be extremely clear so a weaker AI model can follow the instructions perfectly
-`;
-
   const response = await googleGenAi.models.generateContent({
     model: "models/gemini-3-pro-preview",
     contents: userPrompt,
     config: {
-      systemInstruction: SYSTEM_INSTRUCTION,
+      systemInstruction: prompts["system.refineTemplate.rewrite"](),
     },
   });
 
