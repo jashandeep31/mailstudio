@@ -1,81 +1,102 @@
 # Project Overview
 
-This document provides a comprehensive technical overview of the **MailStudio** project. It is designed to assist developers in understanding the architecture, technology stack, and key patterns used across the codebase.
+This document provides a comprehensive technical overview of the **MailStudio** project. It details the architecture, technology stack, and specific implementations for the database, UI, and authentication systems.
 
-## 1. Technology Stack
+## 1. High-Level Architecture
 
-- **Monorepo Management**: Turbo Repo
-- **Backend Runtime**: Node.js
-- **API Framework**: Express.js
-- **Database**: PostgreSQL
-- **ORM**: Drizzle ORM (with Drizzle Kit for migrations)
-- **Language**: TypeScript
-- **AI Integration**: Google GenAI
-- **Email Templating**: MJML
-- **Real-time**: WebSockets (`ws`)
+The project is a **Monorepo** managed by **Turbo Repo**, organizing code into applications (`apps/`) and shared packages (`packages/`).
 
-## 2. Project Structure
+- **`apps/api`**: The backend REST and WebSocket API (Express.js).
+- **`apps/web`**: The frontend application (Next.js 16).
+- **`packages/database`**: Shared database schema and Drizzle ORM configuration.
+- **`packages/ui`**: Shared UI component library (Shadcn UI + Tailwind CSS 4).
+- **`packages/shared`**: Common utilities and types.
 
-The project follows a monorepo structure:
+## 2. Technology Stack
 
-- **`apps/api`**: The main backend service.
-  - Handles HTTP requests, authentication, and business logic.
-  - manages WebSocket connections.
-- **`packages/database`**: Shared database module.
-  - Contains the Drizzle ORM configuration, schema definitions, and database connection logic.
-- **`packages/shared`**: Shared utilities and types used across applications.
+| Category          | Technology   | Version / Details                   |
+| :---------------- | :----------- | :---------------------------------- |
+| **Runtime**       | Node.js      | v20+ (implied)                      |
+| **Language**      | TypeScript   | v5.9+                               |
+| **Backend**       | Express.js   | with generic routing and middleware |
+| **Frontend**      | Next.js      | v16.1.0 (App Router)                |
+| **Database**      | PostgreSQL   | Relational Database                 |
+| **ORM**           | Drizzle ORM  | Type-safe SQL wrapper               |
+| **UI Styling**    | Tailwind CSS | v4.x                                |
+| **UI Lib**        | Shadcn UI    | Radix UI primitives                 |
+| **State**         | Zustand      | Global client state                 |
+| **Data Fetching** | React Query  | Server state management on client   |
+| **AI**            | Google GenAI | For content generation              |
+| **Email**         | MJML         | Responsive email templating         |
 
-## 3. Database Architecture
+## 3. Database Architecture (`packages/database`)
 
-The project uses **Drizzle ORM** to interact with a **PostgreSQL** database.
+The database layer is isolated in `packages/database` to allow type sharing across the monorepo.
 
-- **Configuration**: Located in `packages/database/drizzle.config.ts`.
-- **Schema**: Defined in `packages/database/src/schema/`.
-  - **Key Tables**:
-    - `users`: Stores user profile information, roles, and auth details.
-    - `accounts`: Manages linked accounts.
-    - `user-otps`: Handles one-time passwords.
-    - `brand-kits`, `chats`, `chat-media`: Application-specific data.
+- **Location**:
+  - **Config**: `packages/database/drizzle.config.ts`
+  - **Schema Definition**: `packages/database/src/schema/`
+  - **Connection/Entry**: `packages/database/src/index.ts`
+- **ORM**: Drizzle ORM is used for both schema definition and query execution.
+- **Tables**:
+  - **User & Auth**: `users`, `accounts`, `user-otps`, `plans`, `billings`.
+  - **Core Logic**: `chats`, `chat-categories`, `chat-media`, `user-liked-chats`.
+  - **Application Assets**: `brand-kits`, `upload-media`, `user-test-mails`.
+  - **Finances**: `payments`, `credit-wallets`.
 
-## 4. Authentication & Security
+The frontend (`apps/web`) imports table definitions (e.g., `creditWalletsTable`) directly from `@repo/db` to infer TypeScript types (`$inferSelect`) for API responses, ensuring end-to-end type safety.
 
-The API implements a secure, cookie-based authentication mechanism using **Google OAuth**.
+## 4. Frontend Architecture (`apps/web`)
 
-### Authentication Flow
+The frontend is a modern **Next.js 16** application using the **App Router**.
 
-1.  **Login**: Users authenticate via Google OAuth (`apps/api/src/controllers/auth/google-auth.ts`).
-2.  **Session Creation**: Upon successful authentication, the server generates a JSON object containing the user's essential details (ID, email, role, etc.).
-3.  **Cookie Storage**: This JSON object is serialized and stored in a secure HTTP-only cookie named `session`.
+- **UI Components**:
+  - Built using a custom package **`@repo/ui`**.
+  - Based on **Shadcn UI** (Radix UI primitives).
+  - Styled with **Tailwind CSS 4**.
+  - Icons provided by **Lucide React**.
+- **State Management**:
+  - **Zustand**: Used for global UI state.
+  - **TanStack Query (React Query)**: Used for data fetching, caching, and server state synchronization.
+- **API Integration**:
+  - Services are located in `apps/web/services/`.
+  - **Axios** is used for HTTP requests with `withCredentials: true` to ensure the authentication cookie is passed to the backend.
 
-### Authorization Middleware
+## 5. Authentication & Security
 
-Access control is managed by the `checkAuthorization` middleware (`apps/api/src/middlewares/check-authorization.ts`).
+The system uses a **Cookie-based Session** strategy initiated via **Google OAuth**.
 
-- **Mechanism**:
-  1.  Intercepts incoming requests.
-  2.  Retrieves the `session` cookie.
-  3.  Parses and validates the session data using **Zod** schemas.
-  4.  **Context Embedding**: Embeds the validated user object into the request object (`req["user"]`). This allows downstream controllers to easily access the authenticated user's ID (`req["user"].id`) and other details.
-- **Role-Based Access Control (RBAC)**:
-  - The middleware accepts an array of allowed roles (e.g., `["admin"]`, `["user"]`, or `["all"]`).
-  - It verifies if the authenticated user's role matches the required permissions before granting access.
+### A. The Setup
 
-### Example Usage
+1.  **Backend**: `apps/api/dist/controllers/auth/google-auth.ts` handles the OAuth callback.
+2.  **Frontend**: `apps/web/lib/get-session.ts` handles session retrieval in Server Components.
 
-```typescript
-// Route definition
-router.get(
-  "/protected-resource",
-  checkAuthorization(["admin"]), // Only admins can access
-  (req, res) => {
-    const userId = req["user"].id; // User ID is readily available
-    // ...
-  },
-);
-```
+### B. The Authentication Flow
 
-## 5. API Features
+1.  **Login**: User authenticates via Google.
+2.  **Session Generation**: The API creates a session object (User ID, Email, Name, Role).
+3.  **Cookie Storage**:
+    - The session object is serialized to JSON.
+    - Stored in a secure, **HTTP-only cookie** named `session`.
+    - No JWTs or database session lookups are required for basic request validation (stateless-like efficiency).
 
-- **AI Integration**: Utilizes `@google/genai` for AI-powered features (likely for email content generation or refinement).
-- **Email Processing**: Uses `mjml` for responsive email template generation.
-- **WebSockets**: Implements real-time features using the `ws` library (handlers located in `apps/api/dist/web-sockets`).
+### C. Authorization (Backend)
+
+Requests are protected by the `checkAuthorization` middleware (`apps/api/src/middlewares/check-authorization.ts`):
+
+1.  **Intercepts** request.
+2.  **Decrypts/Parses** the `session` cookie using **Zod** schema validation.
+3.  **Injects** the user object into `req["user"]`.
+4.  **Verifies Role**: Checks if the user's role matches the required roles (e.g., `["admin"]` or `["user"]`).
+
+### D. Authorization (Frontend)
+
+- **Server Side**: `getSession()` in `apps/web/lib/get-session.ts` reads the cookie directly using `next/headers`. This allows protecting routes or pre-fetching user data in Server Components.
+- **Client Side**: API calls automatically include the cookie.
+
+## 6. Key Directories & files
+
+- **`apps/api/src/controllers`**: Business logic grouped by domain (auth, chats, payments).
+- **`apps/api/src/web-sockets`**: Real-time communication handlers.
+- **`apps/web/services`**: Frontend API client functions.
+- **`packages/ui/src/components`**: Reusable UI components (buttons, dialogs, etc.).
