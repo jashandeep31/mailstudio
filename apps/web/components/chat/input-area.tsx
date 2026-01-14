@@ -3,6 +3,7 @@ import { ArrowUp, Command, CornerDownLeft, X } from "lucide-react";
 import React from "react";
 import AddButtonDropdown from "./add-button-dropdown";
 import { useUploadMedia } from "@/hooks/use-media-upload";
+import { toast } from "sonner";
 
 interface InputAreaProps {
   userPrompt: string;
@@ -38,6 +39,7 @@ export default function InputArea({
   const { uploadState, uploadMedia } = useUploadMedia();
   const baseHeight = 100;
   const maxHeight = baseHeight * 1.5;
+  const MAX_FILES = 2;
 
   const isPromptValid = React.useMemo(() => {
     const trimmed = userPrompt.trim();
@@ -90,6 +92,73 @@ export default function InputArea({
     }
   }, [uploadingFile, uploadQueue, startNextUpload]);
 
+  // Handle global paste events
+  React.useEffect(() => {
+    const handlePaste = (e: ClipboardEvent) => {
+      const clipboardData = e.clipboardData;
+      if (!clipboardData) return;
+
+      const items = clipboardData.items;
+      if (!items) return;
+
+      const currentFileCount =
+        uploadedFiles.length + (uploadingFile ? 1 : 0) + uploadQueue.length;
+
+      if (currentFileCount >= MAX_FILES) {
+        // If we are already at or above limit, don't even process the paste for images
+        // But we should check if the paste actually contains images first before showing toast?
+        // Let's assume user intends to paste image if they are pasting
+        // Actually, we should check if there are images in the clipboard first
+        let hasImage = false;
+        for (let i = 0; i < items.length; i++) {
+          const item = items[i];
+          if (item && item.type.indexOf("image") !== -1) {
+            hasImage = true;
+            break;
+          }
+        }
+        if (hasImage) {
+          e.preventDefault();
+          toast.error(`You can only upload up to ${MAX_FILES} files.`);
+          return;
+        }
+      }
+
+      const newFiles: File[] = [];
+      for (let i = 0; i < items.length; i++) {
+        const item = items[i];
+        if (item && item.type.indexOf("image") !== -1) {
+          const file = item.getAsFile();
+          if (file) {
+            newFiles.push(file);
+          }
+        }
+      }
+
+      if (newFiles.length > 0) {
+        e.preventDefault();
+        if (currentFileCount + newFiles.length > MAX_FILES) {
+          toast.error(`You can only upload up to ${MAX_FILES} files.`);
+          // Add only what fits
+          const availableSlots = MAX_FILES - currentFileCount;
+          if (availableSlots > 0) {
+            setUploadQueue((prev) => [
+              ...prev,
+              ...newFiles.slice(0, availableSlots),
+            ]);
+          }
+        } else {
+          setUploadQueue((prev) => [...prev, ...newFiles]);
+        }
+      }
+    };
+
+    window.addEventListener("paste", handlePaste);
+    return () => {
+      window.removeEventListener("paste", handlePaste);
+    };
+  }, [uploadedFiles.length, uploadingFile, uploadQueue.length, MAX_FILES]);
+
   const submitHandler = () => {
     if (isPromptValid) {
       const mediaIds = uploadedFiles.map((file) => file.id);
@@ -110,7 +179,21 @@ export default function InputArea({
     const files = event.target.files;
     if (files && files.length > 0) {
       const newFiles = Array.from(files);
-      setUploadQueue((prev) => [...prev, ...newFiles]);
+      const currentFileCount =
+        uploadedFiles.length + (uploadingFile ? 1 : 0) + uploadQueue.length;
+
+      if (currentFileCount >= MAX_FILES) {
+        toast.error(`You can only upload up to ${MAX_FILES} files.`);
+      } else if (currentFileCount + newFiles.length > MAX_FILES) {
+        toast.error(`You can only upload up to ${MAX_FILES} files.`);
+        const availableSlots = MAX_FILES - currentFileCount;
+        setUploadQueue((prev) => [
+          ...prev,
+          ...newFiles.slice(0, availableSlots),
+        ]);
+      } else {
+        setUploadQueue((prev) => [...prev, ...newFiles]);
+      }
     }
     // Reset input so same file can be selected again
     if (fileInputRef.current) {
@@ -222,6 +305,10 @@ export default function InputArea({
           }}
           className="w-full resize-none border-0 outline-0 focus:border-0"
           placeholder="Create the mail template"
+          name="prompt"
+          id="prompt-input"
+          autoComplete="off"
+          data-1p-ignore
         ></textarea>
         <div className="flex items-center justify-between">
           <AddButtonDropdown
