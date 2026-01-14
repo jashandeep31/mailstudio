@@ -1,11 +1,12 @@
 import { ResizablePanel } from "@repo/ui/components/resizable";
 import React, { useState } from "react";
 import { Button } from "@repo/ui/components/button";
-import { Copy, PencilLine } from "lucide-react";
+import { Copy, Check } from "lucide-react";
 import { ChatVersionAggregate, StreamingOverview } from "@/app/chat/[id]/types";
 import InputArea from "./input-area";
 import { useWebSocketContext } from "@/contexts/web-socket-context";
 import { useParams } from "next/navigation";
+import MarkdownRenderer from "./markdown-renderer";
 
 interface LeftPanel {
   versions: ChatVersionAggregate[];
@@ -38,7 +39,10 @@ export default function LeftPanel({ versions, streamingOverview }: LeftPanel) {
       <div className="min-h-0 flex-1 overflow-y-auto pr-2">
         {versions.length ? (
           versions.map((version) => (
-            <div key={version.chat_versions.id} className="mb-4">
+            <div
+              key={version.chat_versions.id}
+              className="mb-8 border-b border-dashed pb-4"
+            >
               {version.chat_version_prompts && (
                 <UserChatBubble message={version.chat_version_prompts.prompt} />
               )}
@@ -49,16 +53,20 @@ export default function LeftPanel({ versions, streamingOverview }: LeftPanel) {
                     <p className="text-muted-foreground text-sm font-bold">
                       Working..
                     </p>
-                    <p className="text-muted-foreground mt-1 text-sm">
-                      {streamingOverview.response}
-                    </p>
+                    <div className="mt-1">
+                      <MarkdownRenderer
+                        content={streamingOverview.response || ""}
+                      />
+                    </div>
                   </div>
                 )}
 
               {version.chat_version_outputs && (
-                <p className="text-muted-foreground mt-2 text-sm">
-                  {version.chat_version_outputs.overview}
-                </p>
+                <div className="mt-2">
+                  <MarkdownRenderer
+                    content={version.chat_version_outputs.overview || ""}
+                  />
+                </div>
               )}
             </div>
           ))
@@ -95,17 +103,35 @@ interface UserChatBubble {
   message: string;
 }
 const UserChatBubble = ({ message }: UserChatBubble) => {
+  const [copied, setCopied] = useState(false);
+
+  const handleCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(message);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1000);
+    } catch (err) {
+      console.error("Failed to copy text: ", err);
+    }
+  };
+
   return (
     <div className="flex flex-col items-end gap-1">
-      <div className="bg-muted hidden-scrollbar max-w-[75%] overflow-auto rounded-md border p-2 text-sm">
+      <div className="hidden-scrollbar bg-muted max-w-[85%] overflow-auto rounded-xl rounded-tr-sm border px-4 py-2 text-sm">
         {message}
       </div>
-      <div className="flex justify-end gap-1">
-        <Button variant={"ghost"} size={"sm"}>
-          <PencilLine />
-        </Button>
-        <Button variant={"ghost"} size={"sm"}>
-          <Copy />
+      <div className="flex justify-end gap-1 px-1">
+        <Button
+          variant={"ghost"}
+          size={"icon"}
+          className="h-6 w-6"
+          onClick={handleCopy}
+        >
+          {copied ? (
+            <Check className="h-3.5 w-3.5 text-green-500" />
+          ) : (
+            <Copy className="text-muted-foreground h-3.5 w-3.5" />
+          )}
         </Button>
       </div>
     </div>
