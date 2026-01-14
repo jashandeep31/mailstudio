@@ -20,6 +20,9 @@ export default function LeftPanel({ versions, streamingOverview }: LeftPanel) {
     "The template is missing proper formatting please do in and make it looking little better",
   );
 
+  const isCurrentChatStreaming =
+    streamingOverview !== null && streamingOverview.chatId === params.id;
+
   const handleSubmit = (data: { mediaIds: string[]; brandKit?: string }) => {
     sendEvent("event:refine-template-message", {
       chatId: params.id as string,
@@ -36,7 +39,7 @@ export default function LeftPanel({ versions, streamingOverview }: LeftPanel) {
       className="flex h-full min-h-0 w-full flex-col p-3"
     >
       {/* 🔹 SCROLLABLE MESSAGES */}
-      <div className="min-h-0 flex-1 overflow-y-auto pr-2">
+      <div className="hidden-scrollbar min-h-0 flex-1 overflow-y-auto pr-2">
         {versions.length ? (
           versions.map((version) => (
             <div
@@ -94,6 +97,7 @@ export default function LeftPanel({ versions, streamingOverview }: LeftPanel) {
           userPrompt={userPrompt}
           setUserPrompt={setUserPrompt}
           onSubmit={handleSubmit}
+          isDisabled={isCurrentChatStreaming}
         />
       </div>
     </ResizablePanel>

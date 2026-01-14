@@ -17,7 +17,7 @@ export const MailTemplatePreviewer = ({
   if (isStreaming) {
     return (
       <div className="bg-muted/40 flex h-full flex-1 flex-col items-center justify-center">
-        <div className="bg-background w-full max-w-3xl rounded-lg border shadow-sm">
+        <div className="bg-background w-full border shadow-sm">
           <div className="flex items-center justify-between border-b px-4 py-2">
             <span className="text-muted-foreground text-xs tracking-[0.2em] uppercase">
               Live build
@@ -44,7 +44,7 @@ export const MailTemplatePreviewer = ({
 
   if (!html) {
     return (
-      <div className="bg-muted/30 flex h-full flex-1 flex-col items-center justify-center rounded-xl border border-dashed text-center">
+      <div className="bg-muted/30 flex h-full flex-1 flex-col items-center justify-center border border-dashed text-center">
         <p className="text-lg font-semibold">No version selected yet</p>
         <p className="text-muted-foreground max-w-sm text-sm">
           Pick a version or wait for the builder to finish streaming to preview
@@ -55,7 +55,7 @@ export const MailTemplatePreviewer = ({
   }
 
   return (
-    <div className="bg-muted flex h-full flex-1 flex-col justify-center overflow-x-auto rounded-xl border">
+    <div className="bg-muted flex h-full flex-1 flex-col justify-center overflow-x-auto">
       <p className="text-muted-foreground pb-2 text-center text-sm">
         Canvas width: {width}px
       </p>

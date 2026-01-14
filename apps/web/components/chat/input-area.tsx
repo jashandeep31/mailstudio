@@ -9,6 +9,7 @@ interface InputAreaProps {
   userPrompt: string;
   setUserPrompt: React.Dispatch<React.SetStateAction<string>>;
   onSubmit: (data: { mediaIds: string[]; brandKit?: string }) => void;
+  isDisabled?: boolean;
 }
 
 interface UploadingFile {
@@ -25,6 +26,7 @@ export default function InputArea({
   userPrompt,
   setUserPrompt,
   onSubmit,
+  isDisabled = false,
 }: InputAreaProps) {
   const [isFocused, setIsFocused] = React.useState(false);
   const [selectedBrand, setSelectedBrand] = React.useState<
@@ -222,6 +224,9 @@ export default function InputArea({
   const hasAttachments =
     uploadQueue.length > 0 || uploadingFile || uploadedFiles.length > 0;
 
+  const isUploading = uploadingFile !== null || uploadQueue.length > 0;
+  const isButtonDisabled = !isPromptValid || isDisabled || isUploading;
+
   return (
     <>
       <div
@@ -326,7 +331,7 @@ export default function InputArea({
               </div>
             </div>
             <Button
-              disabled={!isPromptValid}
+              disabled={isButtonDisabled}
               onClick={submitHandler}
               className="gap-1"
             >
