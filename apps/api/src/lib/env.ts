@@ -16,6 +16,7 @@ export const env = {
   CLOUDFLARE_R2_SECRET_ACCESS_KEY: process.env.CLOUDFLARE_R2_SECRET_ACCESS_KEY!,
   CLOUDFLARE_R2_BUCKET_NAME: process.env.CLOUDFLARE_R2_BUCKET_NAME!,
   CLOUDFLARE_R2_PUBLIC_DOMAIN: process.env.CLOUDFLARE_R2_PUBLIC_DOMAIN!,
+  HMAC_SECRET: process.env.HMAC_SECRET!,
 } as const;
 
 // Validate env variables

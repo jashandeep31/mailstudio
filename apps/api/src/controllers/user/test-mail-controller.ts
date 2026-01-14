@@ -5,7 +5,9 @@ import {
   chatVersionOutputsTable,
   chatVersionsTable,
   db,
+  desc,
   eq,
+  userOtpsTable,
   userTestMailsTable,
 } from "@repo/db";
 import { z } from "zod";
@@ -17,7 +19,21 @@ import {
   generateOTP,
   createOTPRecord,
   sendVerificationEmail,
+  verifyOTP,
 } from "../../services/otp-service.js";
+
+const deleteTestMailSchema = z.object({
+  id: z.string(),
+});
+
+const createTestMailSchema = z.object({
+  email: z.email("Invalid email format"),
+});
+
+const verifyTestMailSchema = z.object({
+  mailId: z.string(),
+  otp: z.string().length(6, "OTP must be 6 digits"),
+});
 
 export const getUserTestMails = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
@@ -35,25 +51,103 @@ export const getUserTestMails = catchAsync(
   },
 );
 
-const deleteMailSchema = z.object({
-  id: z.string(),
-});
-export const deleteUserTestMail = catchAsync(
+export const deleteTestMail = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     if (!req.user) throw new Error("Authentication failed ");
-    const parsedData = deleteMailSchema.parse(req.body);
+    const parsedData = deleteTestMailSchema.parse(req.params);
     await db
       .delete(userTestMailsTable)
-      .where(eq(userTestMailsTable.id, parsedData.id));
+      .where(
+        and(
+          eq(userTestMailsTable.id, parsedData.id),
+          eq(userTestMailsTable.user_id, req.user.id),
+        ),
+      );
     res.status(200).json({
       message: "Mail id is deleted",
     });
   },
 );
 
-const createTestMailSchema = z.object({
-  email: z.email("Invalid email format"),
-});
+export const verifyTestMail = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    if (!req.user) throw new AppError("Authentication is required", 400);
+    const parsedData = verifyTestMailSchema.parse(req.body);
+
+    const [mail] = await db
+      .select()
+      .from(userTestMailsTable)
+      .where(
+        and(
+          eq(userTestMailsTable.id, parsedData.mailId),
+          eq(userTestMailsTable.user_id, req.user.id),
+        ),
+      );
+
+    if (!mail) {
+      throw new AppError("Test mail not found", 404);
+    }
+
+    if (mail.verified) {
+      res.status(200).json({
+        message: "Test mail already verified",
+      });
+      return;
+    }
+
+    const [otpRecord] = await db
+      .select()
+      .from(userOtpsTable)
+      .where(
+        and(
+          eq(userOtpsTable.verification_key, parsedData.mailId),
+          eq(userOtpsTable.user_id, req.user.id),
+          eq(userOtpsTable.otp_type, "MAIL_VALIDATION"),
+        ),
+      )
+      .orderBy(desc(userOtpsTable.created_at));
+
+    if (!otpRecord) {
+      throw new AppError("Verification code not found", 400);
+    }
+
+    if (otpRecord.used) {
+      throw new AppError("Verification code already used", 400);
+    }
+
+    if (otpRecord.expires_at < new Date()) {
+      throw new AppError("Verification code expired", 400);
+    }
+
+    const isValid = verifyOTP(parsedData.otp, otpRecord.otp);
+
+    if (!isValid) {
+      throw new AppError("Invalid verification code", 400);
+    }
+
+    await db.transaction(async (tx) => {
+      await tx
+        .update(userOtpsTable)
+        .set({
+          used: true,
+          used_at: new Date(),
+        })
+        .where(eq(userOtpsTable.id, otpRecord.id));
+
+      await tx
+        .update(userTestMailsTable)
+        .set({
+          verified: true,
+          updated_at: new Date(),
+        })
+        .where(eq(userTestMailsTable.id, parsedData.mailId));
+    });
+
+    res.status(200).json({
+      message: "Test mail verified successfully",
+    });
+  },
+);
 
 export const createTestMail = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
