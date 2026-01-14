@@ -27,3 +27,38 @@ export const sendTemplateOnTestMail = async (data: unknown) => {
   );
   return res.data;
 };
+
+export const createUserTestMail = async (data: unknown) => {
+  const res = await axios.post<{ message: string; mail: UserTestMail }>(
+    `${BASE_URL}/api/v1/user/test-mails`,
+    data,
+    {
+      withCredentials: true,
+    },
+  );
+  return res.data;
+};
+
+export const deleteUserTestMail = async (id: string) => {
+  const res = await axios.delete<{ message: string }>(
+    `${BASE_URL}/api/v1/user/test-mails/${id}`,
+    {
+      withCredentials: true,
+    },
+  );
+  return res.data;
+};
+
+export const verifyUserTestMail = async (data: {
+  mailId: string;
+  otp: string;
+}) => {
+  const res = await axios.post<{ message: string }>(
+    `${BASE_URL}/api/v1/user/test-mails/verify`,
+    data,
+    {
+      withCredentials: true,
+    },
+  );
+  return res.data;
+};

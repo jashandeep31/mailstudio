@@ -6,6 +6,7 @@ const links: { name: string; href: string }[] = [
   { name: "Profile", href: "/dashboard/settings" },
   { name: "Billings", href: "/dashboard/settings/billings" },
   { name: "Payments", href: "/dashboard/settings/payments" },
+  { name: "Test Mails", href: "/dashboard/settings/test-mails" },
 ];
 
 interface SettingsNavProps {
