@@ -6,9 +6,9 @@ import authRoutes from "./routes/auth-routes.js";
 import userRoutes from "./routes/user-routes.js";
 import chatRoutes from "./routes/chat-routes.js";
 import internalRoutes from "./routes/internal-routes.js";
+
 import paymentRoutes from "./routes/payment-routes.js";
 import utilRoutes from "./routes/util-routes.js";
-
 import cookiesParser from "cookie-parser";
 import { checkAuthorization } from "./middlewares/check-authorization.js";
 import { createServer } from "node:http";

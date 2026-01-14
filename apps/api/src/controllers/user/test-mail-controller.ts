@@ -12,7 +12,12 @@ import { z } from "zod";
 import { AppError } from "../../lib/app-error.js";
 import { sendTemplateToTestMailSchema } from "@repo/shared";
 import { sendMailWithResend } from "../../services/send-mail.js";
-import { Socket } from "dgram";
+import { v4 as uuidv4 } from "uuid";
+import {
+  generateOTP,
+  createOTPRecord,
+  sendVerificationEmail,
+} from "../../services/otp-service.js";
 
 export const getUserTestMails = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
@@ -42,6 +47,62 @@ export const deleteUserTestMail = catchAsync(
       .where(eq(userTestMailsTable.id, parsedData.id));
     res.status(200).json({
       message: "Mail id is deleted",
+    });
+  },
+);
+
+const createTestMailSchema = z.object({
+  email: z.email("Invalid email format"),
+});
+
+export const createTestMail = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    if (!req.user) throw new AppError("Authentication is required", 400);
+    const parsedData = createTestMailSchema.parse(req.body);
+
+    // Check if email already exists for this user
+    const existingMail = await db
+      .select()
+      .from(userTestMailsTable)
+      .where(
+        and(
+          eq(userTestMailsTable.user_id, req.user.id),
+          eq(userTestMailsTable.mail, parsedData.email),
+        ),
+      );
+
+    if (existingMail.length > 0) {
+      throw new AppError("Email already exists", 409);
+    }
+
+    // Generate OTP
+    const otp = generateOTP();
+
+    // Create new test mail
+    const [newMail] = await db
+      .insert(userTestMailsTable)
+      .values({
+        id: uuidv4(),
+        user_id: req.user.id,
+        mail: parsedData.email,
+        verified: false,
+      })
+      .returning();
+
+    if (!newMail) {
+      throw new AppError("Failed to create test mail", 500);
+    }
+
+    // Create OTP record with email ID in verification key
+    await createOTPRecord(req.user.id, newMail.id, otp);
+
+    // Send OTP email
+    await sendVerificationEmail(parsedData.email, otp);
+
+    res.status(201).json({
+      message:
+        "Test mail created successfully. Please check your email for verification code.",
+      mail: newMail,
     });
   },
 );
