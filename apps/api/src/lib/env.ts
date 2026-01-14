@@ -17,6 +17,11 @@ export const env = {
   CLOUDFLARE_R2_BUCKET_NAME: process.env.CLOUDFLARE_R2_BUCKET_NAME!,
   CLOUDFLARE_R2_PUBLIC_DOMAIN: process.env.CLOUDFLARE_R2_PUBLIC_DOMAIN!,
   HMAC_SECRET: process.env.HMAC_SECRET!,
+  DODO_PAYMENTS_API_KEY: process.env.DODO_PAYMENTS_API_KEY!,
+  DODO_PAYMENTS_WEBHOOK_SECRET: process.env.DODO_PAYMENTS_WEBHOOK_SECRET!,
+  DODO_PAYMENTS_ENVIRONMENT: (process.env.DODO_PAYMENTS_ENVIRONMENT ||
+    "live_mode") as "live_mode" | "test_mode",
+  DODO_STARTER_PRODUCT_ID: process.env.DODO_STARTER_PRODUCT_ID!,
 } as const;
 
 // Validate env variables

@@ -16,8 +16,8 @@ import { env } from "../../lib/env.js";
 import { v4 as uuid } from "uuid";
 
 const client = new DodoPayments({
-  bearerToken: process.env.DODO_PAYMENTS_API_KEY,
-  environment: "test_mode", // defaults to 'live_mode'
+  bearerToken: env.DODO_PAYMENTS_API_KEY,
+  environment: env.DODO_PAYMENTS_ENVIRONMENT,
 });
 
 export const getProSubscriptonUrl = catchAsync(
@@ -30,7 +30,7 @@ export const getProSubscriptonUrl = catchAsync(
       .where(eq(usersTable.id, req.user.id));
     if (!user) throw new AppError("User not found", 404);
     const paymentSession = await client.checkoutSessions.create({
-      product_cart: [{ product_id: "pdt_0NW3JXP572Os6xSYT6Hio", quantity: 1 }],
+      product_cart: [{ product_id: env.DODO_STARTER_PRODUCT_ID, quantity: 1 }],
       subscription_data: {},
       customer: {
         email: req.user.email,
@@ -56,20 +56,30 @@ export const getProSubscriptonUrl = catchAsync(
   },
 );
 
-// cks_0NW808U0cHlGP2pgTLXuM
 export const handleDodoPaymentWebhook = catchAsync(
   async (req: Request, res: Response) => {
-    if (req.body.type === "payment.succeeded") {
-      console.log(req.body.data.metadata.user_id);
-      const bodyData = req.body;
-      const orderId = req.body.data.metadata.order_id;
+    const signature = req.headers["webhook-signature"] as string;
+    const webhookId = req.headers["webhook-id"] as string;
+    const timestamp = req.headers["webhook-timestamp"] as string;
+    console.log(signature, webhookId, timestamp);
+
+    if (!signature || !webhookId || !timestamp) {
+      throw new AppError("Missing webhook headers", 400);
+    }
+
+    const body = typeof req.body === "string" ? JSON.parse(req.body) : req.body;
+
+    if (body.type === "payment.succeeded") {
+      const bodyData = body;
+      const orderId = body.data.metadata.order_id;
       const [userPlan] = await db
         .select()
         .from(plansTable)
-        .where(eq(plansTable.user_id, req.body.data.metadata.user_id));
+        .where(eq(plansTable.user_id, body.data.metadata.user_id));
       if (!userPlan) {
-        console.log(`we fucked up here iwht user`);
-
+        console.error(
+          `User plan not found for user: ${body.data.metadata.user_id}`,
+        );
         res.status(200).json({});
         return;
       }
@@ -79,12 +89,12 @@ export const handleDodoPaymentWebhook = catchAsync(
         .from(paymentTransactionsTable)
         .where(eq(paymentTransactionsTable.invoice_id, orderId));
       if (oldPayment) {
-        console.log(`we fucked up here`);
+        console.warn(`Duplicate payment detected for order: ${orderId}`);
         res.status(200).json({});
         return;
       }
       const subscripton = await client.subscriptions.retrieve(
-        req.body.data.subscription_id,
+        body.data.subscription_id,
       );
 
       await db.transaction(async (tx) => {
@@ -191,5 +201,3 @@ export const handleDodoPaymentWebhook = catchAsync(
     return;
   },
 );
-
-// TODO: create the cancel and resume plan
