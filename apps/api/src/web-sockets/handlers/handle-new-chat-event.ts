@@ -8,7 +8,6 @@ export const handleNewChatEvent = async (
   socket: WebSocket,
 ) => {
   const userId = socket.userId;
-  const { message, media, brandKitId } = data;
   const [chat] = await db
     .insert(chatsTable)
     .values({

@@ -5,6 +5,7 @@ import {
   chatVersionsTable,
   db,
   eq,
+  inArray,
   uploadMediaTable,
 } from "@repo/db";
 import { SocketEventSchemas } from "@repo/shared";
@@ -74,24 +75,25 @@ export const handleQuestionEvent = async (
   });
 };
 
-const validateMediaIds = async (
+export const validateMediaIds = async (
   mediaIds: string[],
   userId: string,
 ): Promise<(typeof uploadMediaTable.$inferSelect)[]> => {
-  const valids = [];
-  for (const mediaId of mediaIds) {
-    const [media] = await db
-      .select()
-      .from(uploadMediaTable)
-      .where(
-        and(
-          eq(uploadMediaTable.id, mediaId),
-          eq(uploadMediaTable.user_id, userId),
-        ),
-      );
+  if (mediaIds.length === 0) return [];
 
-    if (!media) throw new Error("Invalid media id");
-    valids.push(media);
+  const validMedia = await db
+    .select()
+    .from(uploadMediaTable)
+    .where(
+      and(
+        inArray(uploadMediaTable.id, mediaIds),
+        eq(uploadMediaTable.user_id, userId),
+      ),
+    );
+
+  if (validMedia.length !== mediaIds.length) {
+    throw new Error("Invalid media id");
   }
-  return valids;
+
+  return validMedia;
 };

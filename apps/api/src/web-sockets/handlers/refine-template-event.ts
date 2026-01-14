@@ -6,6 +6,7 @@ import {
   chatVersionPromptsTable,
   chatVersionOutputsTable,
 } from "@repo/db";
+import { validateMediaIds } from "./handle-question-event.js";
 import { SocketEventSchemas } from "@repo/shared";
 import z, { refine } from "zod";
 import { v4 as uuid } from "uuid";
@@ -28,6 +29,9 @@ export const refineTemplateHandler = async ({
   // TODO: please store the version temp in the redis so that when user referesh can be sent to the user
   const versionId = uuid();
   const questionId = uuid();
+
+  const validMedia = await validateMediaIds(data.media, socket.userId);
+  const mediaUrls = validMedia.map((media) => media.exact_url);
   const [prevOutput] = await db
     .select()
     .from(chatVersionOutputsTable)
@@ -71,7 +75,7 @@ export const refineTemplateHandler = async ({
     refineMailTemplate({
       prevMjmlCode: prevOutput?.mjml_code || "",
       prompt: data.message,
-      media: data.media,
+      mediaUrls: mediaUrls,
       brandKit: null,
     }),
 
