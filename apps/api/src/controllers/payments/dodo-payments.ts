@@ -59,7 +59,7 @@ export const getProSubscriptonUrl = catchAsync(
 
 export const handleDodoPaymentWebhook = catchAsync(
   async (req: Request, res: Response) => {
-    const unwrapped = client.webhooks.unwrap(req.body.toString(), {
+    const event = client.webhooks.unwrap(req.body.toString(), {
       headers: {
         "webhook-id": req.headers["webhook-id"] as string,
         "webhook-signature": req.headers["webhook-signature"] as string,
@@ -67,141 +67,146 @@ export const handleDodoPaymentWebhook = catchAsync(
       },
     });
 
-    // const body = typeof req.body === "string" ? JSON.parse(req.body) : req.body;
-
-    if (unwrapped.type === "payment.succeeded") {
-      const bodyData = unwrapped;
-      const orderId = bodyData.data.metadata.order_id!;
-      const [userPlan] = await db
-        .select()
-        .from(plansTable)
-        .where(eq(plansTable.user_id, bodyData.data.metadata.user_id!));
-      if (!userPlan) {
-        console.error(
-          `User plan not found for user: ${bodyData.data.metadata.user_id}`,
-        );
-        res.status(200).json({ received: true });
-        return;
-      }
-      // checking the if payment is already made
-      const [oldPayment] = await db
-        .select()
-        .from(paymentTransactionsTable)
-        .where(eq(paymentTransactionsTable.invoice_id, orderId!));
-      if (oldPayment) {
-        console.warn(`Duplicate payment detected for order: ${orderId}`);
-        res.status(200).json({ received: true });
-        return;
-      }
-      const subscripton = await client.subscriptions.retrieve(
-        bodyData.data.subscription_id!,
-      );
-
-      await db.transaction(async (tx) => {
-        const [paymentTransaction] = await tx
-          .insert(paymentTransactionsTable)
-          .values({
-            user_id: bodyData.data.metadata.user_id!,
-            provider: "dodopayments",
-            invoice_id: orderId,
-            payment_id: bodyData.data.payment_id,
-            subscription_id: bodyData.data.subscription_id,
-            checkout_session_id: bodyData.data.checkout_session_id,
-
-            settlement_amount: String(bodyData.data.settlement_amount / 100),
-            tax_amount: String(bodyData.data.settlement_tax! / 100),
-
-            payment_method: bodyData.data.payment_method,
-            card_last_four: bodyData.data.card_last_four,
-            card_network: bodyData.data.card_network,
-            card_type: bodyData.data.card_type,
-
-            status: bodyData.data.status as "pending",
-            error_message: null,
-            error_code: null,
-            provider_metadata: bodyData,
-          })
-          .returning();
-        if (!paymentTransaction) {
-          throw new AppError("Payment transaction not created", 500);
-        }
-        await tx.insert(billingsTable).values({
-          user_id: bodyData.data.metadata.user_id!,
-          amount: String(bodyData.data.settlement_amount / 100),
-          payment_transaction_id: paymentTransaction.id,
-          plan_type: "starter_pack",
-        });
-
-        await tx
-          .update(plansTable)
-          .set({
-            updated_at: new Date(),
-            plan_type: "starter_pack",
-            subscription_id: bodyData.data.subscription_id,
-            active: true,
-            price: String(subscripton.recurring_pre_tax_amount / 100),
-            active_from: new Date(subscripton.created_at),
-            renew_at: new Date(subscripton.next_billing_date),
-            ends_at: subscripton.cancel_at_next_billing_date
-              ? new Date(subscripton.next_billing_date)
-              : null,
-            cancel_at_next_billing_date:
-              subscripton.cancel_at_next_billing_date || false,
-          })
-          .where(eq(plansTable.user_id, bodyData.data.metadata.user_id!));
-
-        const [oldWallet] = await tx
-          .select()
-          .from(creditWalletsTable)
-          .where(
-            eq(creditWalletsTable.user_id, bodyData.data.metadata.user_id!),
-          )
-          .limit(1);
-        if (!oldWallet) {
-          throw new AppError("Wallet not found", 500);
-        }
-
-        const oldBalance = Number(oldWallet.balance);
-        const newCredits = subscripton.recurring_pre_tax_amount / 100;
-        const carriedOverBalance = Math.min(oldBalance, 10);
-        const expiredAmount = oldBalance > 10 ? oldBalance - 10 : 0;
-        const newBalance = carriedOverBalance + newCredits;
-
-        await tx
-          .update(creditWalletsTable)
-          .set({
-            updated_at: new Date(),
-            balance: String(newBalance),
-          })
-          .where(
-            eq(creditWalletsTable.user_id, bodyData.data.metadata.user_id!),
-          )
-          .returning();
-
-        if (expiredAmount > 0) {
-          await tx.insert(creditTransactionsTable).values({
-            user_id: bodyData.data.metadata.user_id!,
-            wallet_id: oldWallet.id,
-            amount: String(expiredAmount),
-            after_balance: String(carriedOverBalance),
-            before_balance: oldWallet.balance,
-            type: "expire",
-            reason: "Previous Plan Upgrade - Balance exceeds 10 credits",
-          });
-        }
-
-        await tx.insert(creditTransactionsTable).values({
-          user_id: bodyData.data.metadata.user_id!,
-          wallet_id: oldWallet.id,
-          amount: String(newCredits),
-          after_balance: String(newBalance),
-          before_balance: String(carriedOverBalance),
-          type: "grant",
-          reason: "Plan Upgrade",
-        });
-      });
+    if (event.type !== "payment.succeeded") {
+      res.status(200).json({ received: true });
+      return;
     }
+
+    const paymentData = event.data;
+    const userId = paymentData.metadata.user_id;
+    const orderId = paymentData.metadata.order_id;
+    const subscriptionId = paymentData.subscription_id;
+
+    if (!userId || !orderId || !subscriptionId) {
+      console.error("Missing required metadata in webhook payload");
+      res.status(200).json({ received: true });
+      return;
+    }
+
+    const [userPlan] = await db
+      .select()
+      .from(plansTable)
+      .where(eq(plansTable.user_id, userId));
+    if (!userPlan) {
+      console.error(`User plan not found for user: ${userId}`);
+      res.status(200).json({ received: true });
+      return;
+    }
+
+    const [existingPayment] = await db
+      .select()
+      .from(paymentTransactionsTable)
+      .where(eq(paymentTransactionsTable.invoice_id, orderId));
+    if (existingPayment) {
+      console.warn(`Duplicate payment detected for order: ${orderId}`);
+      res.status(200).json({ received: true });
+      return;
+    }
+
+    const subscription = await client.subscriptions.retrieve(subscriptionId);
+
+    const settlementAmount = paymentData.settlement_amount / 100;
+    const taxAmount = (paymentData.settlement_tax ?? 0) / 100;
+    const newCredits = subscription.recurring_pre_tax_amount / 100;
+
+    await db.transaction(async (tx) => {
+      const [paymentTransaction] = await tx
+        .insert(paymentTransactionsTable)
+        .values({
+          user_id: userId,
+          provider: "dodopayments",
+          invoice_id: orderId,
+          payment_id: paymentData.payment_id,
+          subscription_id: subscriptionId,
+          checkout_session_id: paymentData.checkout_session_id,
+          settlement_amount: String(settlementAmount),
+          tax_amount: String(taxAmount),
+          payment_method: paymentData.payment_method,
+          card_last_four: paymentData.card_last_four,
+          card_network: paymentData.card_network,
+          card_type: paymentData.card_type,
+          status: paymentData.status as "pending",
+          error_message: null,
+          error_code: null,
+          provider_metadata: event,
+        })
+        .returning();
+
+      if (!paymentTransaction) {
+        throw new AppError("Payment transaction not created", 500);
+      }
+
+      await tx.insert(billingsTable).values({
+        user_id: userId,
+        amount: String(settlementAmount),
+        payment_transaction_id: paymentTransaction.id,
+        plan_type: "starter_pack",
+      });
+
+      await tx
+        .update(plansTable)
+        .set({
+          updated_at: new Date(),
+          plan_type: "starter_pack",
+          subscription_id: subscriptionId,
+          active: true,
+          price: String(newCredits),
+          active_from: new Date(subscription.created_at),
+          renew_at: new Date(subscription.next_billing_date),
+          ends_at: subscription.cancel_at_next_billing_date
+            ? new Date(subscription.next_billing_date)
+            : null,
+          cancel_at_next_billing_date:
+            subscription.cancel_at_next_billing_date || false,
+        })
+        .where(eq(plansTable.user_id, userId));
+
+      const [wallet] = await tx
+        .select()
+        .from(creditWalletsTable)
+        .where(eq(creditWalletsTable.user_id, userId))
+        .limit(1);
+
+      if (!wallet) {
+        throw new AppError("Wallet not found", 500);
+      }
+
+      const oldBalance = Number(wallet.balance);
+      const carriedOverBalance = Math.min(oldBalance, 10);
+      const expiredAmount = oldBalance > 10 ? oldBalance - 10 : 0;
+      const newBalance = carriedOverBalance + newCredits;
+
+      await tx
+        .update(creditWalletsTable)
+        .set({
+          updated_at: new Date(),
+          balance: String(newBalance),
+        })
+        .where(eq(creditWalletsTable.user_id, userId));
+
+      if (expiredAmount > 0) {
+        await tx.insert(creditTransactionsTable).values({
+          user_id: userId,
+          wallet_id: wallet.id,
+          amount: String(expiredAmount),
+          after_balance: String(carriedOverBalance),
+          before_balance: wallet.balance,
+          type: "expire",
+          reason: "Previous Plan Upgrade - Balance exceeds 10 credits",
+        });
+      }
+
+      await tx.insert(creditTransactionsTable).values({
+        user_id: userId,
+        wallet_id: wallet.id,
+        amount: String(newCredits),
+        after_balance: String(newBalance),
+        before_balance: String(carriedOverBalance),
+        type: "grant",
+        reason: "Plan Upgrade",
+      });
+    });
+
     res.status(200).json({ received: true });
-    return;
   },
 );
