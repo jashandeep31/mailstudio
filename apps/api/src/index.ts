@@ -22,6 +22,7 @@ const RANDOM_CODE = Math.floor(Math.random() * 100);
 
 // app config.
 const app = express();
+
 app.use(express.json());
 app.use(
   cors({
