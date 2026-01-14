@@ -1,29 +1,48 @@
+import { ContentListUnion } from "@google/genai";
 import { googleGenAi } from "../../config.js";
 import { prompts } from "../../../prompts/index.js";
+import {
+  uploadMediaFiles,
+  waitForFilesProcessing,
+  getValidFiles,
+  buildContent,
+  UploadedFile,
+} from "../utils/index.js";
+
+const GEMINI_MODEL = "models/gemini-3-pro-preview";
 
 interface RefineMailTemplate {
   prompt: string;
   brandKit: string | null;
-  media: string[];
+  mediaUrls: string[];
   prevMjmlCode: string;
 }
+
 export const refineMailTemplate = async ({
   prompt,
-  brandKit,
-  media,
+  mediaUrls,
   prevMjmlCode,
 }: RefineMailTemplate): Promise<string> => {
-  const properPrompt = await rewritePromptForDownstreamModel(prompt);
-  const refinedMJMLTemplate = await generateRefinedMjmlCode(
-    properPrompt + prevMjmlCode,
+  const uploadedFiles = await uploadMediaFiles(mediaUrls);
+  await waitForFilesProcessing(uploadedFiles);
+
+  const validFiles = getValidFiles(uploadedFiles);
+  const contentWithPrompt = buildContent(prompt, validFiles);
+
+  const properPrompt = await rewritePromptForDownstreamModel(contentWithPrompt);
+  const refinedContent = buildContent(
+    properPrompt + "\n\n" + prevMjmlCode,
+    validFiles,
   );
+
+  const refinedMJMLTemplate = await generateRefinedMjmlCode(refinedContent);
   return refinedMJMLTemplate;
 };
 
-const generateRefinedMjmlCode = async (userPrompt: string) => {
+const generateRefinedMjmlCode = async (content: ContentListUnion) => {
   const response = await googleGenAi.models.generateContent({
-    model: "models/gemini-3-pro-preview",
-    contents: userPrompt,
+    model: GEMINI_MODEL,
+    contents: content,
     config: {
       systemInstruction: prompts["system.refineTemplate.applyChanges"](),
     },
@@ -32,10 +51,11 @@ const generateRefinedMjmlCode = async (userPrompt: string) => {
   console.log(response.data);
   return response.text!;
 };
-const rewritePromptForDownstreamModel = async (userPrompt: string) => {
+
+const rewritePromptForDownstreamModel = async (content: ContentListUnion) => {
   const response = await googleGenAi.models.generateContent({
-    model: "models/gemini-3-pro-preview",
-    contents: userPrompt,
+    model: GEMINI_MODEL,
+    contents: content,
     config: {
       systemInstruction: prompts["system.refineTemplate.rewrite"](),
     },
