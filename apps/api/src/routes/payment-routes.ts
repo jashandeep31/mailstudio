@@ -1,4 +1,4 @@
-import { Response, Router, Request } from "express";
+import { Router } from "express";
 
 import DodoPayments from "dodopayments";
 import { checkAuthorization } from "../middlewares/check-authorization.js";
@@ -15,6 +15,6 @@ const client = new DodoPayments({
 const routes: Router = Router();
 routes.route("/upgrade").get(checkAuthorization(["all"]), getProSubscriptonUrl);
 
-routes.route("/dodo-webhoook").post(handleDodoPaymentWebhook);
+// routes.route("/dodo-webhoook").post(handleDodoPaymentWebhook);
 
 export default routes;

@@ -18,6 +18,7 @@ import { v4 as uuid } from "uuid";
 const client = new DodoPayments({
   bearerToken: env.DODO_PAYMENTS_API_KEY,
   environment: env.DODO_PAYMENTS_ENVIRONMENT,
+  webhookKey: env.DODO_PAYMENTS_WEBHOOK_SECRET,
 });
 
 export const getProSubscriptonUrl = catchAsync(
@@ -58,50 +59,49 @@ export const getProSubscriptonUrl = catchAsync(
 
 export const handleDodoPaymentWebhook = catchAsync(
   async (req: Request, res: Response) => {
-    const signature = req.headers["webhook-signature"] as string;
-    const webhookId = req.headers["webhook-id"] as string;
-    const timestamp = req.headers["webhook-timestamp"] as string;
-    console.log(signature, webhookId, timestamp);
+    const unwrapped = client.webhooks.unwrap(req.body.toString(), {
+      headers: {
+        "webhook-id": req.headers["webhook-id"] as string,
+        "webhook-signature": req.headers["webhook-signature"] as string,
+        "webhook-timestamp": req.headers["webhook-timestamp"] as string,
+      },
+    });
 
-    if (!signature || !webhookId || !timestamp) {
-      throw new AppError("Missing webhook headers", 400);
-    }
+    // const body = typeof req.body === "string" ? JSON.parse(req.body) : req.body;
 
-    const body = typeof req.body === "string" ? JSON.parse(req.body) : req.body;
-
-    if (body.type === "payment.succeeded") {
-      const bodyData = body;
-      const orderId = body.data.metadata.order_id;
+    if (unwrapped.type === "payment.succeeded") {
+      const bodyData = unwrapped;
+      const orderId = bodyData.data.metadata.order_id!;
       const [userPlan] = await db
         .select()
         .from(plansTable)
-        .where(eq(plansTable.user_id, body.data.metadata.user_id));
+        .where(eq(plansTable.user_id, bodyData.data.metadata.user_id!));
       if (!userPlan) {
         console.error(
-          `User plan not found for user: ${body.data.metadata.user_id}`,
+          `User plan not found for user: ${bodyData.data.metadata.user_id}`,
         );
-        res.status(200).json({});
+        res.status(200).json({ received: true });
         return;
       }
       // checking the if payment is already made
       const [oldPayment] = await db
         .select()
         .from(paymentTransactionsTable)
-        .where(eq(paymentTransactionsTable.invoice_id, orderId));
+        .where(eq(paymentTransactionsTable.invoice_id, orderId!));
       if (oldPayment) {
         console.warn(`Duplicate payment detected for order: ${orderId}`);
-        res.status(200).json({});
+        res.status(200).json({ received: true });
         return;
       }
       const subscripton = await client.subscriptions.retrieve(
-        body.data.subscription_id,
+        bodyData.data.subscription_id!,
       );
 
       await db.transaction(async (tx) => {
         const [paymentTransaction] = await tx
           .insert(paymentTransactionsTable)
           .values({
-            user_id: bodyData.data.metadata.user_id,
+            user_id: bodyData.data.metadata.user_id!,
             provider: "dodopayments",
             invoice_id: orderId,
             payment_id: bodyData.data.payment_id,
@@ -109,14 +109,14 @@ export const handleDodoPaymentWebhook = catchAsync(
             checkout_session_id: bodyData.data.checkout_session_id,
 
             settlement_amount: String(bodyData.data.settlement_amount / 100),
-            tax_amount: String(bodyData.data.settlement_tax / 100),
+            tax_amount: String(bodyData.data.settlement_tax! / 100),
 
             payment_method: bodyData.data.payment_method,
             card_last_four: bodyData.data.card_last_four,
             card_network: bodyData.data.card_network,
             card_type: bodyData.data.card_type,
 
-            status: bodyData.data.status,
+            status: bodyData.data.status as "pending",
             error_message: null,
             error_code: null,
             provider_metadata: bodyData,
@@ -126,7 +126,7 @@ export const handleDodoPaymentWebhook = catchAsync(
           throw new AppError("Payment transaction not created", 500);
         }
         await tx.insert(billingsTable).values({
-          user_id: bodyData.data.metadata.user_id,
+          user_id: bodyData.data.metadata.user_id!,
           amount: String(bodyData.data.settlement_amount / 100),
           payment_transaction_id: paymentTransaction.id,
           plan_type: "starter_pack",
@@ -148,12 +148,14 @@ export const handleDodoPaymentWebhook = catchAsync(
             cancel_at_next_billing_date:
               subscripton.cancel_at_next_billing_date || false,
           })
-          .where(eq(plansTable.user_id, bodyData.data.metadata.user_id));
+          .where(eq(plansTable.user_id, bodyData.data.metadata.user_id!));
 
         const [oldWallet] = await tx
           .select()
           .from(creditWalletsTable)
-          .where(eq(creditWalletsTable.user_id, bodyData.data.metadata.user_id))
+          .where(
+            eq(creditWalletsTable.user_id, bodyData.data.metadata.user_id!),
+          )
           .limit(1);
         if (!oldWallet) {
           throw new AppError("Wallet not found", 500);
@@ -171,12 +173,14 @@ export const handleDodoPaymentWebhook = catchAsync(
             updated_at: new Date(),
             balance: String(newBalance),
           })
-          .where(eq(creditWalletsTable.user_id, bodyData.data.metadata.user_id))
+          .where(
+            eq(creditWalletsTable.user_id, bodyData.data.metadata.user_id!),
+          )
           .returning();
 
         if (expiredAmount > 0) {
           await tx.insert(creditTransactionsTable).values({
-            user_id: bodyData.data.metadata.user_id,
+            user_id: bodyData.data.metadata.user_id!,
             wallet_id: oldWallet.id,
             amount: String(expiredAmount),
             after_balance: String(carriedOverBalance),
@@ -187,7 +191,7 @@ export const handleDodoPaymentWebhook = catchAsync(
         }
 
         await tx.insert(creditTransactionsTable).values({
-          user_id: bodyData.data.metadata.user_id,
+          user_id: bodyData.data.metadata.user_id!,
           wallet_id: oldWallet.id,
           amount: String(newCredits),
           after_balance: String(newBalance),
@@ -197,7 +201,7 @@ export const handleDodoPaymentWebhook = catchAsync(
         });
       });
     }
-    res.status(200).json({});
+    res.status(200).json({ received: true });
     return;
   },
 );

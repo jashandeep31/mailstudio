@@ -17,11 +17,18 @@ import { SocketHandler } from "./web-sockets/socket-handler.js";
 import cookie from "cookie";
 import { test } from "./test.js";
 import { errorHandler } from "./middlewares/error-hanlder.js";
+import { handleDodoPaymentWebhook } from "./controllers/payments/dodo-payments.js";
 
 const RANDOM_CODE = Math.floor(Math.random() * 100);
 
 // app config.
 const app = express();
+
+app.post(
+  "/api/v1/payments/dodo-webhoook",
+  express.raw({ type: "application/json" }),
+  handleDodoPaymentWebhook,
+);
 
 app.use(express.json());
 app.use(
