@@ -6,9 +6,11 @@ import {
 } from "../controllers/payments/dodo-payments.js";
 
 const routes: Router = Router();
-routes.route("/upgrade").get(checkAuthorization(["all"]), getProSubscriptonUrl);
+routes
+  .route("/upgrade")
+  .post(checkAuthorization(["all"]), getProSubscriptonUrl);
 routes
   .route("/management")
-  .get(checkAuthorization(["all"]), dodoCustomerSession);
+  .post(checkAuthorization(["all"]), dodoCustomerSession);
 
 export default routes;

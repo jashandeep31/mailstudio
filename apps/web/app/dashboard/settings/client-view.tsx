@@ -31,7 +31,7 @@ import { useUserMetadata, useUserPlan } from "@/hooks/use-user";
 import {
   getProSubscriptionUrl,
   getSubsriptionManagementUrl,
-} from "@/services/user-services";
+} from "@/services/payment-services";
 
 const ClientView = () => {
   const { theme, setTheme } = useTheme();
