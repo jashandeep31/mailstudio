@@ -47,3 +47,22 @@ export const getUserBillings = async (): Promise<BillingWithPayment[]> => {
   });
   return res.data.data;
 };
+
+export type PaymentTransaction = {
+  id: string;
+  provider: "dodopayments" | "stripe" | "lemonsqueezy";
+  settlement_amount: string | null;
+  tax_amount: string | null;
+  status: "pending" | "succeeded" | "failed" | "refunded";
+  payment_method: string | null;
+  card_last_four: string | null;
+  card_network: string | null;
+  created_at: Date;
+};
+
+export const getUserPayments = async (): Promise<PaymentTransaction[]> => {
+  const res = await axios.get(`${BASE_URL}/api/v1/user/payments`, {
+    withCredentials: true,
+  });
+  return res.data.data;
+};

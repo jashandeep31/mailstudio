@@ -1,6 +1,7 @@
 import {
   getUserBillings,
   getUserMetadata,
+  getUserPayments,
   getUserPlan,
 } from "@/services/user-services";
 import { useQuery } from "@tanstack/react-query";
@@ -21,4 +22,10 @@ export const useUserBillings = () =>
   useQuery({
     queryKey: ["user-billings"],
     queryFn: getUserBillings,
+  });
+
+export const useUserPayments = () =>
+  useQuery({
+    queryKey: ["user-payments"],
+    queryFn: getUserPayments,
   });
