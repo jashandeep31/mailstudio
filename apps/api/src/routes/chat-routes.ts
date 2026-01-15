@@ -3,6 +3,7 @@ import {
   deleteUserChat,
   getAllUserChats,
   updateChat,
+  getChatById,
 } from "../controllers/chats/chat-controllers.js";
 import { checkChatAuth } from "../lib/redis/check-chat-auth.js";
 import { checkAuthorization } from "../middlewares/check-authorization.js";
@@ -13,6 +14,9 @@ routes
   .route("/")
   .get(checkAuthorization(["all"]), getAllUserChats)
   .post(checkAuthorization(["all"]), updateChat);
-routes.route("/:chatId").delete(checkAuthorization(["all"]), deleteUserChat);
+routes
+  .route("/:chatId")
+  .get(checkAuthorization(["all"]), getChatById)
+  .delete(checkAuthorization(["all"]), deleteUserChat);
 
 export default routes;

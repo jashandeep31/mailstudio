@@ -1,62 +1,35 @@
 "use client";
 
-import React, { useState } from "react";
-import { Plus } from "lucide-react";
+import React from "react";
+import { Plus, Loader2 } from "lucide-react";
 import { Button } from "@repo/ui/components/button";
 import { DashboardTemplateCard } from "@/components/dashboard-template-card";
 import { toast } from "sonner";
-
-// Mock Data
-const MOCK_TEMPLATES = [
-  {
-    id: "1",
-    name: "Welcome Onboarding",
-    thumbnail:
-      "https://mailstudio-testing-public.s3.us-east-1.amazonaws.com/response.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIATCKAN5R3NGQPGZ7K%2F20260110%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260110T122756Z&X-Amz-Expires=604800&X-Amz-Signature=784645376291a9ce91f160fd9571ece0124d40d192ee377af334b61f01e384b8&X-Amz-SignedHeaders=host&x-amz-checksum-mode=ENABLED&x-id=GetObject",
-    lastModified: "2 days ago",
-  },
-  {
-    id: "2",
-    name: "Weekly Newsletter",
-    thumbnail:
-      "https://mailstudio-testing-public.s3.us-east-1.amazonaws.com/response.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIATCKAN5R3NGQPGZ7K%2F20260110%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260110T122756Z&X-Amz-Expires=604800&X-Amz-Signature=784645376291a9ce91f160fd9571ece0124d40d192ee377af334b61f01e384b8&X-Amz-SignedHeaders=host&x-amz-checksum-mode=ENABLED&x-id=GetObject",
-    lastModified: "1 week ago",
-  },
-  {
-    id: "3",
-    name: "Product Launch v2",
-    thumbnail: "", // Test empty state
-    lastModified: "Just now",
-  },
-];
+import { useChats, useDeleteChat } from "@/hooks/use-chats";
 
 export default function TemplatesPage() {
-  const [templates, setTemplates] = useState(MOCK_TEMPLATES);
+  const { data: templates, isLoading } = useChats();
+  const { mutate: deleteTemplate } = useDeleteChat();
 
   const handleDuplicate = (id: string) => {
-    toast.success(`Duplicated template ${id}`);
-    // Mock duplication logic
-    const template = templates.find((t) => t.id === id);
-    if (template) {
-      setTemplates([
-        ...templates,
-        {
-          ...template,
-          id: Date.now().toString(),
-          name: `${template.name} (Copy)`,
-        },
-      ]);
-    }
+    toast.info(`Duplicate feature coming soon for ${id}`);
   };
 
   const handleDelete = (id: string) => {
-    toast.success(`Deleted template ${id}`);
-    setTemplates(templates.filter((t) => t.id !== id));
+    deleteTemplate(id);
   };
 
   const handleRename = (id: string) => {
-    toast.info(`Rename triggered for ${id}`);
+    toast.info(`Rename feature coming soon for ${id}`);
   };
+
+  if (isLoading) {
+    return (
+      <div className="flex h-96 items-center justify-center">
+        <Loader2 className="text-muted-foreground h-8 w-8 animate-spin" />
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-8 px-6 py-8">
@@ -78,13 +51,13 @@ export default function TemplatesPage() {
 
       {/* Grid */}
       <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-        {templates.map((template) => (
+        {templates?.map((template) => (
           <DashboardTemplateCard
             key={template.id}
             id={template.id}
             name={template.name}
-            thumbnail={template.thumbnail}
-            lastModified={template.lastModified}
+            thumbnail={template.thumbnail || undefined}
+            lastModified={new Date(template.updated_at).toLocaleDateString()}
             onDuplicate={handleDuplicate}
             onDelete={handleDelete}
             onRename={handleRename}
@@ -92,7 +65,7 @@ export default function TemplatesPage() {
         ))}
 
         {/* Empty State */}
-        {templates.length === 0 && (
+        {templates?.length === 0 && (
           <div className="col-span-full py-12 text-center">
             <p className="text-muted-foreground">
               No templates found. Create one to get started!

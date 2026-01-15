@@ -97,7 +97,7 @@ export const DashboardTemplateCard = ({
             <DropdownMenuContent align="end" className="w-40">
               <DropdownMenuItem asChild>
                 <Link
-                  href={`/dashboard/manage-template/${id}`}
+                  href={`/dashboard/templates/manage/${id}`}
                   className="cursor-pointer"
                 >
                   <Settings className="text-muted-foreground mr-2 h-3.5 w-3.5" />

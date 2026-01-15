@@ -24,3 +24,12 @@ export const updateChat = async (data: unknown) => {
   });
   return res.data.data;
 };
+
+export const getChatById = async (
+  chatId: string,
+): Promise<typeof chatsTable.$inferSelect> => {
+  const res = await axios.get(`${BASE_URL}/api/v1/chats/${chatId}`, {
+    withCredentials: true,
+  });
+  return res.data.data;
+};

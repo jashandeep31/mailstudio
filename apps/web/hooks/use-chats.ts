@@ -1,5 +1,10 @@
 import { queryClient } from "@/app/provider";
-import { deleteChat, getChats, updateChat } from "@/services/chat-services";
+import {
+  deleteChat,
+  getChats,
+  updateChat,
+  getChatById,
+} from "@/services/chat-services";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
 
@@ -7,6 +12,13 @@ export const useChats = () =>
   useQuery({
     queryKey: ["chats"],
     queryFn: getChats,
+  });
+
+export const useChat = (id: string) =>
+  useQuery({
+    queryKey: ["chats", id],
+    queryFn: () => getChatById(id),
+    enabled: !!id,
   });
 
 export const useDeleteChat = () =>
