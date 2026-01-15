@@ -17,7 +17,7 @@ export const MailTemplatePreviewer = ({
   if (isStreaming) {
     return (
       <div className="bg-muted/40 flex h-full flex-1 flex-col items-center justify-center">
-        <div className="bg-background w-full border shadow-sm">
+        <div className="bg-background w-full max-w-3xl rounded-l border shadow-sm">
           <div className="flex items-center justify-between border-b px-4 py-2">
             <span className="text-muted-foreground text-xs tracking-[0.2em] uppercase">
               Live build

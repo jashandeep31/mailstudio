@@ -66,7 +66,7 @@ const ws = new WebSocketServer({
   server,
 });
 
-ws.on("connection", (socket, req) => {
+ws.on("connection", async (socket, req) => {
   try {
     const cookies = req.headers.cookie;
     if (!cookies) {
@@ -80,7 +80,7 @@ ws.on("connection", (socket, req) => {
     session = JSON.parse(decodeURIComponent(parsedCookie.session));
 
     socket.userId = session.id;
-    SocketHandler(socket);
+    await SocketHandler(socket);
   } catch {
     return;
   }

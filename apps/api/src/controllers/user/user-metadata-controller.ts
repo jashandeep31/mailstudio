@@ -10,8 +10,18 @@ export const getUserMetadata = catchAsync(
       .select()
       .from(creditWalletsTable)
       .where(eq(creditWalletsTable.user_id, req.user.id));
+
     res.status(200).json({
-      data: { ...creditsWallet },
+      data: {
+        creditsWallet,
+        user: {
+          email: req.user.email,
+          firstName: req.user.firstName,
+          lastName: req.user.lastName,
+          id: req.user.id,
+          role: req.user.role,
+        },
+      },
     });
   },
 );

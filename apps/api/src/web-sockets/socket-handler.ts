@@ -94,7 +94,7 @@ export const SocketHandler = async (socket: WebSocket) => {
               }),
             );
           }
-          refineTemplateHandler({ data, socket });
+          await refineTemplateHandler({ data, socket });
           break;
         }
       }

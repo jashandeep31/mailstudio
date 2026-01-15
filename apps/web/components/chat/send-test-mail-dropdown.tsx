@@ -3,7 +3,7 @@ import {
   DropdownMenuTrigger,
   DropdownMenuContent,
 } from "@repo/ui/components/dropdown-menu";
-import { Button } from "@repo/ui/components/button";
+import { Button, buttonVariants } from "@repo/ui/components/button";
 import {
   SelectValue,
   Select,
@@ -22,6 +22,7 @@ import {
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { useChatStore } from "@/zustand-store/chat-store";
+import Link from "next/link";
 export const SendTestMailDropdown = () => {
   const selectedVersionId = useChatStore((s) => s.selectedVersionId);
 
@@ -129,7 +130,12 @@ export const SendTestMailDropdown = () => {
             </SelectContent>
           </Select>
           <div className="mt-3 flex justify-between gap-4">
-            <Button variant={"link"}>Manage Mails</Button>
+            <Link
+              className={buttonVariants({ variant: "link" })}
+              href={"/dashboard/settings/test-mails"}
+            >
+              Manage Mails
+            </Link>
             <Button
               onClick={handleSendMail}
               disabled={isSending || !selectedMailId}

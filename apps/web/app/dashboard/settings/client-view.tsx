@@ -36,14 +36,6 @@ import {
 const ClientView = () => {
   const { theme, setTheme } = useTheme();
 
-  // Static data for demonstration
-  const currentUser = {
-    firstName: "John",
-    lastName: "Doe",
-    email: "john.doe@example.com",
-    avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=john",
-  };
-
   const handleLogout = () => {
     // TODO: Implement logout logic
     console.log("Logout clicked");
@@ -71,15 +63,16 @@ const ClientView = () => {
         <div className="flex items-center justify-between py-4">
           <div className="flex items-center space-x-4">
             <div className="bg-primary text-primary-foreground flex h-12 w-12 items-center justify-center rounded-lg text-lg font-semibold">
-              {currentUser.firstName[0]}
-              {currentUser.lastName[0]}
+              {userMetadata.data?.user.firstName[0]}
+              {userMetadata.data?.user.lastName[0]}
             </div>
             <div>
               <h2 className="text-base font-medium">
-                {currentUser.firstName} {currentUser.lastName}
+                {userMetadata.data?.user.firstName}{" "}
+                {userMetadata.data?.user.lastName}
               </h2>
               <p className="text-muted-foreground text-sm">
-                {currentUser.email}
+                {userMetadata.data?.user.email}
               </p>
             </div>
           </div>
@@ -252,9 +245,9 @@ const ClientView = () => {
                 <CardTitle>Credits</CardTitle>
                 <p className="text-muted-foreground text-xs">
                   Last updated:{" "}
-                  {userMetadata.data?.updated_at
+                  {userMetadata.data?.creditsWallet.updated_at
                     ? new Date(
-                        userMetadata.data.updated_at,
+                        userMetadata.data.creditsWallet.updated_at,
                       ).toLocaleDateString()
                     : "N/A"}
                 </p>
@@ -269,7 +262,7 @@ const ClientView = () => {
                     Current Balance
                   </span>
                   <span className="text-primary text-2xl font-bold">
-                    {userMetadata.data?.balance || "0.00"}
+                    {userMetadata.data?.creditsWallet.balance || "0.00"}
                   </span>
                 </div>
               </div>
