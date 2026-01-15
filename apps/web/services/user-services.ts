@@ -27,3 +27,23 @@ export const getUserPlan = async (): Promise<
 
   return res.data.data;
 };
+
+export type BillingWithPayment = {
+  id: string;
+  plan_type: "free" | "starter_pack";
+  amount: string | null;
+  created_at: Date | null;
+  payment: {
+    settlement_amount: string | null;
+    tax_amount: string | null;
+    status: "pending" | "succeeded" | "failed" | "refunded" | null;
+    payment_method: string | null;
+  } | null;
+};
+
+export const getUserBillings = async (): Promise<BillingWithPayment[]> => {
+  const res = await axios.get(`${BASE_URL}/api/v1/user/billings`, {
+    withCredentials: true,
+  });
+  return res.data.data;
+};
