@@ -84,10 +84,14 @@ export const updateChat = catchAsync(
     if (!req.user) throw new AppError("Authentication failed", 400);
     const parsedData = updateChatSchema.parse(req.body);
 
-    const updateData: Partial<typeof chatsTable.$inferInsert> = {};
-    if (parsedData.name !== undefined) updateData.name = parsedData.name;
-    if (parsedData.public !== undefined) updateData.public = parsedData.public;
-    if (parsedData.price !== undefined) updateData.price = parsedData.price;
+    // Build update data object more efficiently
+    const updateData = Object.fromEntries(
+      Object.entries({
+        name: parsedData.name,
+        public: parsedData.public,
+        price: parsedData.price,
+      }).filter(([_, value]) => value !== undefined),
+    ) as Partial<typeof chatsTable.$inferInsert>;
 
     if (Object.keys(updateData).length === 0) {
       res.status(200).json({
@@ -110,7 +114,8 @@ export const updateChat = catchAsync(
       );
 
     res.status(200).json({
-      message: "Chat is updated",
+      message: "Chat updated successfully",
+      data: updateData,
     });
     return;
   },
