@@ -1,0 +1,319 @@
+"use client";
+
+import { useState } from "react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+  CardFooter,
+} from "@repo/ui/components/card";
+import { Button } from "@repo/ui/components/button";
+import { Input } from "@repo/ui/components/input";
+import { Label } from "@repo/ui/components/label";
+import { Checkbox } from "@repo/ui/components/checkbox";
+import { Separator } from "@repo/ui/components/separator";
+import {
+  ArrowLeft,
+  Eye,
+  Save,
+  Globe,
+  Lock,
+  Calendar,
+  Clock,
+  MoreVertical,
+  ImageIcon,
+  DollarSign,
+} from "lucide-react";
+import Link from "next/link";
+
+interface Chat {
+  id: string;
+  name: string;
+  public: boolean;
+  price: string;
+  thumbnail: string | null;
+  createdAt: string;
+  updatedAt: string;
+  likes: number;
+}
+
+export default function ClientView({ id }: { id: string }) {
+  // Static mock data
+  const [chat, setChat] = useState<Chat>({
+    id,
+    name: "Welcome Series - Modern SaaS",
+    public: true,
+    price: "19.00",
+    thumbnail: null,
+    createdAt: "Jan 12, 2024",
+    updatedAt: "2 hours ago",
+    likes: 128,
+  });
+
+  // Form state
+  const [formData, setFormData] = useState(chat);
+  const [isDirty, setIsDirty] = useState(false);
+
+  const handleInputChange = (field: keyof Chat, value: any) => {
+    setFormData((prev) => ({ ...prev, [field]: value }));
+    setIsDirty(true);
+  };
+
+  const handleSave = () => {
+    setChat(formData);
+    setIsDirty(false);
+    // Here you would typically trigger a toast notification
+  };
+
+  const handleCancel = () => {
+    setFormData(chat);
+    setIsDirty(false);
+  };
+
+  return (
+    <div className="bg-muted/10 flex min-h-screen flex-col">
+      {/* Header */}
+      <header className="bg-background/95 supports-[backdrop-filter]:bg-background/60 sticky top-0 z-10 border-b backdrop-blur">
+        <div className="container mx-auto flex items-center justify-between px-4 py-4">
+          <div className="flex items-center gap-4">
+            <Button variant="ghost" size="icon" asChild>
+              <Link href="/dashboard/templates">
+                <ArrowLeft className="h-5 w-5" />
+              </Link>
+            </Button>
+            <div>
+              <h1 className="text-xl font-semibold tracking-tight">
+                {formData.name || "Untitled Template"}
+              </h1>
+              <div className="text-muted-foreground mt-0.5 flex items-center gap-2 text-xs">
+                <span className="flex items-center gap-1">
+                  {formData.public ? (
+                    <Globe className="h-3 w-3" />
+                  ) : (
+                    <Lock className="h-3 w-3" />
+                  )}
+                  {formData.public ? "Public Template" : "Private Draft"}
+                </span>
+                <span>•</span>
+                <span>Last edited {chat.updatedAt}</span>
+              </div>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              disabled={!isDirty}
+              onClick={handleCancel}
+            >
+              Discard
+            </Button>
+            <Button
+              size="sm"
+              disabled={!isDirty}
+              onClick={handleSave}
+              className="gap-2"
+            >
+              <Save className="h-4 w-4" />
+              Save Changes
+            </Button>
+          </div>
+        </div>
+      </header>
+
+      <main className="container mx-auto flex-1 px-4 py-8">
+        <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
+          {/* Left Column: Preview / Thumbnail */}
+          <div className="space-y-6 lg:col-span-2">
+            <div className="flex items-center justify-between">
+              <h2 className="text-lg font-medium">Preview</h2>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="text-muted-foreground gap-2"
+              >
+                <Eye className="h-4 w-4" />
+                View Live Preview
+              </Button>
+            </div>
+
+            <div className="bg-card group relative aspect-[16/10] overflow-hidden rounded-xl border shadow-sm">
+              {chat.thumbnail ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={chat.thumbnail}
+                  alt={chat.name}
+                  className="h-full w-full object-cover"
+                />
+              ) : (
+                <div className="bg-muted/20 text-muted-foreground flex h-full w-full flex-col items-center justify-center">
+                  <div className="bg-background h-3/4 w-3/4 space-y-4 rounded-lg border p-4 opacity-50 shadow-lg">
+                    <div className="bg-muted h-8 w-1/3 animate-pulse rounded" />
+                    <div className="space-y-2">
+                      <div className="bg-muted/50 h-4 w-full animate-pulse rounded" />
+                      <div className="bg-muted/50 h-4 w-5/6 animate-pulse rounded" />
+                      <div className="bg-muted/50 h-4 w-4/6 animate-pulse rounded" />
+                    </div>
+                    <div className="bg-muted/20 border-muted flex h-32 w-full items-center justify-center rounded border-2 border-dashed">
+                      <ImageIcon className="h-10 w-10 opacity-20" />
+                    </div>
+                  </div>
+                  <p className="mt-4 text-sm font-medium">
+                    No custom thumbnail generated
+                  </p>
+                </div>
+              )}
+
+              <div className="absolute top-4 right-4 opacity-0 transition-opacity group-hover:opacity-100">
+                <div className="bg-background/80 rounded border px-2 py-1 text-xs shadow-sm backdrop-blur">
+                  Read-only Preview
+                </div>
+              </div>
+            </div>
+
+            <Card>
+              <CardHeader>
+                <CardTitle>Analytics</CardTitle>
+                <CardDescription>
+                  Performance metrics for this template
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="grid grid-cols-3 gap-4">
+                <div className="space-y-1">
+                  <p className="text-muted-foreground text-sm font-medium">
+                    Total Likes
+                  </p>
+                  <p className="text-2xl font-bold">{chat.likes}</p>
+                </div>
+                <div className="space-y-1">
+                  <p className="text-muted-foreground text-sm font-medium">
+                    Total Sales
+                  </p>
+                  <p className="text-2xl font-bold">24</p>
+                </div>
+                <div className="space-y-1">
+                  <p className="text-muted-foreground text-sm font-medium">
+                    Revenue
+                  </p>
+                  <p className="text-2xl font-bold">
+                    ${(Number(chat.price) * 24).toFixed(2)}
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Right Column: Settings */}
+          <div className="space-y-6">
+            <div>
+              <h2 className="mb-4 text-lg font-medium">Configuration</h2>
+
+              <div className="space-y-6">
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="text-base">General Details</CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="name">Template Name</Label>
+                      <Input
+                        id="name"
+                        value={formData.name}
+                        onChange={(e) =>
+                          handleInputChange("name", e.target.value)
+                        }
+                        placeholder="E.g. Monthly Newsletter"
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label>Template ID</Label>
+                      <div className="bg-muted truncate rounded border p-2 font-mono text-xs select-all">
+                        {chat.id}
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-4 pt-2">
+                      <div className="space-y-1">
+                        <Label className="text-muted-foreground text-xs">
+                          Created
+                        </Label>
+                        <div className="flex items-center gap-1 text-sm">
+                          <Calendar className="text-muted-foreground h-3 w-3" />
+                          {chat.createdAt}
+                        </div>
+                      </div>
+                      <div className="space-y-1">
+                        <Label className="text-muted-foreground text-xs">
+                          Updated
+                        </Label>
+                        <div className="flex items-center gap-1 text-sm">
+                          <Clock className="text-muted-foreground h-3 w-3" />
+                          {chat.updatedAt}
+                        </div>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="text-base">
+                      Marketplace Settings
+                    </CardTitle>
+                    <CardDescription>
+                      Manage visibility and pricing
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-6">
+                    <div className="flex flex-row items-start space-y-0 space-x-3 rounded-md border p-4 shadow-sm">
+                      <Checkbox
+                        id="public-mode"
+                        checked={formData.public}
+                        onCheckedChange={(checked) =>
+                          handleInputChange("public", checked === true)
+                        }
+                      />
+                      <div className="space-y-1 leading-none">
+                        <Label htmlFor="public-mode">Public Marketplace</Label>
+                        <p className="text-muted-foreground text-xs">
+                          Allow other users to discover and purchase this
+                          template.
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="price">Price (USD)</Label>
+                      <div className="relative">
+                        <DollarSign className="text-muted-foreground absolute top-2.5 left-2.5 h-4 w-4" />
+                        <Input
+                          id="price"
+                          type="number"
+                          min="0"
+                          step="0.01"
+                          className="pl-8"
+                          value={formData.price}
+                          onChange={(e) =>
+                            handleInputChange("price", e.target.value)
+                          }
+                          placeholder="0.00"
+                        />
+                      </div>
+                      <p className="text-muted-foreground text-[0.8rem]">
+                        Set to 0 for free distribution. Platform fees may apply.
+                      </p>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+  );
+}
