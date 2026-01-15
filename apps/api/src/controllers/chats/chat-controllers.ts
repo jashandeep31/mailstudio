@@ -74,16 +74,33 @@ export const deleteUserChat = catchAsync(
 
 const updateChatSchema = z.object({
   chatId: z.string(),
-  name: z.string(),
+  name: z.string().optional(),
+  public: z.boolean().optional(),
+  price: z.string().optional(),
 });
+
 export const updateChat = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     if (!req.user) throw new AppError("Authentication failed", 400);
     const parsedData = updateChatSchema.parse(req.body);
+
+    const updateData: Partial<typeof chatsTable.$inferInsert> = {};
+    if (parsedData.name !== undefined) updateData.name = parsedData.name;
+    if (parsedData.public !== undefined) updateData.public = parsedData.public;
+    if (parsedData.price !== undefined) updateData.price = parsedData.price;
+
+    if (Object.keys(updateData).length === 0) {
+      res.status(200).json({
+        message: "No changes to update",
+      });
+      return;
+    }
+
     await db
       .update(chatsTable)
       .set({
-        name: parsedData.name,
+        ...updateData,
+        updated_at: new Date(),
       })
       .where(
         and(

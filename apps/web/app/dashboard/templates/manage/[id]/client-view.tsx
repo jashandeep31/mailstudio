@@ -18,7 +18,7 @@ import {
   Loader2,
 } from "lucide-react";
 import Link from "next/link";
-import { useChat } from "@/hooks/use-chats";
+import { useChat, useUpdateChat } from "@/hooks/use-chats";
 
 interface ChatFormData {
   name: string;
@@ -28,6 +28,7 @@ interface ChatFormData {
 
 export default function ClientView({ id }: { id: string }) {
   const { data: chat, isLoading } = useChat(id);
+  const { mutate: updateChatMutation, isPending: isUpdating } = useUpdateChat();
 
   // Form state
   const [formData, setFormData] = useState<ChatFormData>({
@@ -54,10 +55,19 @@ export default function ClientView({ id }: { id: string }) {
   };
 
   const handleSave = () => {
-    // TODO: Implement save functionality
-    console.log("Saving...", formData);
-    setIsDirty(false);
-    // Here you would typically trigger a toast notification and mutation
+    updateChatMutation(
+      {
+        chatId: id,
+        name: formData.name,
+        public: formData.public,
+        price: formData.price,
+      },
+      {
+        onSuccess: () => {
+          setIsDirty(false);
+        },
+      },
+    );
   };
 
   const handleCancel = () => {
@@ -91,74 +101,20 @@ export default function ClientView({ id }: { id: string }) {
   }
 
   return (
-    <div className="bg-background flex min-h-screen flex-col">
-      {/* Header */}
-      <header className="border-b">
-        <div className="container mx-auto flex items-center justify-between px-4 py-4">
-          <div className="flex items-center gap-4">
-            <Button variant="ghost" size="icon" asChild>
-              <Link href="/dashboard/templates">
-                <ArrowLeft className="h-5 w-5" />
-              </Link>
-            </Button>
-            <div>
-              <h1 className="text-xl font-semibold tracking-tight">
-                {formData.name || "Untitled Template"}
-              </h1>
-              <div className="text-muted-foreground mt-0.5 flex items-center gap-2 text-xs">
-                <span className="flex items-center gap-1">
-                  {formData.public ? (
-                    <Globe className="h-3 w-3" />
-                  ) : (
-                    <Lock className="h-3 w-3" />
-                  )}
-                  {formData.public ? "Public Template" : "Private Draft"}
-                </span>
-                <span>•</span>
-                <span>
-                  Last edited {new Date(chat.updated_at).toLocaleDateString()}
-                </span>
-              </div>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-2">
-            <Button
-              variant="ghost"
-              size="sm"
-              disabled={!isDirty}
-              onClick={handleCancel}
-            >
-              Discard
-            </Button>
-            <Button
-              size="sm"
-              disabled={!isDirty}
-              onClick={handleSave}
-              className="gap-2"
-            >
-              <Save className="h-4 w-4" />
-              Save Changes
-            </Button>
-          </div>
-        </div>
-      </header>
-
+    <div className="bg-muted flex min-h-screen flex-col">
       <main className="container mx-auto flex-1 px-4 py-8">
         <div className="grid grid-cols-1 gap-12 lg:grid-cols-3">
           {/* Left Column: Preview / Thumbnail */}
           <div className="space-y-8 lg:col-span-2">
             <div className="space-y-4">
               <div className="flex items-center justify-between">
-                <h2 className="text-lg font-medium">Preview</h2>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="text-muted-foreground gap-2"
-                >
-                  <Eye className="h-4 w-4" />
-                  View Live Preview
+                <Button asChild variant={"link"}>
+                  <Link href="/dashboard/templates">
+                    <ArrowLeft className="mr-2 h-4 w-4" />
+                    Back to Templates
+                  </Link>
                 </Button>
+                <h2 className="text-lg font-medium">Preview</h2>
               </div>
 
               <div className="bg-card group relative aspect-[16/10] overflow-hidden rounded-xl border shadow-sm">
@@ -318,6 +274,27 @@ export default function ClientView({ id }: { id: string }) {
                       <p className="text-muted-foreground text-[0.8rem]">
                         Set to 0 for free distribution. Platform fees may apply.
                       </p>
+                    </div>
+                    <div className="mt-12 flex items-center justify-end gap-2">
+                      <Button
+                        variant="ghost"
+                        disabled={!isDirty || isUpdating}
+                        onClick={handleCancel}
+                      >
+                        Discard
+                      </Button>
+                      <Button
+                        disabled={!isDirty || isUpdating}
+                        onClick={handleSave}
+                        className="gap-2"
+                      >
+                        {isUpdating ? (
+                          <Loader2 className="h-4 w-4 animate-spin" />
+                        ) : (
+                          <Save className="h-4 w-4" />
+                        )}
+                        Save Changes
+                      </Button>
                     </div>
                   </div>
                 </div>

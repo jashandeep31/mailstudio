@@ -36,9 +36,10 @@ export const useDeleteChat = () =>
 export const useUpdateChat = () =>
   useMutation({
     mutationFn: updateChat,
-    onSuccess: () => {
+    onSuccess: (_, variables) => {
       toast.success("Updated");
       queryClient.refetchQueries({ queryKey: ["chats"] });
+      queryClient.invalidateQueries({ queryKey: ["chats", variables.chatId] });
     },
     onError: () => {
       toast.error("eror");
