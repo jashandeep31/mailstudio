@@ -2,10 +2,11 @@
 
 import React from "react";
 import { Plus, Loader2 } from "lucide-react";
-import { Button } from "@repo/ui/components/button";
+import { Button, buttonVariants } from "@repo/ui/components/button";
 import { DashboardTemplateCard } from "@/components/dashboard-template-card";
 import { toast } from "sonner";
 import { useChats, useDeleteChat } from "@/hooks/use-chats";
+import Link from "next/link";
 
 export default function TemplatesPage() {
   const { data: templates, isLoading } = useChats();
@@ -17,10 +18,6 @@ export default function TemplatesPage() {
 
   const handleDelete = (id: string) => {
     deleteTemplate(id);
-  };
-
-  const handleRename = (id: string) => {
-    toast.info(`Rename feature coming soon for ${id}`);
   };
 
   if (isLoading) {
@@ -43,10 +40,10 @@ export default function TemplatesPage() {
             Manage and edit your email designs.
           </p>
         </div>
-        <Button className="gap-2">
+        <Link href="/dashboard" className={buttonVariants()}>
           <Plus className="h-4 w-4" />
           New Template
-        </Button>
+        </Link>
       </div>
 
       {/* Grid */}
@@ -60,7 +57,6 @@ export default function TemplatesPage() {
             lastModified={new Date(template.updated_at).toLocaleDateString()}
             onDuplicate={handleDuplicate}
             onDelete={handleDelete}
-            onRename={handleRename}
           />
         ))}
 

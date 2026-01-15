@@ -17,13 +17,15 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@repo/ui/components/dropdown-menu";
+import { RenameDialog } from "@/components/dialogs/rename-dialog";
+import { ConfirmationDialog } from "@/components/dialogs/confirmation-dialog";
+import { useUpdateChat } from "@/hooks/use-chats";
 
 interface DashboardTemplateCardProps {
   id: string;
   name: string;
   thumbnail?: string;
   lastModified?: string;
-  onRename?: (id: string) => void;
   onDuplicate?: (id: string) => void;
   onDelete?: (id: string) => void;
 }
@@ -33,12 +35,20 @@ export const DashboardTemplateCard = ({
   name,
   thumbnail,
   lastModified,
-  onRename,
   onDuplicate,
   onDelete,
 }: DashboardTemplateCardProps) => {
+  const { mutate: updateChat, isPending: isUpdating } = useUpdateChat();
+
+  const handleRename = (newName: string) => {
+    updateChat({
+      chatId: id,
+      name: newName,
+    });
+  };
+
   return (
-    <div className="bg-background group w-full overflow-clip rounded-lg border transition-all hover:shadow-md">
+    <div className="bg-background group w-full overflow-clip rounded-lg border transition-all">
       {/* Thumbnail Section */}
       <div className="bg-muted/20 relative aspect-3/2">
         {thumbnail ? (
@@ -59,9 +69,12 @@ export const DashboardTemplateCard = ({
             variant="secondary"
             size="sm"
             className="gap-2 font-medium shadow-lg"
+            asChild
           >
-            <Sparkles className="h-3.5 w-3.5 text-indigo-500" />
-            Modify with AI
+            <Link href={`/chat/${id}`}>
+              <Sparkles className="h-3.5 w-3.5 text-indigo-500" />
+              Modify with AI
+            </Link>
           </Button>
         </div>
       </div>
@@ -104,22 +117,39 @@ export const DashboardTemplateCard = ({
                   Manage
                 </Link>
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => onRename?.(id)}>
-                <Pencil className="text-muted-foreground mr-2 h-3.5 w-3.5" />
-                Rename
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => onDuplicate?.(id)}>
+
+              <RenameDialog
+                currentName={name}
+                onRename={handleRename}
+                isPending={isUpdating}
+              >
+                <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                  <Pencil className="text-muted-foreground mr-2 h-3.5 w-3.5" />
+                  Rename
+                </DropdownMenuItem>
+              </RenameDialog>
+
+              <DropdownMenuItem disabled onClick={() => onDuplicate?.(id)}>
                 <Copy className="text-muted-foreground mr-2 h-3.5 w-3.5" />
                 Duplicate
               </DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem
-                className="text-destructive focus:text-destructive"
-                onClick={() => onDelete?.(id)}
+
+              <ConfirmationDialog
+                title="Delete Template"
+                description="Are you sure you want to delete this template? This action cannot be undone."
+                confirmText="Delete"
+                variant="destructive"
+                onConfirm={() => onDelete?.(id)}
               >
-                <Trash className="mr-2 h-3.5 w-3.5" />
-                Delete
-              </DropdownMenuItem>
+                <DropdownMenuItem
+                  className="text-destructive focus:text-destructive"
+                  onSelect={(e) => e.preventDefault()}
+                >
+                  <Trash className="mr-2 h-3.5 w-3.5" />
+                  Delete
+                </DropdownMenuItem>
+              </ConfirmationDialog>
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
