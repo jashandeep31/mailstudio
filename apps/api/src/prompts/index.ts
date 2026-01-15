@@ -25,6 +25,12 @@ export const prompts = {
 
   "system.refineTemplate.overview": () =>
     getFileText("system.refine-template.overview.txt"),
+
+  "sytem.createUserInstructions": () =>
+    getFileText("system.create-user-instructions.txt"),
+
+  "system.updateUserInstructions": () =>
+    getFileText("system.update-user-instructions.txt"),
 } as const;
 
 const getFileText = (fileName: string): string => {
@@ -32,4 +38,13 @@ const getFileText = (fileName: string): string => {
     path.join(process.cwd(), "text-files", fileName),
     "utf-8",
   );
+};
+
+export const checkAllPromptFiles = () => {
+  Object.entries(prompts).forEach(([key, prompt]) => {
+    const text = prompt();
+    if (!text) {
+      console.log(`Warning ⚠️⚠️⚠️⚠️: Prompt '${key}' is empty`);
+    }
+  });
 };

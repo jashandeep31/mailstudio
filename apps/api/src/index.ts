@@ -18,10 +18,13 @@ import cookie from "cookie";
 import { test } from "./test.js";
 import { errorHandler } from "./middlewares/error-hanlder.js";
 import { handleDodoPaymentWebhook } from "./controllers/payments/dodo-payments.js";
+import { checkAllPromptFiles } from "./prompts/index.js";
 
 const RANDOM_CODE = Math.floor(Math.random() * 100);
 
 // app config.
+
+checkAllPromptFiles();
 const app = express();
 
 app.post(

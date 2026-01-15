@@ -40,6 +40,7 @@ const retryWithDelay = async <T>(
 
 interface RefineMailTemplate {
   prompt: string;
+  instructions?: string;
   brandKit: string | null;
   mediaUrls: string[];
   prevMjmlCode: string;
@@ -47,6 +48,7 @@ interface RefineMailTemplate {
 
 export const refineMailTemplate = async ({
   prompt,
+  instructions,
   mediaUrls,
   prevMjmlCode,
 }: RefineMailTemplate): Promise<string> => {
@@ -54,7 +56,21 @@ export const refineMailTemplate = async ({
   await waitForFilesProcessing(uploadedFiles);
 
   const validFiles = getValidFiles(uploadedFiles);
-  const contentWithPrompt = buildContent(prompt, validFiles);
+  const contentWithPrompt = buildContent(
+    `
+NEW USER INPUT:
+${prompt}
+
+EXISTING USER INSTRUCTIONS:
+${instructions}
+
+TASK:
+Update the existing instructions based strictly on the new user input.
+Preserve all preferences that are not explicitly changed.
+Return only the updated instructions as a single paragraph.
+`,
+    validFiles,
+  );
 
   const properPrompt = await rewritePromptForDownstreamModel(contentWithPrompt);
   const refinedContent = buildContent(

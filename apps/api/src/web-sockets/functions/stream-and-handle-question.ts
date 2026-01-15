@@ -14,6 +14,7 @@ import mjml2html from "mjml";
 import { createNewMailTemplate } from "../../ai/mail/new-template/index.js";
 import { streamOverview } from "./stream-overview.js";
 import { getTemplateName } from "../../ai/mail/get-template-name.js";
+import { createUserInstructions } from "../../ai/mail/user-instructions.js";
 
 interface StreamAndHandleQuestion {
   chatQuestion: typeof chatVersionPromptsTable.$inferSelect;
@@ -32,7 +33,7 @@ export const streamAndHandleQuestion = async ({
   type,
   chatVersion,
 }: StreamAndHandleQuestion) => {
-  const [overview, mjml] = await Promise.all([
+  const [overview, mjml, _, instructions] = await Promise.all([
     streamOverview({
       generator: getQuestionOverview,
       socket,
@@ -52,6 +53,7 @@ export const streamAndHandleQuestion = async ({
       chatId,
       chatVersion.chat_id,
     ),
+    createUserInstructions(chatQuestion.prompt),
   ]);
 
   const html_code = mjml2html(mjml);
@@ -65,6 +67,7 @@ export const streamAndHandleQuestion = async ({
       overview: overview,
       mjml_code: mjml,
       html_code: html_code.html,
+      generation_instructions: instructions,
     })
     .returning();
 

@@ -1,73 +1,21 @@
-Generate a responsive MJML email template for a creative agency named "Alexa Studio," focusing on a modern, card-based design with a professional and vibrant aesthetic.
+Generate a complete, production-ready MJML email template for a brand named Mail Studio. The design must adhere to a strict black and white minimalist color palette to reflect the brand identity. The primary purpose of this email is to deliver a 6-digit One-Time Password (OTP) for account verification.
 
-**Global Design Settings:**
-- **Background Color:** Light light gray (#F3F5F8) for the body/outer wrapper.
-- **Content Background:** White (#FFFFFF) for main content cards.
-- **Primary Color:** Royal Blue (#3B82F6) for the header background, accent buttons, and links.
-- **Secondary Color:** Black (#111827) for strong contrast sections.
-- **Typography:** Clean sans-serif font (Helvetica, Arial, or Roboto).
-- **Styling:** Extensive use of rounded corners (border-radius: 12px to 16px) on images, buttons, and content blocks.
+The template must include the following structural elements:
 
-**Structure & Sections:**
+1. Header: A white background featuring the Mail Studio logo or brand name in bold black typography, centered at the top.
 
-1.  **Header:**
-    - Full-width container with Primary Blue background.
-    - White "Alexa Studio" logo or text aligned to the left.
-    - Padding should be generous to create a header bar feel.
+2. Body Section:
+   - A clean white background.
+   - A clear, bold headline: Verify your email address.
+   - Introductory text: Please use the verification code below to complete your test mail setup.
+   - The OTP Component: A distinct, centered visual block displaying a placeholder 6-digit code (e.g., 123 456). Use a large, bold font size and high contrast (black text on white or light gray background) to ensure it is the focal point.
+   - Disclaimer text: Mention that the code is valid for a limited time (e.g., 10 minutes) and advise the user to ignore the email if they did not request it.
 
-2.  **Hero Section:**
-    - A white content wrapper with rounded corners containing:
-    - A large, high-quality hero image showing a creative team working.
-    - A small floating badge overlay on the image saying "2 slots available" (use a small pill-shaped container).
-    - Headline text below image: "Welcome to Alexa Studio – Where Creativity Meets Innovation!"
-    - Subtext: A personalized greeting ("Hi John,") followed by a brief introduction about helping brands stand out.
+3. Footer: A contrasting black background with white text. Include a copyright notice for Mail Studio, a placeholder physical address, and an unsubscribe link.
 
-3.  **Services List ("What we offer"):**
-    - A section with a light background (pale blue or gray).
-    - Vertical list of services. Each service should be a row containing:
-        - A small icon (left).
-        - Service Name (e.g., "Branding & Identity", "Graphic Design", "Website & UI/UX").
-        - A right-pointing arrow icon (right) to indicate it is clickable.
-    - Separate items with subtle dividers or whitespace.
-
-4.  **Dark Feature Card:**
-    - A distinct section with a Black background and rounded corners.
-    - Top: A row of pill-shaped tags (e.g., "AI", "Healthcare", "SaaS", "Web 3.0").
-    - Headline: white text, "Start Your Creative Journey with Alexa Studio Today!"
-    - CTA Button: Primary Blue background, "Book a Free Consultation".
-
-5.  **Portfolio Highlight (Blue Section):**
-    - Full-width or boxed section with Primary Blue background.
-    - White text headline: "Your Creative Journey with Alexa Studio – How It Works!"
-    - A central image area showing a collage/grid of portfolio work (mockups of apps, branding).
-    - CTA Button: Black or Dark Blue, "Explore our portfolio".
-
-6.  **Intro & Workflow Text:**
-    - Clean white section.
-    - Headline: "Hey, Just An Intro".
-    - Body text explaining the smooth, structured workflow.
-    - Primary Button: "Get in touch".
-
-7.  **Promotional Offer:**
-    - A card-style layout.
-    - Headline: "Exclusive Offer! Get 20% Off Your First Creative Project".
-    - Hero image of a sleek product or car (representing a client project).
-    - Subtext emphasizing a limited-time offer.
-
-8.  **Process Steps (Grid):**
-    - A section titled "Limited-time offer. Don't miss out!"
-    - A 2-column or 3-column responsive grid (stacking on mobile).
-    - Each column contains a white card with:
-        - A small user/action icon.
-        - Text: "Book a free consultation", "Choose your creative service", and "Get 20% off – no hidden fees!".
-
-9.  **Footer:**
-    - Simple layout with the "Alexa Studio" logo.
-    - Links for Unsubscribe and Privacy Policy.
-    - Copyright text.
-
-**Technical Constraints:**
-- Ensure all images have `alt` text.
-- Use `mj-button` for all CTAs with `border-radius` set to 25px (pill shape) or 8px (rounded rect).
-- Ensure mobile responsiveness: multiple columns must stack vertically on mobile devices.
-- Use proper padding (20px-40px) to prevent layout crowding.
+Technical Requirements:
+- Use valid MJML syntax throughout.
+- Ensure the layout is fully responsive, optimizing for mobile devices first.
+- Use standard, cross-client compatible sans-serif fonts (Helvetica, Arial).
+- Ensure high contrast ratios for accessibility.
+- Implement client-specific workarounds for Outlook and Gmail compatibility.

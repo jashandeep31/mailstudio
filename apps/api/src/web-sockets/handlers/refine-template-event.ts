@@ -8,7 +8,7 @@ import {
 } from "@repo/db";
 import { validateMediaIds } from "./handle-question-event.js";
 import { SocketEventSchemas } from "@repo/shared";
-import z, { refine } from "zod";
+import z from "zod";
 import { v4 as uuid } from "uuid";
 import { refineMailTemplate } from "../../ai/mail/refine-template/index.js";
 import mjml2html from "mjml";
@@ -16,6 +16,7 @@ import { WebSocket } from "ws";
 import { getRefineTemplateOverview } from "../../ai/mail/refine-template/get-refine-template-overview.js";
 import { streamOverview } from "../functions/stream-overview.js";
 import { ProcesingVersions } from "../../state/processing-versions-state.js";
+import { updateUserInstructions } from "../../ai/mail/user-instructions.js";
 
 interface RefineTemplateHandler {
   data: z.infer<(typeof SocketEventSchemas)["event:refine-template-message"]>;
@@ -71,24 +72,30 @@ export const refineTemplateHandler = async ({
     }),
   );
 
-  const [refinedMJMLResponse, overview] = await Promise.all([
-    refineMailTemplate({
-      prevMjmlCode: prevOutput?.mjml_code || "",
-      prompt: data.message,
-      mediaUrls: mediaUrls,
-      brandKit: null,
-    }),
+  const [refinedMJMLResponse, overview, updatedInstructions] =
+    await Promise.all([
+      refineMailTemplate({
+        prevMjmlCode: prevOutput?.mjml_code || "",
+        prompt: data.message,
+        instructions: prevOutput?.generation_instructions || "",
+        mediaUrls: mediaUrls,
+        brandKit: null,
+      }),
 
-    //streaming the overview
-    streamOverview({
-      chatId: data.chatId,
-      chatQuestion: DummyQuestion,
-      version: DummyVersion,
-      generator: getRefineTemplateOverview,
-      socket: socket,
-      addCurrentSocket: true,
-    }),
-  ]);
+      //streaming the overview
+      streamOverview({
+        chatId: data.chatId,
+        chatQuestion: DummyQuestion,
+        version: DummyVersion,
+        generator: getRefineTemplateOverview,
+        socket: socket,
+        addCurrentSocket: true,
+      }),
+      updateUserInstructions(
+        data.message,
+        prevOutput?.generation_instructions || "",
+      ),
+    ]);
 
   const html_code = mjml2html(refinedMJMLResponse);
 
@@ -113,6 +120,7 @@ export const refineTemplateHandler = async ({
           overview: overview,
           mjml_code: refinedMJMLResponse,
           html_code: html_code.html,
+          generation_instructions: updatedInstructions,
         })
         .returning();
 

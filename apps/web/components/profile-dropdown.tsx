@@ -50,7 +50,9 @@ const ProfileDropdown = () => {
           <div className="flex flex-col space-y-1">
             <p className="text-sm leading-none font-medium">
               Credits:{" "}
-              <span className="text-foreground text-sm">${data?.balance}</span>
+              <span className="text-foreground text-sm">
+                ${data?.creditsWallet.balance}
+              </span>
             </p>
           </div>
         </DropdownMenuLabel>
