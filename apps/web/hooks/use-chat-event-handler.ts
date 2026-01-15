@@ -37,7 +37,9 @@ export const useChatEventHandler = () => {
       } else if (event.key === "res:new-version") {
         const eventData: ChatVersionAggregate = event.data;
         appendChatVersion(eventData);
-        if (eventData.chat_versions.id === activeStream?.versionId) {
+        // Clear active stream when a new version is received, regardless of ID match
+        // This ensures input is re-enabled after streaming completes
+        if (activeStream) {
           setActiveStream(null);
         }
         setSelectedVersionId(event.data.chat_versions.id);
@@ -54,6 +56,6 @@ export const useChatEventHandler = () => {
     appendChatVersion,
     deleteEvent,
     updateChatVersion,
-    activeStream?.versionId,
+    activeStream,
   ]);
 };
