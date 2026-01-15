@@ -49,13 +49,18 @@ const refinePrompt = async (content: ContentListUnion): Promise<string> => {
 };
 
 const generateTemplate = async (content: ContentListUnion): Promise<string> => {
-  const response = await googleGenAi.models.generateContent({
+  const response = await googleGenAi.models.generateContentStream({
     model: GEMINI_MODEL,
     contents: content,
     config: {
       systemInstruction: prompts["system.newTemplate.generation"](),
     },
   });
+  let code = ``;
+  for await (const chunk of response) {
+    code += chunk.text;
+    console.log(chunk.text);
+  }
 
-  return response.text!;
+  return code;
 };

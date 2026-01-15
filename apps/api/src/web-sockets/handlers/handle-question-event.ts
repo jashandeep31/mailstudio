@@ -65,7 +65,7 @@ export const handleQuestionEvent = async (
   );
   if (!chatQuestion) throw new Error("Something went wrong");
 
-  streamAndHandleQuestion({
+  await streamAndHandleQuestion({
     chatQuestion: chatQuestion,
     chatMedia: chatMedia,
     chatId: data.chatId,

@@ -20,6 +20,15 @@ import { errorHandler } from "./middlewares/error-hanlder.js";
 import { handleDodoPaymentWebhook } from "./controllers/payments/dodo-payments.js";
 import { checkAllPromptFiles } from "./prompts/index.js";
 
+// Global error handlers to prevent server crashes
+process.on("unhandledRejection", (reason, promise) => {
+  console.error("Unhandled Rejection at:", promise, "reason:", reason);
+});
+
+process.on("uncaughtException", (error) => {
+  console.error("Uncaught Exception:", error);
+});
+
 const RANDOM_CODE = Math.floor(Math.random() * 100);
 
 // app config.
@@ -84,8 +93,8 @@ ws.on("connection", async (socket, req) => {
 
     socket.userId = session.id;
     await SocketHandler(socket);
-  } catch {
-    return;
+  } catch (e) {
+    console.log(`Error: ${e}`);
   }
 });
 test();

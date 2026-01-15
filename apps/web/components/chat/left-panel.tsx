@@ -16,12 +16,12 @@ interface LeftPanel {
 export default function LeftPanel({ versions, streamingOverview }: LeftPanel) {
   const params = useParams();
   const { sendEvent } = useWebSocketContext();
-  const [userPrompt, setUserPrompt] = useState(
-    "The template is missing proper formatting please do in and make it looking little better",
-  );
+  const [userPrompt, setUserPrompt] = useState("");
 
   const isCurrentChatStreaming =
-    streamingOverview !== null && streamingOverview.chatId === params.id;
+    streamingOverview !== null &&
+    streamingOverview.chatId === params.id &&
+    streamingOverview.versionId === versions.at(-1)?.chat_versions.id;
 
   const handleSubmit = (data: { mediaIds: string[]; brandKit?: string }) => {
     sendEvent("event:refine-template-message", {
@@ -69,6 +69,7 @@ export default function LeftPanel({ versions, streamingOverview }: LeftPanel) {
                   <MarkdownRenderer
                     content={version.chat_version_outputs.overview || ""}
                   />
+                  <p>{version.chat_version_outputs.generation_instructions}</p>
                 </div>
               )}
             </div>
