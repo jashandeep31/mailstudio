@@ -1,12 +1,17 @@
 import { ResizablePanel } from "@repo/ui/components/resizable";
 import React, { useState } from "react";
 import { Button } from "@repo/ui/components/button";
-import { Copy, Check } from "lucide-react";
+import { Copy, Check, MemoryStick } from "lucide-react";
 import { ChatVersionAggregate, StreamingOverview } from "@/app/chat/[id]/types";
 import InputArea from "./input-area";
 import { useWebSocketContext } from "@/contexts/web-socket-context";
 import { useParams } from "next/navigation";
 import MarkdownRenderer from "./markdown-renderer";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@repo/ui/components/tooltip";
 
 interface LeftPanel {
   versions: ChatVersionAggregate[];
@@ -69,7 +74,29 @@ export default function LeftPanel({ versions, streamingOverview }: LeftPanel) {
                   <MarkdownRenderer
                     content={version.chat_version_outputs.overview || ""}
                   />
-                  <p>{version.chat_version_outputs.generation_instructions}</p>
+                  {version.chat_version_outputs.generation_instructions && (
+                    <div className="flex justify-end">
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Button
+                            variant={"ghost"}
+                            size="sm"
+                            className="flex items-center gap-2 text-xs"
+                          >
+                            <MemoryStick /> Memory Updated
+                          </Button>
+                        </TooltipTrigger>
+                        <TooltipContent className="">
+                          <p className="text-xs">
+                            {
+                              version.chat_version_outputs
+                                .generation_instructions
+                            }
+                          </p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </div>
+                  )}
                 </div>
               )}
             </div>

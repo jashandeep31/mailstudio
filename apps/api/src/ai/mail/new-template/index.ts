@@ -6,8 +6,9 @@ import {
   uploadMediaFiles,
   waitForFilesProcessing,
   getValidFiles,
-  buildContent,
-} from "../utils/index.js";
+} from "../utils/file-upload.js";
+import { buildContent } from "../utils/content-builder.js";
+import { retryWithDelay } from "../utils/retry.js";
 
 const GEMINI_MODEL = "models/gemini-3-pro-preview";
 
@@ -34,33 +35,30 @@ export const createNewMailTemplate = async ({
 };
 
 const refinePrompt = async (content: ContentListUnion): Promise<string> => {
-  const response = await googleGenAi.models.generateContent({
-    model: GEMINI_MODEL,
-    contents: content,
-    config: {
-      systemInstruction: prompts["system.newTemplate.properPrompt"](),
-    },
-  });
+  console.log("Refining prompt...");
+  const response = await retryWithDelay(() =>
+    googleGenAi.models.generateContent({
+      model: GEMINI_MODEL,
+      contents: content,
+      config: {
+        systemInstruction: prompts["system.newTemplate.properPrompt"](),
+      },
+    }),
+  );
 
-  const refinedPrompt = response.text!;
-  fs.writeFileSync("prompt.txt", refinedPrompt);
-
-  return refinedPrompt;
+  return response.text!;
 };
 
 const generateTemplate = async (content: ContentListUnion): Promise<string> => {
-  const response = await googleGenAi.models.generateContentStream({
-    model: GEMINI_MODEL,
-    contents: content,
-    config: {
-      systemInstruction: prompts["system.newTemplate.generation"](),
-    },
-  });
-  let code = ``;
-  for await (const chunk of response) {
-    code += chunk.text;
-    console.log(chunk.text);
-  }
-
-  return code;
+  console.log("Generating template...");
+  const response = await retryWithDelay(() =>
+    googleGenAi.models.generateContent({
+      model: GEMINI_MODEL,
+      contents: content,
+      config: {
+        systemInstruction: prompts["system.newTemplate.generation"](),
+      },
+    }),
+  );
+  return response.text!;
 };

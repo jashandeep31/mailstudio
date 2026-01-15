@@ -5,38 +5,11 @@ import {
   uploadMediaFiles,
   waitForFilesProcessing,
   getValidFiles,
-  buildContent,
-  UploadedFile,
-} from "../utils/index.js";
+} from "../utils/file-upload.js";
+import { buildContent } from "../utils/content-builder.js";
+import { retryWithDelay } from "../utils/retry.js";
 
 const GEMINI_MODEL = "models/gemini-3-pro-preview";
-const MAX_RETRIES = 3;
-const RETRY_DELAY_MS = 3000;
-
-const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
-
-const retryWithDelay = async <T>(
-  fn: () => Promise<T>,
-  retries = MAX_RETRIES,
-): Promise<T> => {
-  try {
-    return await fn();
-  } catch (error: any) {
-    const isOverloadError =
-      error?.status === "UNAVAILABLE" ||
-      error?.message?.includes("overloaded") ||
-      error?.code === 503;
-
-    if (isOverloadError && retries > 0) {
-      console.log(
-        `Model overloaded, retrying in ${RETRY_DELAY_MS / 1000}s... (${retries} attempts left)`,
-      );
-      await sleep(RETRY_DELAY_MS);
-      return retryWithDelay(fn, retries - 1);
-    }
-    throw error;
-  }
-};
 
 interface RefineMailTemplate {
   prompt: string;
@@ -93,7 +66,6 @@ const generateRefinedMjmlCode = async (content: ContentListUnion) => {
     }),
   );
 
-  console.log(response.data);
   return response.text!;
 };
 

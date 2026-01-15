@@ -1,7 +1,7 @@
-import { Button } from "@repo/ui/components/button";
 import { Mail } from "lucide-react";
 import Link from "next/link";
 import React from "react";
+import ProfileDropdown from "../profile-dropdown";
 
 const Navbar = () => {
   return (
@@ -15,7 +15,7 @@ const Navbar = () => {
             Mail Studio
           </h2>
         </Link>
-        <Button>Share</Button>
+        <ProfileDropdown />
       </div>
     </header>
   );
