@@ -65,6 +65,6 @@ export const googleAuthCallbackController = catchAsync(
         issuedAt: new Date(),
       }),
     );
-    res.status(200).json({ message: "login success" });
+    res.redirect(`${env.FRONTEND_URL}/dashboardh`)
   },
 );
