@@ -9,12 +9,21 @@ import {
   eq,
 } from "@repo/db";
 import { AppError } from "../../lib/app-error.js";
+import { env } from "../../lib/env.js";
 
 const getChatTemplateHtmlSchema = z.object({
   chatId: z.string(),
 });
 export const getChatTemplateHtml = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
+    const authHeader = req.header("Authorization");
+    if (!authHeader || authHeader !== `Bearer ${env.INTERNAL_API_KEY}`) {
+      res.status(401).json({
+        error: "Authentication is required",
+      });
+      return
+    }
+
     const parsedData = getChatTemplateHtmlSchema.parse(req.params);
     const [lastVersion] = await db
       .select()
