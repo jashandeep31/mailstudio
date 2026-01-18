@@ -9,8 +9,9 @@ import {
 } from "../utils/file-upload.js";
 import { buildContent } from "../utils/content-builder.js";
 import { retryWithDelay } from "../utils/retry.js";
-
-const GEMINI_MODEL = "models/gemini-3-pro-preview";
+import { AiFunctionResponse } from "../../types.js";
+import { parseAiFunctionResponse } from "../../utils.js";
+import { models } from "../../models.js";
 
 interface CreateNewMailTemplateParams {
   prompt: string;
@@ -21,24 +22,38 @@ interface CreateNewMailTemplateParams {
 export const createNewMailTemplate = async ({
   prompt,
   mediaUrls,
-}: CreateNewMailTemplateParams): Promise<string> => {
+}: CreateNewMailTemplateParams): Promise<AiFunctionResponse> => {
   const uploadedFiles = await uploadMediaFiles(mediaUrls);
   await waitForFilesProcessing(uploadedFiles);
 
   const validFiles = getValidFiles(uploadedFiles);
   const contentWithPrompt = buildContent(prompt, validFiles);
 
-  const refinedPrompt = await refinePrompt(contentWithPrompt);
-  const contentWithRefinedPrompt = buildContent(refinedPrompt, validFiles);
+  const refinedPromptRes = await refinePrompt(contentWithPrompt);
+  const contentWithRefinedPrompt = buildContent(
+    refinedPromptRes.outputText,
+    validFiles,
+  );
 
-  return generateTemplate(contentWithRefinedPrompt);
+  const mjmlTemplateResponse = await generateTemplate(contentWithRefinedPrompt);
+  return {
+    outputText: mjmlTemplateResponse.outputText,
+    outputTokensCost:
+      mjmlTemplateResponse.outputTokensCost + refinedPromptRes.outputTokensCost,
+    inputTokensCost:
+      mjmlTemplateResponse.inputTokensCost + refinedPromptRes.inputTokensCost,
+  };
 };
 
-const refinePrompt = async (content: ContentListUnion): Promise<string> => {
+const refinePrompt = async (
+  content: ContentListUnion,
+): Promise<AiFunctionResponse> => {
   console.log("Refining prompt...");
+
+  const MODEL = models["gemini-3-pro-preview"];
   const response = await retryWithDelay(() =>
     googleGenAi.models.generateContent({
-      model: GEMINI_MODEL,
+      model: MODEL.name,
       contents: content,
       config: {
         systemInstruction: prompts["system.newTemplate.properPrompt"](),
@@ -46,19 +61,30 @@ const refinePrompt = async (content: ContentListUnion): Promise<string> => {
     }),
   );
 
-  return response.text!;
+  return parseAiFunctionResponse(
+    response,
+    MODEL.getInputTokensPrice,
+    MODEL.getOutputTokensPrice,
+  );
 };
 
-const generateTemplate = async (content: ContentListUnion): Promise<string> => {
+const generateTemplate = async (
+  content: ContentListUnion,
+): Promise<AiFunctionResponse> => {
   console.log("Generating template...");
+  const MODEL = models["gemini-3-pro-preview"];
   const response = await retryWithDelay(() =>
     googleGenAi.models.generateContent({
-      model: GEMINI_MODEL,
+      model: MODEL.name,
       contents: content,
       config: {
         systemInstruction: prompts["system.newTemplate.generation"](),
       },
     }),
   );
-  return response.text!;
+  return parseAiFunctionResponse(
+    response,
+    MODEL.getInputTokensPrice,
+    MODEL.getOutputTokensPrice,
+  );
 };

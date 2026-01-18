@@ -27,7 +27,9 @@ export async function* getRefineTemplateOverview(
       MODEL.getInputTokensPrice,
       MODEL.getOutputTokensPrice,
     );
-    accumulatedText += res.output.text;
+
+    //  !just direct assign the values don't append
+    accumulatedText = res.output.text;
     inputTokensCost = res.outputTokensCost;
     outputTokensCost = res.outputTokensCost;
     yield res;

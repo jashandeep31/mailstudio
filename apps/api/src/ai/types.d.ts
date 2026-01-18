@@ -3,3 +3,9 @@ export type StreamingAiFunctionResponse = {
   inputTokensCost: number;
   outputTokensCost: number;
 };
+
+export type AiFunctionResponse = {
+  outputText: string;
+  inputTokensCost: number;
+  outputTokensCost: number;
+};
