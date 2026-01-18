@@ -34,14 +34,14 @@ const ProfileDropdown = () => {
     setTheme(theme === "dark" ? "light" : "dark");
   };
 
-  const { data, isLoading } = useUserMetadata();
+  const { data } = useUserMetadata();
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" className="relative h-8 w-8 rounded-full">
           <Avatar className="h-8 w-8">
-            <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
-            <AvatarFallback>CN</AvatarFallback>
+            <AvatarImage src={data?.user.avatar} alt="@shadcn" />
+            <AvatarFallback>{data?.user.firstName[0]}</AvatarFallback>
           </Avatar>
         </Button>
       </DropdownMenuTrigger>
