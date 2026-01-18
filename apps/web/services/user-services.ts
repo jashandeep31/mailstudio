@@ -10,11 +10,13 @@ export const getUserMetadata = async (): Promise<{
     firstName: string;
     lastName: string;
     role: string;
+    avatar: string
   };
 }> => {
   const res = await axios.get(`${BASE_URL}/api/v1/user/metadata`, {
     withCredentials: true,
   });
+  console.log(res.data.data)
   return res.data.data;
 };
 

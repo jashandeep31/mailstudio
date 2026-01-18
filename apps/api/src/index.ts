@@ -19,6 +19,7 @@ import { test } from "./test.js";
 import { errorHandler } from "./middlewares/error-hanlder.js";
 import { handleDodoPaymentWebhook } from "./controllers/payments/dodo-payments.js";
 import { checkAllPromptFiles } from "./prompts/index.js";
+import { models } from "./ai/models.js";
 
 // Global error handlers to prevent server crashes
 process.on("unhandledRejection", (reason, promise) => {
@@ -31,10 +32,17 @@ process.on("uncaughtException", (error) => {
 
 const RANDOM_CODE = Math.floor(Math.random() * 100);
 
-// app config.
 
+// check the prompt and warn in the console when not found 
+// TODO: replace it with the throwing the error instead of just the warning
 checkAllPromptFiles();
+// app config.
 const app = express();
+
+
+// testing hte models pricing
+const value = models["gemini-3-pro-preview"].getInputTokensPrice(300_000)
+console.log(value)
 
 app.post(
   "/api/v1/payments/dodo-webhoook",

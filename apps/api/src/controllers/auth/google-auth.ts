@@ -52,19 +52,16 @@ export const googleAuthCallbackController = catchAsync(
 
     const user = await createUser({
       ...parsedPayload,
+      avatar: parsedPayload.picture,
       provider: "google",
     });
     res.cookie(
       "session",
       JSON.stringify({
         id: user.id,
-        email: user.email,
-        firstName: user.firstName,
-        lastName: user.lastName,
         role: user.role,
-        issuedAt: new Date(),
       }),
     );
-    res.redirect(`${env.FRONTEND_URL}/dashboardh`)
+    res.redirect(`${env.FRONTEND_URL}/dashboard`)
   },
 );

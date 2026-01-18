@@ -11,6 +11,7 @@ declare global {
         role: (typeof userRoleEnum)[number];
         firstName: string;
         lastName: string?;
+        avatar: string;
       };
     }
   }

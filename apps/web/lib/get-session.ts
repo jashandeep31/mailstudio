@@ -1,9 +1,7 @@
 import { cookies } from "next/headers";
 import { z } from "zod";
 const sessionSchema = z.object({
-  email: z.string(),
-  firstName: z.string(),
-  lastName: z.string().optional(),
+  id: z.string(),
   role: z.string(),
 });
 export const getSession = async (): Promise<z.infer<
