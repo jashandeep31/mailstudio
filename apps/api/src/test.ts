@@ -1,28 +1,18 @@
-import { googleGenAi } from "./ai/config.js";
-import { models } from "./ai/models.js";
-
 export async function test() {
   console.log(`Test is fired 🔥 up `);
-  // const res = await googleGenAi.models.generateContent({
-  //   model: models["gemini-3-pro-preview"].name,
-  //   contents: "what is current version of the next js",
+  // const response = await axios.post(
+  //   "http://localhost:8002/screenshot",
+  //   {
+  //     url: "http://localhost:8000/api/v1/internal/get-html-code/7f07aa4d-986f-4364-85e8-f93d15108f2b",
+  //   },
+  //   { responseType: "arraybuffer" },
+  // );
+  // const buffer = Buffer.from(response.data);
+  // const mimeType = response.headers["content-type"] || "image/png";
+  // // const fileName = path.basename(new URL(mediaUrl).pathname) || "media-file";
+  // uploadObjectToR2({
+  //   uniqueKey: "/sc-test/test.png",
+  //   contentType: mimeType,
+  //   body: buffer,
   // });
-  // console.log(res.modelVersion);
-  // console.log(res.usageMetadata);
-  // const res1 = await googleGenAi.models.generateContentStream({
-  //   model: models["gemini-3-flash-preview"].name,
-  //   contents: "what is current version of the next js",
-  // });
-  // for await (const chunk of res1) {
-  //   console.log(chunk.usageMetadata);
-  // }
-  //
-  //
-  //
-  //   promptTokenCount: 9,
-  // candidatesTokenCount: 349,
-  //   totalTokenCount: 581,
-  //   promptTokensDetails: [ { modality: 'TEXT', tokenCount: 9 } ],
-  //   thoughtsTokenCount: 223
-  // }
 }

@@ -16,14 +16,16 @@ const getChatTemplateHtmlSchema = z.object({
 });
 export const getChatTemplateHtml = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
-    const authHeader = req.header("Authorization");
-    if (!authHeader || authHeader !== `Bearer ${env.INTERNAL_API_KEY}`) {
-      res.status(401).json({
-        error: "Authentication is required",
-      });
-      return
-    }
-
+    // const authHeader = req.header("Authorization");
+    // console.log(req.headers);
+    // console.log(authHeader);
+    // if (!authHeader || authHeader !== `Bearer ${env.INTERNAL_API_KEY}`) {
+    //   res.status(401).json({
+    //     error: "Authentication is required",
+    //   });
+    //   return;
+    // }
+    //
     const parsedData = getChatTemplateHtmlSchema.parse(req.params);
     const [lastVersion] = await db
       .select()
