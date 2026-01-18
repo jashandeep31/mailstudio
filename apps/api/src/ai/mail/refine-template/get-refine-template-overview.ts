@@ -16,13 +16,6 @@ export async function* getRefineTemplateOverview(
       systemInstruction,
     },
   });
-  // let tempText = "";
-  // for await (const chunk of response) {
-  //   if (!chunk.text) continue;
-  //   tempText += chunk.text;
-  //   yield { text: tempText, done: false };
-  // }
-  // yield { text: tempText, done: true };
   let accumulatedText = "";
   let inputTokensCost = 0;
   let outputTokensCost = 0;

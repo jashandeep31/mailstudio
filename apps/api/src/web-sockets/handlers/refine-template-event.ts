@@ -117,7 +117,7 @@ export const refineTemplateHandler = async ({
         .insert(chatVersionOutputsTable)
         .values({
           version_id: chatVersion.id,
-          overview: overview,
+          overview: overview.outputText,
           mjml_code: refinedMJMLResponse,
           html_code: html_code.html,
           generation_instructions: updatedInstructions,
