@@ -64,7 +64,7 @@ export const streamAndHandleQuestion = async ({
     .insert(chatVersionOutputsTable)
     .values({
       version_id: chatQuestion.version_id,
-      overview: overview,
+      overview: overview.outputText,
       mjml_code: mjml,
       html_code: html_code.html,
       generation_instructions: instructions,

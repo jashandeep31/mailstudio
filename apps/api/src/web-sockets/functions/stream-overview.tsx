@@ -1,22 +1,25 @@
 import { chatVersionPromptsTable, chatVersionsTable } from "@repo/db";
 import WebSocket from "ws";
 import { ProcesingVersions } from "../../state/processing-versions-state.js";
+import { StreamingAiFunctionResponse } from "../../ai/types.js";
 
 interface streamOverview {
   chatId: string;
   version: typeof chatVersionsTable.$inferSelect;
   chatQuestion: typeof chatVersionPromptsTable.$inferSelect;
   socket: WebSocket;
-  generator: (prompt: string) => AsyncGenerator<
-    {
-      text: string;
-      done: boolean;
-    },
-    void,
-    unknown
-  >;
+  generator: (
+    prompt: string,
+  ) => AsyncGenerator<StreamingAiFunctionResponse, void, unknown>;
   addCurrentSocket: boolean;
 }
+
+type streamOverviewOutput = Promise<{
+  outputText: string;
+  outputTokensCost: number;
+  inputTokesnCost: number;
+}>;
+
 export const streamOverview = async ({
   generator,
   socket,
@@ -24,7 +27,7 @@ export const streamOverview = async ({
   version,
   chatId,
   addCurrentSocket,
-}: streamOverview): Promise<string> => {
+}: streamOverview): streamOverviewOutput => {
   const ProcesingVersionKey = `${socket.userId}::${chatId}`;
   const isProcessing = ProcesingVersions.get(ProcesingVersionKey);
   const streamDataTemplate = {
@@ -52,12 +55,13 @@ export const streamOverview = async ({
     }),
   );
 
+  // Adding this the internal mapping system so that rejoin the user can get the data
   ProcesingVersions.set(ProcesingVersionKey, streamDataTemplate);
-
-  // TODO: in future make sure to only send the chunks to the user to redue the payload size
+  let lastChunk: StreamingAiFunctionResponse | null = null;
   for await (const chunk of generator(chatQuestion.prompt)) {
-    // updating the ovview in the template
-    streamDataTemplate.overviewOutput = chunk.text || "";
+    // updating the lastchunk and the  streamingTemplate output
+    lastChunk = chunk;
+    streamDataTemplate.overviewOutput = chunk.output.text || "";
     for (const socket of streamDataTemplate.sockets) {
       socket.send(
         JSON.stringify({
@@ -66,14 +70,23 @@ export const streamOverview = async ({
             versionId: version.id,
             chatId: chatId,
             questionId: chatQuestion.id,
-            response: chunk.text,
+            response: chunk.output.text,
           },
         }),
       );
     }
   }
 
-  // updating the state of the processing version
   streamDataTemplate.isDone = true;
-  return streamDataTemplate.overviewOutput;
+  return lastChunk
+    ? {
+        outputTokensCost: lastChunk.outputTokensCost,
+        inputTokesnCost: lastChunk.inputTokensCost,
+        outputText: lastChunk.output.text,
+      }
+    : {
+        outputTokensCost: 0,
+        inputTokesnCost: 0,
+        outputText: "",
+      };
 };

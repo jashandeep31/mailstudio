@@ -23,8 +23,8 @@ export const env = {
     "live_mode") as "live_mode" | "test_mode",
   DODO_STARTER_PRODUCT_ID: process.env.DODO_STARTER_PRODUCT_ID!,
   INTERNAL_API_KEY: process.env.INTERNAL_API_KEY!,
+  PROFIT_PERCENTAGE: Number(process.env.PROFIT_PERCENTAGE!),
 } as const;
-
 
 // Validate env variables
 for (const [key, value] of Object.entries(env)) {

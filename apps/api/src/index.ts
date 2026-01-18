@@ -6,9 +6,9 @@ import authRoutes from "./routes/auth-routes.js";
 import userRoutes from "./routes/user-routes.js";
 import chatRoutes from "./routes/chat-routes.js";
 import internalRoutes from "./routes/internal-routes.js";
-
 import paymentRoutes from "./routes/payment-routes.js";
 import utilRoutes from "./routes/util-routes.js";
+
 import cookiesParser from "cookie-parser";
 import { checkAuthorization } from "./middlewares/check-authorization.js";
 import { createServer } from "node:http";
@@ -19,7 +19,6 @@ import { test } from "./test.js";
 import { errorHandler } from "./middlewares/error-hanlder.js";
 import { handleDodoPaymentWebhook } from "./controllers/payments/dodo-payments.js";
 import { checkAllPromptFiles } from "./prompts/index.js";
-import { models } from "./ai/models.js";
 
 // Global error handlers to prevent server crashes
 process.on("unhandledRejection", (reason, promise) => {
@@ -32,17 +31,11 @@ process.on("uncaughtException", (error) => {
 
 const RANDOM_CODE = Math.floor(Math.random() * 100);
 
-
-// check the prompt and warn in the console when not found 
+// check the prompt and warn in the console when not found
 // TODO: replace it with the throwing the error instead of just the warning
 checkAllPromptFiles();
 // app config.
 const app = express();
-
-
-// testing hte models pricing
-const value = models["gemini-3-pro-preview"].getInputTokensPrice(300_000)
-console.log(value)
 
 app.post(
   "/api/v1/payments/dodo-webhoook",
