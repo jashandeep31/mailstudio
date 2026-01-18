@@ -38,7 +38,6 @@ export const creditTransactionsTable = pgTable("credit_transactions", {
     .references(() => creditWalletsTable.id, { onDelete: "cascade" }),
   user_id: uuid("user_id")
     .notNull()
-    .unique()
     .references(() => usersTable.id, {
       onDelete: "cascade",
     }),
@@ -47,10 +46,6 @@ export const creditTransactionsTable = pgTable("credit_transactions", {
     scale: 2,
   }),
   after_balance: numeric("after_balance", {
-    precision: 10,
-    scale: 2,
-  }),
-  before_balance: numeric("before_balance", {
     precision: 10,
     scale: 2,
   }),

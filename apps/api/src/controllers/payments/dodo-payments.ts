@@ -226,7 +226,6 @@ export const handleDodoPaymentWebhook = catchAsync(
           wallet_id: wallet.id,
           amount: String(expiredAmount),
           after_balance: String(carriedOverBalance),
-          before_balance: wallet.balance,
           type: "expire",
           reason: "Previous Plan Upgrade - Balance exceeds 10 credits",
         });
@@ -237,7 +236,6 @@ export const handleDodoPaymentWebhook = catchAsync(
         wallet_id: wallet.id,
         amount: String(newCredits),
         after_balance: String(newBalance),
-        before_balance: String(carriedOverBalance),
         type: "grant",
         reason: "Plan Upgrade",
       });
