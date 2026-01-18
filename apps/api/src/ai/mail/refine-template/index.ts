@@ -8,8 +8,9 @@ import {
 } from "../utils/file-upload.js";
 import { buildContent } from "../utils/content-builder.js";
 import { retryWithDelay } from "../utils/retry.js";
-
-const GEMINI_MODEL = "models/gemini-3-pro-preview";
+import { AiFunctionResponse } from "../../types.js";
+import { parseAiFunctionResponse } from "../../utils.js";
+import { models } from "../../models.js";
 
 interface RefineMailTemplate {
   prompt: string;
@@ -24,7 +25,7 @@ export const refineMailTemplate = async ({
   instructions,
   mediaUrls,
   prevMjmlCode,
-}: RefineMailTemplate): Promise<string> => {
+}: RefineMailTemplate): Promise<AiFunctionResponse> => {
   const uploadedFiles = await uploadMediaFiles(mediaUrls);
   await waitForFilesProcessing(uploadedFiles);
 
@@ -45,34 +46,51 @@ Return only the updated instructions as a single paragraph.
     validFiles,
   );
 
-  const properPrompt = await rewritePromptForDownstreamModel(contentWithPrompt);
+  const refinedPromptRes =
+    await rewritePromptForDownstreamModel(contentWithPrompt);
   const refinedContent = buildContent(
-    properPrompt + "\n\n" + prevMjmlCode,
+    refinedPromptRes.outputText + "\n\n" + prevMjmlCode,
     validFiles,
   );
 
-  const refinedMJMLTemplate = await generateRefinedMjmlCode(refinedContent);
-  return refinedMJMLTemplate;
+  const refinedMJMLTemplateRes = await generateRefinedMjmlCode(refinedContent);
+  return {
+    outputText: refinedMJMLTemplateRes.outputText,
+    inputTokensCost:
+      refinedMJMLTemplateRes.inputTokensCost + refinedPromptRes.inputTokensCost,
+    outputTokensCost:
+      refinedMJMLTemplateRes.outputTokensCost +
+      refinedPromptRes.outputTokensCost,
+  };
 };
 
-const generateRefinedMjmlCode = async (content: ContentListUnion) => {
+const generateRefinedMjmlCode = async (
+  content: ContentListUnion,
+): Promise<AiFunctionResponse> => {
+  const MODEL = models["gemini-3-pro-preview"];
   const response = await retryWithDelay(() =>
     googleGenAi.models.generateContent({
-      model: GEMINI_MODEL,
+      model: MODEL.name,
       contents: content,
       config: {
         systemInstruction: prompts["system.refineTemplate.applyChanges"](),
       },
     }),
   );
-
-  return response.text!;
+  return parseAiFunctionResponse(
+    response,
+    MODEL.getInputTokensPrice,
+    MODEL.getOutputTokensPrice,
+  );
 };
 
-const rewritePromptForDownstreamModel = async (content: ContentListUnion) => {
+const rewritePromptForDownstreamModel = async (
+  content: ContentListUnion,
+): Promise<AiFunctionResponse> => {
+  const MODEL = models["gemini-3-pro-preview"];
   const response = await retryWithDelay(() =>
     googleGenAi.models.generateContent({
-      model: GEMINI_MODEL,
+      model: MODEL.name,
       contents: content,
       config: {
         systemInstruction: prompts["system.refineTemplate.rewrite"](),
@@ -80,5 +98,9 @@ const rewritePromptForDownstreamModel = async (content: ContentListUnion) => {
     }),
   );
 
-  return response.text!;
+  return parseAiFunctionResponse(
+    response,
+    MODEL.getInputTokensPrice,
+    MODEL.getOutputTokensPrice,
+  );
 };

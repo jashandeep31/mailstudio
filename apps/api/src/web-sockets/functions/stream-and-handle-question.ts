@@ -4,11 +4,8 @@ import {
   chatVersionOutputsTable,
   chatVersionPromptsTable,
   chatVersionsTable,
-  creditTransactionsTable,
-  creditWalletsTable,
   db,
   eq,
-  sql,
 } from "@repo/db";
 import { getQuestionOverview } from "../../ai/mail/get-question-overview.js";
 import { ProcesingVersions } from "../../state/processing-versions-state.js";
@@ -20,6 +17,7 @@ import { getTemplateName } from "../../ai/mail/get-template-name.js";
 import { createUserInstructions } from "../../ai/mail/user-instructions.js";
 import { totalmem } from "os";
 import { AwsClient } from "google-auth-library";
+import { updateUserCreditWallet } from "./common.js";
 
 interface StreamAndHandleQuestion {
   chatQuestion: typeof chatVersionPromptsTable.$inferSelect;
@@ -94,30 +92,12 @@ export const streamAndHandleQuestion = async ({
   }
   ProcesingVersions.delete(`${socket.userId}::${chatId}`);
 
-  const toltalCost =
+  const totalCost =
     overviewRes.outputTokensCost +
     overviewRes.inputTokesnCost +
     mjmlAiRes.outputTokensCost +
     mjmlAiRes.inputTokensCost;
-  await db.transaction(async (tx) => {
-    const [wallet] = await tx
-      .update(creditWalletsTable)
-      .set({
-        updated_at: new Date(),
-        balance: sql`${creditWalletsTable.balance} - ${toltalCost}`,
-      })
-      .where(eq(creditWalletsTable.user_id, socket.userId))
-      .returning();
-    if (!wallet) return;
-    console.log(wallet);
-    await tx.insert(creditTransactionsTable).values({
-      wallet_id: wallet.id,
-      user_id: socket.userId,
-      amount: String(Number(toltalCost).toFixed(2)),
-      after_balance: wallet.balance,
-      type: "spent",
-    });
-  });
+  await updateUserCreditWallet({ socket, totalCost });
 };
 
 const streamTemplateName = async (

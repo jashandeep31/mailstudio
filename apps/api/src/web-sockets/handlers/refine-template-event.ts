@@ -17,6 +17,7 @@ import { getRefineTemplateOverview } from "../../ai/mail/refine-template/get-ref
 import { streamOverview } from "../functions/stream-overview.js";
 import { ProcesingVersions } from "../../state/processing-versions-state.js";
 import { updateUserInstructions } from "../../ai/mail/user-instructions.js";
+import { updateUserCreditWallet } from "../functions/common.js";
 
 interface RefineTemplateHandler {
   data: z.infer<(typeof SocketEventSchemas)["event:refine-template-message"]>;
@@ -72,7 +73,7 @@ export const refineTemplateHandler = async ({
     }),
   );
 
-  const [refinedMJMLResponse, overview, updatedInstructions] =
+  const [refinedMJMLResponse, overviewRes, updatedInstructions] =
     await Promise.all([
       refineMailTemplate({
         prevMjmlCode: prevOutput?.mjml_code || "",
@@ -97,7 +98,7 @@ export const refineTemplateHandler = async ({
       ),
     ]);
 
-  const html_code = mjml2html(refinedMJMLResponse);
+  const html_code = mjml2html(refinedMJMLResponse.outputText);
 
   const { chatVersion, chatQuestion, chatOutput } = await db.transaction(
     async (tx) => {
@@ -117,8 +118,8 @@ export const refineTemplateHandler = async ({
         .insert(chatVersionOutputsTable)
         .values({
           version_id: chatVersion.id,
-          overview: overview.outputText,
-          mjml_code: refinedMJMLResponse,
+          overview: overviewRes.outputText,
+          mjml_code: refinedMJMLResponse.outputText,
           html_code: html_code.html,
           generation_instructions: updatedInstructions,
         })
@@ -147,4 +148,10 @@ export const refineTemplateHandler = async ({
   }
 
   ProcesingVersions.delete(`${socket.userId}::${chatVersion.chat_id}`);
+  const totalCost =
+    refinedMJMLResponse.outputTokensCost +
+    refinedMJMLResponse.inputTokensCost +
+    overviewRes.outputTokensCost +
+    overviewRes.inputTokesnCost;
+  await updateUserCreditWallet({ socket, totalCost });
 };
