@@ -24,6 +24,7 @@ export const env = {
   DODO_STARTER_PRODUCT_ID: process.env.DODO_STARTER_PRODUCT_ID!,
   INTERNAL_API_KEY: process.env.INTERNAL_API_KEY!,
   PROFIT_PERCENTAGE: Number(process.env.PROFIT_PERCENTAGE!),
+  SCREENSHOT_SERVICE_URL: process.env.SCREENSHOT_SERVICE_URL!,
 } as const;
 
 // Validate env variables

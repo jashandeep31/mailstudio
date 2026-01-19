@@ -19,7 +19,7 @@ new Worker(
   async (job: Job<{ url: string; id: string }>) => {
     console.log(job.data.url);
     const response = await axios.post(
-      "http://localhost:8002/screenshot",
+      `${env.SCREENSHOT_SERVICE_URL}/screenshot`,
       {
         url: job.data.url,
       },
