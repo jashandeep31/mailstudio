@@ -1,7 +1,10 @@
-import { updateBrandkitSchema } from "@repo/shared";
+import { createBrandkitSchema } from "@repo/shared";
 import { AppError } from "../../lib/app-error.js";
 import { catchAsync } from "../../lib/catch-async.js";
 import { Request, Response } from "express";
+import z from "zod";
+
+const updateBrandkitSchema = createBrandkitSchema.extend({ id: z.string() });
 
 export const updateBrandKit = catchAsync(
   async (req: Request, res: Response) => {

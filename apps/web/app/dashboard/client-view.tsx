@@ -6,9 +6,7 @@ import { MailTemplateCard } from "@/components/mail-template-card";
 
 const ClientView = () => {
   const { sendEvent } = useWebSocketContext();
-  const [userPrompt, setUserPrompt] = useState(
-    "Creatte the mail template like agove attached image",
-  );
+  const [userPrompt, setUserPrompt] = useState("");
 
   const handleSubmit = (data: { mediaIds: string[]; brandKitId?: string }) => {
     sendEvent("event:new-chat", {

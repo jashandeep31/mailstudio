@@ -35,9 +35,13 @@ export default function ClientView() {
                   </DropdownMenuTrigger>
                   <DropdownMenuContent>
                     <DropdownMenuItem asChild>
-                      <Link href={`/dashboard/brand-kits/${brandKit.id}`}>Edit</Link>
+                      <Link href={`/dashboard/brand-kits/${brandKit.id}`}>
+                        Edit
+                      </Link>
                     </DropdownMenuItem>
-                    <DropdownMenuItem variant="destructive">Delete</DropdownMenuItem>
+                    <DropdownMenuItem variant="destructive">
+                      Delete
+                    </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
               </div>
@@ -51,7 +55,7 @@ export default function ClientView() {
                     />
                   </div>
                 ) : (
-                  <div className="flex h-20 w-20 items-center justify-center rounded-lg bg-muted text-2xl font-semibold uppercase">
+                  <div className="bg-muted flex h-20 w-20 items-center justify-center rounded-lg text-2xl font-semibold uppercase">
                     {brandKit.name[0]}
                   </div>
                 )}

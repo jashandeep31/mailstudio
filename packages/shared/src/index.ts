@@ -1,8 +1,7 @@
 export * from "./event-schemas.js";
 import z from "zod";
 
-export const updateBrandkitSchema = z.object({
-  id: z.string(),
+export const createBrandkitSchema = z.object({
   name: z.string().min(1, "Company name is required"),
   website_url: z.string().min(1, "Website URL is required"),
 

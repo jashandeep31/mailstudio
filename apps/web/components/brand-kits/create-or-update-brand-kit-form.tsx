@@ -1,5 +1,5 @@
 "use client";
-import { updateBrandkitSchema } from "@repo/shared";
+import { createBrandkitSchema } from "@repo/shared";
 import z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -14,14 +14,14 @@ export default function CreateOrUpdateBrandKitForm({
   defaultValues?: typeof brandKitsTable.$inferSelect;
 }) {
   const {
+    register,
     handleSubmit,
     formState: { errors },
-  } = useForm<z.infer<typeof updateBrandkitSchema>>({
-    resolver: zodResolver(updateBrandkitSchema),
-    defaultValues: { name: "thsi " },
+  } = useForm<z.infer<typeof createBrandkitSchema>>({
+    resolver: zodResolver(createBrandkitSchema),
+    defaultValues: { ...defaultValues },
   });
-
-  function onSubmit(data: z.infer<typeof updateBrandkitSchema>) {
+  function onSubmit(data: z.infer<typeof createBrandkitSchema>) {
     console.log(data);
   }
 
@@ -33,7 +33,11 @@ export default function CreateOrUpdateBrandKitForm({
 
           <div className="space-y-2">
             <Label htmlFor="name">Company Name</Label>
-            <Input id="name" placeholder="Enter company name" />
+            <Input
+              id="name"
+              placeholder="Enter company name"
+              {...register("name")}
+            />
             {errors.name && (
               <p className="text-destructive text-sm">{errors.name.message}</p>
             )}
@@ -45,6 +49,7 @@ export default function CreateOrUpdateBrandKitForm({
               id="website_url"
               type="url"
               placeholder="https://example.com"
+              {...register("website_url")}
             />
             {errors.website_url && (
               <p className="text-destructive text-sm">
@@ -55,7 +60,7 @@ export default function CreateOrUpdateBrandKitForm({
 
           <div className="space-y-2">
             <Label htmlFor="brand_summary">Brand Summary</Label>
-            <Input id="brand_summary" />
+            <Input id="brand_summary" {...register("brand_summary")} />
             {errors.brand_summary && (
               <p className="text-destructive text-sm">
                 {errors.brand_summary.message}
@@ -65,7 +70,10 @@ export default function CreateOrUpdateBrandKitForm({
 
           <div className="space-y-2">
             <Label htmlFor="brand_design_style">Design Style</Label>
-            <Input id="brand_design_style" />
+            <Input
+              id="brand_design_style"
+              {...register("brand_design_style")}
+            />
             {errors.brand_design_style && (
               <p className="text-destructive text-sm">
                 {errors.brand_design_style.message}
@@ -79,7 +87,11 @@ export default function CreateOrUpdateBrandKitForm({
 
           <div className="space-y-2">
             <Label htmlFor="logo_url">Logo URL</Label>
-            <Input id="logo_url" placeholder="https://example.com/logo.png" />
+            <Input
+              id="logo_url"
+              placeholder="https://example.com/logo.png"
+              {...register("logo_url")}
+            />
             {errors.logo_url && (
               <p className="text-destructive text-sm">
                 {errors.logo_url.message}
@@ -92,6 +104,7 @@ export default function CreateOrUpdateBrandKitForm({
             <Input
               id="icon_logo_url"
               placeholder="https://example.com/icon.png"
+              {...register("icon_logo_url")}
             />
             {errors.icon_logo_url && (
               <p className="text-destructive text-sm">
@@ -102,7 +115,11 @@ export default function CreateOrUpdateBrandKitForm({
 
           <div className="space-y-2">
             <Label htmlFor="font_family">Font Family</Label>
-            <Input id="font_family" placeholder="Inter, Arial, sans-serif" />
+            <Input
+              id="font_family"
+              placeholder="Inter, Arial, sans-serif"
+              {...register("font_family")}
+            />
             {errors.font_family && (
               <p className="text-destructive text-sm">
                 {errors.font_family.message}
@@ -119,15 +136,10 @@ export default function CreateOrUpdateBrandKitForm({
               <Label htmlFor="primary_color">Primary Color</Label>
               <div className="flex gap-2">
                 <Input
-                  id="primary_color"
-                  type="color"
-                  // onChange={(e) => setValue("primary_color", e.target.value)}
-                  className="h-9 w-12 p-1"
-                />
-                <Input
                   placeholder="#000000"
                   maxLength={7}
                   className="font-mono"
+                  {...register("primary_color")}
                 />
               </div>
               {errors.primary_color && (
@@ -141,14 +153,10 @@ export default function CreateOrUpdateBrandKitForm({
               <Label htmlFor="secondary_color">Secondary Color</Label>
               <div className="flex gap-2">
                 <Input
-                  id="secondary_color"
-                  type="color"
-                  className="h-9 w-12 p-1"
-                />
-                <Input
                   placeholder="#000000"
                   maxLength={7}
                   className="font-mono"
+                  {...register("secondary_color")}
                 />
               </div>
               {errors.secondary_color && (
@@ -162,14 +170,10 @@ export default function CreateOrUpdateBrandKitForm({
               <Label htmlFor="accent_color">Accent Color</Label>
               <div className="flex gap-2">
                 <Input
-                  id="accent_color"
-                  type="color"
-                  className="h-9 w-12 p-1"
-                />
-                <Input
                   placeholder="#000000"
                   maxLength={7}
                   className="font-mono"
+                  {...register("accent_color")}
                 />
               </div>
               {errors.accent_color && (
@@ -186,7 +190,11 @@ export default function CreateOrUpdateBrandKitForm({
 
           <div className="space-y-2">
             <Label htmlFor="address">Address</Label>
-            <Input id="address" placeholder="Company address" />
+            <Input
+              id="address"
+              placeholder="Company address"
+              {...register("address")}
+            />
             {errors.address && (
               <p className="text-destructive text-sm">
                 {errors.address.message}
@@ -199,6 +207,7 @@ export default function CreateOrUpdateBrandKitForm({
             <Input
               id="copyright"
               placeholder="© 2024 Company Name. All rights reserved."
+              {...register("copyright")}
             />
             {errors.copyright && (
               <p className="text-destructive text-sm">
@@ -209,7 +218,11 @@ export default function CreateOrUpdateBrandKitForm({
 
           <div className="space-y-2">
             <Label htmlFor="desclaimer">Disclaimer</Label>
-            <Input id="desclaimer" placeholder="Legal disclaimer text" />
+            <Input
+              id="desclaimer"
+              placeholder="Legal disclaimer text"
+              {...register("desclaimer")}
+            />
             {errors.desclaimer && (
               <p className="text-destructive text-sm">
                 {errors.desclaimer.message}
