@@ -1,53 +1,24 @@
-import { z } from "zod";
+export * from "./event-schemas.js";
+import z from "zod";
 
-export const SocketEventSchemas = {
-  "event:new-chat": z.object({
-    message: z.string().min(10),
-    media: z.array(z.string()),
-    brandKitId: z.string().optional(),
-  }),
-  "event:first-chat-message": z.object({
-    chatId: z.string(),
-    message: z.string(),
-    media: z.array(z.string()),
-    brandKitId: z.string().optional(),
-  }),
-  "event:joined-chat": z.object({
-    chatId: z.string(),
-  }),
-  "event:left-chat": z.object({
-    chatId: z.string(),
-  }),
-  "event:refine-template-message": z.object({
-    chatId: z.string(),
-    message: z.string().min(10),
-    media: z.array(z.string()),
-    brandKitId: z.string().optional(),
-    prevVersionId: z.string(),
-  }),
-} as const;
+export const updateBrandkitSchema = z.object({
+  id: z.string(),
+  name: z.string().min(1, "Company name is required"),
+  website_url: z.string().min(1, "Website URL is required"),
 
-export const SocketEventKeySchema = z.enum(
-  Object.keys(SocketEventSchemas) as [
-    keyof typeof SocketEventSchemas,
-    ...(keyof typeof SocketEventSchemas)[],
-  ],
-);
+  brand_summary: z.string().nullable().optional(),
+  brand_design_style: z.string().nullable().optional(),
 
-export type SocketEventKey = keyof typeof SocketEventSchemas;
+  address: z.string().nullable().optional(),
+  copyright: z.string().nullable().optional(),
+  desclaimer: z.string().nullable().optional(),
 
-export type SocketEventPayload<K extends SocketEventKey> = z.infer<
-  (typeof SocketEventSchemas)[K]
->;
+  logo_url: z.string().nullable().optional(),
+  icon_logo_url: z.string().nullable().optional(),
 
-export const sendTemplateToTestMailSchema = z.object({
-  versionId: z.string(),
-  mailId: z.string(),
-});
+  primary_color: z.string().nullable().optional(),
+  secondary_color: z.string().nullable().optional(),
+  accent_color: z.string().nullable().optional(),
 
-export const getPreSignedUrlSchema = z.object({
-  key: z.enum(["attachment"]),
-  contentType: z.string(),
-  fileName: z.string(),
-  size: z.number(),
+  font_family: z.string().nullable().optional(),
 });
