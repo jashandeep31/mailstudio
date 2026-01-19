@@ -61,7 +61,7 @@ app.use("/api/v1/chats", chatRoutes);
 app.use("/api/v1/internal", internalRoutes);
 app.use("/api/v1/payments", paymentRoutes);
 app.use("/api/v1/utils", utilRoutes);
-app.use("/api/v1/brandkit", brandKitRoutes);
+app.use("/api/v1/brandkits", brandKitRoutes);
 // Testing route of the application
 app.get("/", checkAuthorization(["all"]), (req, res, next) => {
   res.status(200).json({ message: "hello" });

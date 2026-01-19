@@ -1,3 +1,4 @@
+import { getUserBrandKits } from "@/services/brandkit-services";
 import { Button } from "@repo/ui/components/button";
 import { ArrowUpRight, Plus } from "lucide-react";
 import React from "react";
@@ -65,13 +66,15 @@ const brandKits: BrandKit[] = [
   },
 ];
 
-export default function page() {
+export default async function page() {
+  const res = await getUserBrandKits();
+
   return (
     <section className="space-y-8 px-6 py-8">
       <header className="flex flex-wrap items-center justify-between gap-4">
         <div className="space-y-1">
           <p className="text-muted-foreground text-sm font-medium tracking-[0.28em] uppercase">
-            Brandkits
+            Brandkits {JSON.stringify(brandKits)}
           </p>
           <h1 className="text-3xl font-semibold tracking-tight">
             Craft consistent brand stories
