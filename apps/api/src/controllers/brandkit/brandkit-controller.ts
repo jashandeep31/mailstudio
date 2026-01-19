@@ -37,13 +37,3 @@ export const deleteBrandKit = catchAsync(
     });
   },
 );
-
-export const createBrandKit = catchAsync(
-  async (req: Request, res: Response) => {
-    if (!req.user) throw new AppError("Authorization is required", 400);
-    //TODO: make the request to the micro service
-    res.status(201).json({
-      data: {},
-    });
-  },
-);

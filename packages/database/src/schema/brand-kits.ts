@@ -9,7 +9,9 @@ export const brandKitsTable = pgTable("brand_kits", {
       onDelete: "cascade",
     }),
   name: varchar("name", { length: 255 }).notNull(),
-  brand_summary: text().notNull(),
+
+  brand_summary: text(),
+  brand_design_style: text(),
 
   website_url: varchar({ length: 255 }).notNull(),
   address: text(),
