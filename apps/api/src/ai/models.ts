@@ -35,6 +35,5 @@ const getTokensCostWithProfit = (
   const baseCost = (tokensCount / MILLION) * pricePerMil;
   const profit = baseCost * (PROFIT_PERCENTAGE / 100);
   const cost = Number((profit + baseCost).toFixed(2));
-  console.log(baseCost, `this value after calcl`);
   return cost >= 0.01 ? cost : 0.01;
 };
