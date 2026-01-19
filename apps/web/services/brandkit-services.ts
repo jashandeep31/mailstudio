@@ -5,7 +5,18 @@ import axios from "axios";
 export const getUserBrandKits = async (): Promise<
   (typeof brandKitsTable.$inferSelect)[]
 > => {
-  const res = await axios.get(`${BASE_URL}/api/v1/brankits`);
-  console.log(res.data.data);
+  const res = await axios.get(`${BASE_URL}/api/v1/brandkits`, {
+    withCredentials: true,
+  });
+  return res.data.data;
+};
+
+
+export const getUserBrandKitById = async (id: string): Promise<
+  typeof brandKitsTable.$inferSelect
+> => {
+  const res = await axios.get(`${BASE_URL}/api/v1/brandkits/${id}`, {
+    withCredentials: true,
+  });
   return res.data.data;
 };

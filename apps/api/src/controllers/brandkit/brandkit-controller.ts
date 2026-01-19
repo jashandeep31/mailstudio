@@ -17,6 +17,28 @@ export const getUserBrandKits = catchAsync(
   },
 );
 
+const getBrandKitByIdSchema = z.object({
+  id: z.string(),
+});
+export const getUserBrandKitById = catchAsync(
+  async (req: Request, res: Response) => {
+    if (!req.user) throw new AppError("Authorization is required", 400);
+    const parsedData = getBrandKitByIdSchema.parse(req.params);
+    const [brandkit] = await db
+      .select()
+      .from(brandKitsTable)
+      .where(
+        and(
+          eq(brandKitsTable.user_id, req.user.id),
+          eq(brandKitsTable.id, parsedData.id),
+        ),
+      );
+    res.status(200).json({
+      data: brandkit,
+    });
+  },
+);
+
 const deleteBrandKitSchema = z.object({
   id: z.string(),
 });
