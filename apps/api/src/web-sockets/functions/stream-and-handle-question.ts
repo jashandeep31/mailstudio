@@ -18,6 +18,7 @@ import { createUserInstructions } from "../../ai/mail/user-instructions.js";
 import { totalmem } from "os";
 import { AwsClient } from "google-auth-library";
 import { updateUserCreditWallet } from "./common.js";
+import { addToThumbnailUpdateQueue } from "../../queues/thumbnail-update-queue.js";
 
 interface StreamAndHandleQuestion {
   chatQuestion: typeof chatVersionPromptsTable.$inferSelect;
@@ -91,7 +92,8 @@ export const streamAndHandleQuestion = async ({
     }
   }
   ProcesingVersions.delete(`${socket.userId}::${chatId}`);
-
+  // updating the thumbnail of new-template
+  addToThumbnailUpdateQueue(chatId);
   const totalCost =
     overviewRes.outputTokensCost +
     overviewRes.inputTokesnCost +

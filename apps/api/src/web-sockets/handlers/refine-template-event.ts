@@ -18,6 +18,7 @@ import { streamOverview } from "../functions/stream-overview.js";
 import { ProcesingVersions } from "../../state/processing-versions-state.js";
 import { updateUserInstructions } from "../../ai/mail/user-instructions.js";
 import { updateUserCreditWallet } from "../functions/common.js";
+import { addToThumbnailUpdateQueue } from "../../queues/thumbnail-update-queue.js";
 
 interface RefineTemplateHandler {
   data: z.infer<(typeof SocketEventSchemas)["event:refine-template-message"]>;
@@ -146,7 +147,8 @@ export const refineTemplateHandler = async ({
       );
     }
   }
-
+  // updating the thumbnail of the refine-template
+  addToThumbnailUpdateQueue(data.chatId);
   ProcesingVersions.delete(`${socket.userId}::${chatVersion.chat_id}`);
   const totalCost =
     refinedMJMLResponse.outputTokensCost +

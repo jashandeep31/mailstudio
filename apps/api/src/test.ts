@@ -1,5 +1,11 @@
+import { addToThumbnailUpdateQueue } from "./queues/thumbnail-update-queue.js";
+
 export async function test() {
   console.log(`Test is fired 🔥 up `);
+  // addToThumbnailUpdateQueue(
+  //   "7f07aa4d-986f-4364-85e8-f93d15108f2b",
+  //   "test-name",
+  // );
   // const response = await axios.post(
   //   "http://localhost:8002/screenshot",
   //   {
