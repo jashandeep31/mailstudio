@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import { useState } from "react";
 import { Input } from "@repo/ui/components/input";
 import { Label } from "@repo/ui/components/label";
@@ -25,7 +25,9 @@ interface BrandKitFormData {
 
 export default function ClientView() {
   const params = useParams();
-  const { data: brandKit, isLoading } = useUserBrandKitById(params.id as string);
+  const { data: brandKit, isLoading } = useUserBrandKitById(
+    params.id as string,
+  );
 
   if (isLoading) {
     return <div className="p-6">Loading...</div>;
@@ -57,14 +59,19 @@ function BrandKitForm({ brandKit }: { brandKit: BrandKit }) {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
+  function onSubmit() {
+    // TODO: Implement update brand kit logic
+    console.log("Updating brand kit:", formData);
+  }
+
   return (
     <div className="p-6">
       <h1 className="mb-8 text-2xl font-semibold">Edit Brand Kit</h1>
-      
+
       <form className="space-y-6">
         <div className="space-y-4">
           <h2 className="text-lg font-medium">Basic Information</h2>
-          
+
           <div className="space-y-2">
             <Label htmlFor="name">Company Name</Label>
             <Input
@@ -91,7 +98,9 @@ function BrandKitForm({ brandKit }: { brandKit: BrandKit }) {
             <Input
               id="brand_summary"
               value={formData.brand_summary}
-              onChange={(e) => handleInputChange("brand_summary", e.target.value)}
+              onChange={(e) =>
+                handleInputChange("brand_summary", e.target.value)
+              }
               placeholder="Brief description of your brand"
             />
           </div>
@@ -101,7 +110,9 @@ function BrandKitForm({ brandKit }: { brandKit: BrandKit }) {
             <Input
               id="brand_design_style"
               value={formData.brand_design_style}
-              onChange={(e) => handleInputChange("brand_design_style", e.target.value)}
+              onChange={(e) =>
+                handleInputChange("brand_design_style", e.target.value)
+              }
               placeholder="Describe your brand's design style"
             />
           </div>
@@ -109,7 +120,7 @@ function BrandKitForm({ brandKit }: { brandKit: BrandKit }) {
 
         <div className="space-y-4">
           <h2 className="text-lg font-medium">Brand Assets</h2>
-          
+
           <div className="space-y-2">
             <Label htmlFor="logo_url">Logo URL</Label>
             <Input
@@ -127,7 +138,9 @@ function BrandKitForm({ brandKit }: { brandKit: BrandKit }) {
               id="icon_logo_url"
               type="url"
               value={formData.icon_logo_url}
-              onChange={(e) => handleInputChange("icon_logo_url", e.target.value)}
+              onChange={(e) =>
+                handleInputChange("icon_logo_url", e.target.value)
+              }
               placeholder="https://example.com/icon.png"
             />
           </div>
@@ -135,7 +148,7 @@ function BrandKitForm({ brandKit }: { brandKit: BrandKit }) {
 
         <div className="space-y-4">
           <h2 className="text-lg font-medium">Brand Colors</h2>
-          
+
           <div className="grid grid-cols-3 gap-4">
             <div className="space-y-2">
               <Label htmlFor="primary_color">Primary Color</Label>
@@ -144,12 +157,16 @@ function BrandKitForm({ brandKit }: { brandKit: BrandKit }) {
                   id="primary_color"
                   type="color"
                   value={formData.primary_color}
-                  onChange={(e) => handleInputChange("primary_color", e.target.value)}
-                  className="w-12 p-1 h-9"
+                  onChange={(e) =>
+                    handleInputChange("primary_color", e.target.value)
+                  }
+                  className="h-9 w-12 p-1"
                 />
                 <Input
                   value={formData.primary_color}
-                  onChange={(e) => handleInputChange("primary_color", e.target.value)}
+                  onChange={(e) =>
+                    handleInputChange("primary_color", e.target.value)
+                  }
                   placeholder="#000000"
                   maxLength={7}
                   className="font-mono"
@@ -164,12 +181,16 @@ function BrandKitForm({ brandKit }: { brandKit: BrandKit }) {
                   id="secondary_color"
                   type="color"
                   value={formData.secondary_color}
-                  onChange={(e) => handleInputChange("secondary_color", e.target.value)}
-                  className="w-12 p-1 h-9"
+                  onChange={(e) =>
+                    handleInputChange("secondary_color", e.target.value)
+                  }
+                  className="h-9 w-12 p-1"
                 />
                 <Input
                   value={formData.secondary_color}
-                  onChange={(e) => handleInputChange("secondary_color", e.target.value)}
+                  onChange={(e) =>
+                    handleInputChange("secondary_color", e.target.value)
+                  }
                   placeholder="#000000"
                   maxLength={7}
                   className="font-mono"
@@ -184,12 +205,16 @@ function BrandKitForm({ brandKit }: { brandKit: BrandKit }) {
                   id="accent_color"
                   type="color"
                   value={formData.accent_color}
-                  onChange={(e) => handleInputChange("accent_color", e.target.value)}
-                  className="w-12 p-1 h-9"
+                  onChange={(e) =>
+                    handleInputChange("accent_color", e.target.value)
+                  }
+                  className="h-9 w-12 p-1"
                 />
                 <Input
                   value={formData.accent_color}
-                  onChange={(e) => handleInputChange("accent_color", e.target.value)}
+                  onChange={(e) =>
+                    handleInputChange("accent_color", e.target.value)
+                  }
                   placeholder="#000000"
                   maxLength={7}
                   className="font-mono"
@@ -201,7 +226,7 @@ function BrandKitForm({ brandKit }: { brandKit: BrandKit }) {
 
         <div className="space-y-4">
           <h2 className="text-lg font-medium">Legal Information</h2>
-          
+
           <div className="space-y-2">
             <Label htmlFor="address">Address</Label>
             <Input
