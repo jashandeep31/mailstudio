@@ -19,17 +19,22 @@ const createBrandkitSchema = z.object({
   brandDesignSyle: z.string().optional(),
 });
 
+const createBrandKitInputSchema = z.object({
+  websiteUrl: z.string(),
+});
+
 export const createBrandKit = catchAsync(
   async (req: Request, res: Response) => {
     if (!req.user) throw new AppError("Authorization is required", 400);
+    const { websiteUrl } = createBrandKitInputSchema.parse(req.body);
     const response = await axios.post(
       `${env.SCREENSHOT_SERVICE_URL}/get-brandkit`,
-      { url: "https://jashan.dev" },
+      { url: websiteUrl },
     );
     console.log(response.data);
     const parsedData = createBrandkitSchema.parse({
       ...response.data.data,
-      websiteUrl: `hhtps://jashan.dev`,
+      websiteUrl: websiteUrl,
     });
     const [brandKit] = await db
       .insert(brandKitsTable)

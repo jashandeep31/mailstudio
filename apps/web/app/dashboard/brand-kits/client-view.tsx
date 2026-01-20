@@ -1,7 +1,7 @@
 "use client";
-import { useUserBrandKits } from "@/hooks/use-brandkits";
-import React from "react";
-import { MoreVertical } from "lucide-react";
+import { useDeleteBrandKit, useUserBrandKits } from "@/hooks/use-brandkits";
+import React, { useState } from "react";
+import { MoreVertical, Trash2 } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -9,64 +9,100 @@ import {
   DropdownMenuTrigger,
 } from "@repo/ui/components/dropdown-menu";
 import Link from "next/link";
+import { Button } from "@repo/ui/components/button";
+import { BrandKitDialog } from "@/components/dialogs/brand-kit-dialog";
+import { ConfirmationDialog } from "@/components/dialogs/confirmation-dialog";
+import { toast } from "sonner";
 
 export default function ClientView() {
+  const [dialogOpen, setDialogOpen] = useState(false);
   const brandkitsRes = useUserBrandKits();
+  const { mutate: deleteBrandKit, isPending: isDeleting } = useDeleteBrandKit();
+
+  const handleDelete = (id: string) => {
+    const toastId = toast.loading("Deleting brand kit...");
+    deleteBrandKit(id, {
+      onSuccess: () => {
+        toast.success("Brand kit deleted successfully", { id: toastId });
+      },
+      onError: () => {
+        toast.error("Failed to delete brand kit", { id: toastId });
+      },
+    });
+  };
   if (brandkitsRes.isLoading) {
     return <h1>Loading..</h1>;
   }
   return (
-    <div className="p-5">
-      <h1 className="text-lg font-semibold tracking-tight md:text-xl lg:text-3xl">
-        My Brand kits
-      </h1>
-      <div className="mt-4 md:mt-4">
-        <div className="md:grid-col-2 grid-col-1 grid grid-cols-4">
-          {brandkitsRes?.data?.map((brandKit) => (
-            <div
-              className="bg-background flex aspect-3/2 flex-col rounded-lg border p-3"
-              key={brandKit.id}
-            >
-              <div className="flex items-center justify-between">
-                <div className="flex-1" />
-                <DropdownMenu>
-                  <DropdownMenuTrigger className="focus:outline-none">
-                    <MoreVertical className="h-4 w-4" />
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent>
-                    <DropdownMenuItem asChild>
-                      <Link href={`/dashboard/brand-kits/${brandKit.id}`}>
-                        Edit
-                      </Link>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem variant="destructive">
-                      Delete
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              </div>
-              <div className="flex flex-1 items-center justify-center">
-                {brandKit.logo_url ? (
-                  <div className="overflow-hidden rounded-lg">
-                    <img
-                      src={brandKit.logo_url}
-                      alt={brandKit.name}
-                      className="h-20 w-20 object-contain"
-                    />
+    <>
+      <div className="p-5">
+        <div className="flex items-center justify-between">
+          <h1 className="text-lg font-semibold tracking-tight md:text-xl lg:text-3xl">
+            My Brand kits
+          </h1>
+          <Button onClick={() => setDialogOpen(true)}>+ Brand Kit</Button>
+          <BrandKitDialog open={dialogOpen} onOpenChange={setDialogOpen} />
+        </div>
+        <div className="mt-4 md:mt-4">
+          <div className="md:grid-col-2 grid-col-1 grid grid-cols-4 gap-6">
+            {brandkitsRes?.data?.map((brandKit) => (
+              <div
+                className="bg-background flex aspect-3/2 flex-col rounded-lg border p-3"
+                key={brandKit.id}
+              >
+                <div className="flex items-center justify-between">
+                  <div className="flex-1" />
+                  <DropdownMenu>
+                    <DropdownMenuTrigger className="relative z-10 focus:outline-none">
+                      <MoreVertical className="h-4 w-4" />
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent>
+                      <DropdownMenuItem asChild>
+                        <Link href={`/dashboard/brand-kits/${brandKit.id}`}>
+                          Edit
+                        </Link>
+                      </DropdownMenuItem>
+                      <ConfirmationDialog
+                        title="Delete Brand Kit"
+                        description="Are you sure you want to delete this brand kit?"
+                        onConfirm={() => handleDelete(brandKit.id)}
+                      >
+                        <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                          <Trash2 className="text-muted-foreground" />
+                          <span>Delete</span>
+                        </DropdownMenuItem>
+                      </ConfirmationDialog>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </div>
+                <Link
+                  href={`/dashboard/brand-kits/${brandKit.id}`}
+                  className="flex flex-1 flex-col"
+                >
+                  <div className="flex flex-1 items-center justify-center">
+                    {brandKit.logo_url ? (
+                      <div className="overflow-hidden rounded-lg">
+                        <img
+                          src={brandKit.logo_url}
+                          alt={brandKit.name}
+                          className="h-20 w-20 object-contain"
+                        />
+                      </div>
+                    ) : (
+                      <div className="bg-muted flex h-20 w-20 items-center justify-center rounded-lg text-2xl font-semibold uppercase">
+                        {brandKit.name[0]}
+                      </div>
+                    )}
                   </div>
-                ) : (
-                  <div className="bg-muted flex h-20 w-20 items-center justify-center rounded-lg text-2xl font-semibold uppercase">
-                    {brandKit.name[0]}
+                  <div className="mt-2 text-center text-sm font-medium">
+                    {brandKit.name}
                   </div>
-                )}
+                </Link>
               </div>
-              <div className="mt-2 text-center text-sm font-medium">
-                {brandKit.name}
-              </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       </div>
-    </div>
+    </>
   );
 }

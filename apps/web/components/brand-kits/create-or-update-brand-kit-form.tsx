@@ -7,6 +7,7 @@ import { Input } from "@repo/ui/components/input";
 import { Label } from "@repo/ui/components/label";
 import { Button } from "@repo/ui/components/button";
 import { brandKitsTable } from "@repo/db";
+import { useCreateBrandKit } from "@/hooks/use-brandkits";
 
 export default function CreateOrUpdateBrandKitForm({
   defaultValues,
@@ -21,9 +22,7 @@ export default function CreateOrUpdateBrandKitForm({
     resolver: zodResolver(createBrandkitSchema),
     defaultValues: { ...defaultValues },
   });
-  function onSubmit(data: z.infer<typeof createBrandkitSchema>) {
-    console.log(data);
-  }
+  function onSubmit(data: z.infer<typeof createBrandkitSchema>) {}
 
   return (
     <div>
