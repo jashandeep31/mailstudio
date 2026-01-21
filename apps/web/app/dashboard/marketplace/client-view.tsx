@@ -9,21 +9,14 @@ import { Input } from "@repo/ui/components/input";
 import { MailTemplateCard } from "@/components/mail-template-card";
 import { useMarketplaceTemplates } from "@/hooks/use-marketplace";
 import { Loader2 } from "lucide-react";
+import { useCategories } from "@/hooks/use-utils";
 
 export default function ClientView() {
   const { data: templates, isLoading } = useMarketplaceTemplates();
+  const { data: categories } = useCategories();
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [selectedType, setSelectedType] = useState("all");
-
-  const categories = [
-    { id: "all", label: "All" },
-    { id: "signup", label: "Signup" },
-    { id: "newsletter", label: "Newsletter" },
-    { id: "marketing", label: "Marketing" },
-    { id: "transactional", label: "Transactional" },
-    { id: "welcome", label: "Welcome" },
-  ];
 
   const types = [
     { id: "all", label: "All" },
@@ -55,7 +48,7 @@ export default function ClientView() {
           <div>
             <h3 className="mb-3 text-sm font-medium">Categories</h3>
             <div className="flex flex-wrap gap-2">
-              {categories.map((category) => (
+              {categories?.map((category) => (
                 <Button
                   key={category.id}
                   variant={
@@ -64,7 +57,7 @@ export default function ClientView() {
                   size="sm"
                   onClick={() => setSelectedCategory(category.id)}
                 >
-                  {category.label}
+                  {category.name}
                 </Button>
               ))}
             </div>

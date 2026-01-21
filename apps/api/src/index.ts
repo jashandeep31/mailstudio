@@ -21,6 +21,7 @@ import { test } from "./test.js";
 import { errorHandler } from "./middlewares/error-hanlder.js";
 import { handleDodoPaymentWebhook } from "./controllers/payments/dodo-payments.js";
 import { checkAllPromptFiles } from "./prompts/index.js";
+import { redis } from "./lib/db.js";
 
 // Global error handlers to prevent server crashes
 process.on("unhandledRejection", (reason, promise) => {

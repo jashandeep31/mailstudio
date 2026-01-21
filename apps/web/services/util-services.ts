@@ -16,3 +16,11 @@ export const getPresignedUrl = async (
 
   return res.data.data;
 };
+
+export const getCategories = async (): Promise<
+  { id: string; name: string; slug: string }[]
+> => {
+  const res = await axios.get(`${BASE_URL}/api/v1/utils/categories`);
+
+  return res.data.data;
+};
