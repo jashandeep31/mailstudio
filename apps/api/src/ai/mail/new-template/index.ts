@@ -10,7 +10,10 @@ import {
 import { buildContent } from "../utils/content-builder.js";
 import { retryWithDelay } from "../utils/retry.js";
 import { AiFunctionResponse } from "../../types.js";
-import { parseAiFunctionResponse } from "../../utils.js";
+import {
+  getBrankitInAIFormatedWay,
+  parseAiFunctionResponse,
+} from "../../utils.js";
 import { models } from "../../models.js";
 import { brandKitsTable } from "@repo/db";
 
@@ -22,15 +25,21 @@ interface CreateNewMailTemplateParams {
 
 export const createNewMailTemplate = async ({
   prompt,
+  brandKit,
   mediaUrls,
 }: CreateNewMailTemplateParams): Promise<AiFunctionResponse> => {
   const uploadedFiles = await uploadMediaFiles(mediaUrls);
   await waitForFilesProcessing(uploadedFiles);
-
+  const brandKitData = brandKit ? getBrankitInAIFormatedWay(brandKit) : null;
   const validFiles = getValidFiles(uploadedFiles);
-  const contentWithPrompt = buildContent(prompt, validFiles);
+
+  const contentWithPrompt = buildContent(
+    brandKitData ? `${prompt} \n ${brandKitData}` : prompt,
+    validFiles,
+  );
 
   const refinedPromptRes = await refinePrompt(contentWithPrompt);
+  console.log(refinedPromptRes.outputText);
   const contentWithRefinedPrompt = buildContent(
     refinedPromptRes.outputText,
     validFiles,

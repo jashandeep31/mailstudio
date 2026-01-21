@@ -16,8 +16,6 @@ import { createNewMailTemplate } from "../../ai/mail/new-template/index.js";
 import { streamOverview } from "./stream-overview.js";
 import { getTemplateName } from "../../ai/mail/get-template-name.js";
 import { createUserInstructions } from "../../ai/mail/user-instructions.js";
-import { totalmem } from "os";
-import { AwsClient } from "google-auth-library";
 import { updateUserCreditWallet } from "./common.js";
 import { addToThumbnailUpdateQueue } from "../../queues/thumbnail-update-queue.js";
 import { getCachedBrandKit } from "../../lib/redis/brand-kit-cache.ts.js";

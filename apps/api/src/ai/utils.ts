@@ -1,5 +1,6 @@
 import { GenerateContentResponse, Tokens } from "@google/genai";
 import { AiFunctionResponse, StreamingAiFunctionResponse } from "./types.js";
+import { brandKitsTable } from "@repo/db";
 
 /**
  * Function return the response after parsing the data;
@@ -43,4 +44,26 @@ export const parseChunkStreamingChunkGemini = (
     outputTokensCost: getOutputTokensPrice(outputTokensCount),
     inputTokensCost: getInputTokensPrice(inputTokensCount),
   };
+};
+
+export const getBrankitInAIFormatedWay = (
+  brandKit: typeof brandKitsTable.$inferSelect,
+): string => {
+  const cleanBrandKit = removeNullishOrUndefined(brandKit);
+  let finalOutput = `Here is the brand data for which the user is creating a mail template please use this given data links suppose may its of website, logo, and social media links etc to ry match teh brand identity  using its colors and data if not provided then you can assume those values:`;
+
+  for (const [key, value] of Object.entries(cleanBrandKit)) {
+    finalOutput += `\n${key}: ${value}`;
+  }
+
+  return finalOutput;
+};
+const removeNullishOrUndefined = (obj: any) => {
+  const otherRemoveAbleKeys = ["id", "created_at", "updated_at", "user_id"];
+  return Object.fromEntries(
+    Object.entries(obj).filter(
+      ([k, v]) =>
+        v !== null && v !== undefined && !otherRemoveAbleKeys.includes(k),
+    ),
+  );
 };

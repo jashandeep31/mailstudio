@@ -1,9 +1,13 @@
-import { uploadObjectToR2 } from "./lib/configs/r2-config.js";
-import { addToThumbnailUpdateQueue } from "./queues/thumbnail-update-queue.js";
-import axios from "axios";
+import { brandKitsTable, db } from "@repo/db";
+import { getBrankitInAIFormatedWay } from "./ai/utils.js";
 
 export async function test() {
   console.log(`Test is fired 🔥 up `);
+  // const [brandkit] = await db.select().from(brandKitsTable);
+  // if (brandkit) {
+  //   const res = getBrankitInAIFormatedWay(brandkit);
+  //   console.log(res);
+  // }
   // // addToThumbnailUpdateQueue(
   // //   "7f07aa4d-986f-4364-85e8-f93d15108f2b",
   // //   "test-name",
