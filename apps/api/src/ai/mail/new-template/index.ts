@@ -16,6 +16,7 @@ import {
 } from "../../utils.js";
 import { models } from "../../models.js";
 import { brandKitsTable } from "@repo/db";
+import { extractMJMLOnly } from "../../../lib/mjml-helpers.js";
 
 interface CreateNewMailTemplateParams {
   prompt: string;
@@ -47,7 +48,7 @@ export const createNewMailTemplate = async ({
 
   const mjmlTemplateResponse = await generateTemplate(contentWithRefinedPrompt);
   return {
-    outputText: mjmlTemplateResponse.outputText,
+    outputText: extractMJMLOnly(mjmlTemplateResponse.outputText),
     outputTokensCost:
       mjmlTemplateResponse.outputTokensCost + refinedPromptRes.outputTokensCost,
     inputTokensCost:

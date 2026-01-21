@@ -5,6 +5,7 @@ import {
   count,
   chatVersionPromptsTable,
   chatVersionOutputsTable,
+  brandKitsTable,
 } from "@repo/db";
 import { validateMediaIds } from "./handle-question-event.js";
 import { SocketEventSchemas } from "@repo/shared";
@@ -19,6 +20,7 @@ import { ProcesingVersions } from "../../state/processing-versions-state.js";
 import { updateUserInstructions } from "../../ai/mail/user-instructions.js";
 import { updateUserCreditWallet } from "../functions/common.js";
 import { addToThumbnailUpdateQueue } from "../../queues/thumbnail-update-queue.js";
+import { getCachedBrandKit } from "../../lib/redis/brand-kit-cache.ts.js";
 
 interface RefineTemplateHandler {
   data: z.infer<(typeof SocketEventSchemas)["event:refine-template-message"]>;
@@ -33,6 +35,11 @@ export const refineTemplateHandler = async ({
   const versionId = uuid();
   const questionId = uuid();
 
+  // Getting the brandkit and sending it to refine template maker ai function
+  let brandKit: null | typeof brandKitsTable.$inferSelect = null;
+  if (data.brandKitId) {
+    brandKit = await getCachedBrandKit(data.brandKitId, socket.userId);
+  }
   const validMedia = await validateMediaIds(data.media, socket.userId);
   const mediaUrls = validMedia.map((media) => media.exact_url);
   const [prevOutput] = await db

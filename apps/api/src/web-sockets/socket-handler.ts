@@ -81,10 +81,6 @@ export const SocketHandler = async (socket: WebSocket) => {
 
         case "event:refine-template-message": {
           const data = getParsedData(event, rawData);
-          if (1 == 1) {
-            console.log(data);
-            return;
-          }
           const authStatus = await checkChatAuth({
             userId: socket.userId,
             chatId: data.chatId,

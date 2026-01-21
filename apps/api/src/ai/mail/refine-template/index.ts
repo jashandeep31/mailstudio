@@ -9,13 +9,18 @@ import {
 import { buildContent } from "../utils/content-builder.js";
 import { retryWithDelay } from "../utils/retry.js";
 import { AiFunctionResponse } from "../../types.js";
-import { parseAiFunctionResponse } from "../../utils.js";
+import {
+  getBrankitInAIFormatedWay,
+  parseAiFunctionResponse,
+} from "../../utils.js";
 import { models } from "../../models.js";
+import { brandKitsTable } from "@repo/db";
+import { extractMJMLOnly } from "../../../lib/mjml-helpers.js";
 
 interface RefineMailTemplate {
   prompt: string;
   instructions?: string;
-  brandKit: string | null;
+  brandKit: typeof brandKitsTable.$inferSelect | null;
   mediaUrls: string[];
   prevMjmlCode: string;
 }
@@ -25,8 +30,10 @@ export const refineMailTemplate = async ({
   instructions,
   mediaUrls,
   prevMjmlCode,
+  brandKit,
 }: RefineMailTemplate): Promise<AiFunctionResponse> => {
   const uploadedFiles = await uploadMediaFiles(mediaUrls);
+  const brandKitData = brandKit ? getBrankitInAIFormatedWay(brandKit) : null;
   await waitForFilesProcessing(uploadedFiles);
 
   const validFiles = getValidFiles(uploadedFiles);
@@ -34,10 +41,9 @@ export const refineMailTemplate = async ({
     `
 NEW USER INPUT:
 ${prompt}
-
 EXISTING USER INSTRUCTIONS:
 ${instructions}
-
+${brandKitData ? `BRANDKIT: \n${brandKitData}` : ""}
 TASK:
 Update the existing instructions based strictly on the new user input.
 Preserve all preferences that are not explicitly changed.
@@ -55,7 +61,7 @@ Return only the updated instructions as a single paragraph.
 
   const refinedMJMLTemplateRes = await generateRefinedMjmlCode(refinedContent);
   return {
-    outputText: refinedMJMLTemplateRes.outputText,
+    outputText: extractMJMLOnly(refinedMJMLTemplateRes.outputText),
     inputTokensCost:
       refinedMJMLTemplateRes.inputTokensCost + refinedPromptRes.inputTokensCost,
     outputTokensCost:
