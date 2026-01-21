@@ -12,13 +12,9 @@ import { SocketEventSchemas } from "@repo/shared";
 import z from "zod";
 import { WebSocket } from "ws";
 import { streamAndHandleQuestion } from "../functions/stream-and-handle-question.js";
-const extendedZodSchema = SocketEventSchemas["event:first-chat-message"].extend(
-  {
-    type: z.enum(["old", "new"]),
-  },
-);
+
 export const handleQuestionEvent = async (
-  data: z.infer<typeof extendedZodSchema>,
+  data: z.infer<(typeof SocketEventSchemas)["event:first-chat-message"]>,
   socket: WebSocket,
 ) => {
   const { chatVersion, chatQuestion, chatMedia } = await db.transaction(
@@ -39,6 +35,7 @@ export const handleQuestionEvent = async (
         .values({
           version_id: chatVersion.id,
           prompt: data.message,
+          brand_kit_id: data.brandKitId,
         })
         .returning();
       if (!chatQuestion) throw new Error("Something went wrong");
@@ -71,7 +68,6 @@ export const handleQuestionEvent = async (
     chatId: data.chatId,
     chatVersion: chatVersion,
     socket,
-    type: data.type,
   });
 };
 

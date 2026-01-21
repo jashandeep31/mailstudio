@@ -12,10 +12,11 @@ import { retryWithDelay } from "../utils/retry.js";
 import { AiFunctionResponse } from "../../types.js";
 import { parseAiFunctionResponse } from "../../utils.js";
 import { models } from "../../models.js";
+import { brandKitsTable } from "@repo/db";
 
 interface CreateNewMailTemplateParams {
   prompt: string;
-  brandKitId: string | null;
+  brandKit: null | typeof brandKitsTable.$inferSelect;
   mediaUrls: string[];
 }
 

@@ -8,7 +8,7 @@ import { toast } from "sonner";
 interface InputAreaProps {
   userPrompt: string;
   setUserPrompt: React.Dispatch<React.SetStateAction<string>>;
-  onSubmit: (data: { mediaIds: string[]; brandKit?: string }) => void;
+  onSubmit: (data: { mediaIds: string[]; brandKitId?: string }) => void;
   isDisabled?: boolean;
 }
 
@@ -29,9 +29,10 @@ export default function InputArea({
   isDisabled = false,
 }: InputAreaProps) {
   const [isFocused, setIsFocused] = React.useState(false);
-  const [selectedBrand, setSelectedBrand] = React.useState<
-    string | undefined
-  >();
+  const [selectedBrand, setSelectedBrand] = React.useState<{
+    name: string;
+    id: string;
+  } | null>(null);
   const [uploadQueue, setUploadQueue] = React.useState<File[]>([]);
   const [uploadingFile, setUploadingFile] =
     React.useState<UploadingFile | null>(null);
@@ -164,10 +165,10 @@ export default function InputArea({
   const submitHandler = () => {
     if (isPromptValid) {
       const mediaIds = uploadedFiles.map((file) => file.id);
-      onSubmit({ mediaIds, brandKit: selectedBrand });
+      onSubmit({ mediaIds, brandKitId: selectedBrand?.id });
       setUserPrompt("");
       setUploadedFiles([]);
-      setSelectedBrand(undefined);
+      setSelectedBrand(null);
     }
   };
 
@@ -210,17 +211,6 @@ export default function InputArea({
   const handleRemoveUploadedFile = (index: number) => {
     setUploadedFiles((prev) => prev.filter((_, i) => i !== index));
   };
-
-  const handleAddBrandKit = (brand?: string) => {
-    if (brand) {
-      setSelectedBrand(brand);
-    }
-  };
-
-  const handleRemoveBrand = () => {
-    setSelectedBrand(undefined);
-  };
-
   const hasAttachments =
     uploadQueue.length > 0 || uploadingFile || uploadedFiles.length > 0;
 
@@ -319,8 +309,7 @@ export default function InputArea({
           <AddButtonDropdown
             selectedBrand={selectedBrand}
             onAddPhotos={handleAddPhotos}
-            onAddBrandKit={handleAddBrandKit}
-            onRemoveBrand={handleRemoveBrand}
+            setSelectedBrand={setSelectedBrand}
           />
           <div className="flex items-end gap-2">
             <div className="flex flex-col text-right">

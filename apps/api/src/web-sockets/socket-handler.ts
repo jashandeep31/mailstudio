@@ -26,7 +26,6 @@ export const SocketHandler = async (socket: WebSocket) => {
           const chat = await handleNewChatEvent(data, socket);
           await handleQuestionEvent(
             {
-              type: "new",
               ...data,
               chatId: chat.id,
             },

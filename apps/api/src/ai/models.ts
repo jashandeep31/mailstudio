@@ -10,7 +10,7 @@ interface Model {
 }
 export const models: Record<(typeof modelKeys)[number], Model> = {
   "gemini-3-pro-preview": {
-    name: "gemini-3-pro-preview",
+    name: "gemini-3-flash-preview",
     getInputTokensPrice: (tokensCount) =>
       getTokensCostWithProfit(tokensCount, tokensCount <= 2 * 100_000 ? 2 : 4),
     getOutputTokensPrice: (tokensCount) =>

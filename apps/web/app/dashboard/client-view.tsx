@@ -14,6 +14,7 @@ const ClientView = () => {
       media: data.mediaIds,
       brandKitId: data.brandKitId,
     });
+    setUserPrompt("");
   };
 
   return (

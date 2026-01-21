@@ -28,12 +28,12 @@ export const createBrandKit = catchAsync(
     if (!req.user) throw new AppError("Authorization is required", 400);
     const { websiteUrl } = createBrandKitInputSchema.parse(req.body);
     const response = await axios.post(
-      `${env.SCREENSHOT_SERVICE_URL}/get-brandkit`,
+      `${env.SCREENSHOT_SERVICE_URL}/brandkit`,
       { url: websiteUrl },
     );
-    console.log(response.data);
+    const data = JSON.parse(response.data.data);
     const parsedData = createBrandkitSchema.parse({
-      ...response.data.data,
+      ...data,
       websiteUrl: websiteUrl,
     });
     const [brandKit] = await db

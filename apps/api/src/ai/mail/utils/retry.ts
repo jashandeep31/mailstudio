@@ -8,8 +8,13 @@ export const retryWithDelay = async <T>(
   retries = MAX_RETRIES,
 ): Promise<T> => {
   try {
-    return await fn();
+    console.log(`we are firring upo `);
+    const res = await fn();
+    console.log(`we are firring had done with it  `);
+
+    return res;
   } catch (error: any) {
+    console.log(error);
     const isOverloadError =
       error?.status === "UNAVAILABLE" ||
       error?.message?.includes("overloaded") ||

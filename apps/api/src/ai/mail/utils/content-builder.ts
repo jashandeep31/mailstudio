@@ -6,10 +6,10 @@ export const buildContent = (
   files: UploadedFile[],
 ): ContentListUnion => {
   const content: ContentListUnion = [textContent];
-
-  for (const { uri, mimeType } of files) {
-    content.push(createPartFromUri(uri, mimeType));
-  }
+  //
+  // for (const { uri, mimeType } of files) {
+  //   content.push(createPartFromUri(uri, mimeType));
+  // }
 
   return content;
 };

@@ -13,58 +13,28 @@ import {
 import { Plus, Image, Palette, X } from "lucide-react";
 import React from "react";
 import Link from "next/link";
+import { useUserBrandKits } from "@/hooks/use-brandkits";
 
 interface AddButtonDropdownProps {
   onAddPhotos?: () => void;
-  onAddBrandKit?: (brand?: string) => void;
-  selectedBrand?: string;
-  onRemoveBrand?: () => void;
+  selectedBrand: {
+    name: string;
+    id: string;
+  } | null;
+  setSelectedBrand: React.Dispatch<
+    React.SetStateAction<{ name: string; id: string } | null>
+  >;
 }
 
 export default function AddButtonDropdown({
   onAddPhotos,
-  onAddBrandKit,
   selectedBrand,
-  onRemoveBrand,
+  setSelectedBrand,
 }: AddButtonDropdownProps) {
+  const brandkits = useUserBrandKits();
   const handleAddPhotos = () => {
     if (onAddPhotos) {
       onAddPhotos();
-    } else {
-      // Default behavior if no handler provided
-      console.log("Add photos clicked");
-    }
-  };
-
-  const handleAddAppleBrand = () => {
-    if (onAddBrandKit) {
-      onAddBrandKit("Apple");
-    } else {
-      console.log("Apple brand kit clicked");
-    }
-  };
-
-  const handleAddSamsungBrand = () => {
-    if (onAddBrandKit) {
-      onAddBrandKit("Samsung");
-    } else {
-      console.log("Samsung brand kit clicked");
-    }
-  };
-
-  const handleAddGoogleBrand = () => {
-    if (onAddBrandKit) {
-      onAddBrandKit("Google");
-    } else {
-      console.log("Google brand kit clicked");
-    }
-  };
-
-  const handleAddMicrosoftBrand = () => {
-    if (onAddBrandKit) {
-      onAddBrandKit("Microsoft");
-    } else {
-      console.log("Microsoft brand kit clicked");
     }
   };
 
@@ -87,18 +57,17 @@ export default function AddButtonDropdown({
               Select brandkit
             </DropdownMenuSubTrigger>
             <DropdownMenuSubContent>
-              <DropdownMenuItem onClick={handleAddAppleBrand}>
-                Apple
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={handleAddSamsungBrand}>
-                Samsung
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={handleAddGoogleBrand}>
-                Google
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={handleAddMicrosoftBrand}>
-                Microsoft
-              </DropdownMenuItem>
+              {brandkits.data?.map((brandkit) => (
+                <DropdownMenuItem
+                  onClick={() =>
+                    setSelectedBrand({ name: brandkit.name, id: brandkit.id })
+                  }
+                  key={brandkit.id}
+                >
+                  {brandkit.name}
+                </DropdownMenuItem>
+              ))}
+
               <DropdownMenuItem asChild>
                 <Link href="/dashboard/brand-kits" className="text-blue-600">
                   Manage brand kits
@@ -111,12 +80,14 @@ export default function AddButtonDropdown({
 
       {selectedBrand && (
         <div className="bg-secondary text-secondary-foreground flex items-center gap-1 rounded-md px-2 py-1 text-sm">
-          <span>{selectedBrand} </span>
+          <span>{selectedBrand.name} </span>
           <Button
             variant="ghost"
             size="sm"
             className="h-auto p-0 hover:bg-transparent"
-            onClick={onRemoveBrand}
+            onClick={() => {
+              setSelectedBrand(null);
+            }}
           >
             <X className="h-3 w-3" />
           </Button>

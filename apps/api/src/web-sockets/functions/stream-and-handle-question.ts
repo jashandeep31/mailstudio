@@ -1,4 +1,5 @@
 import {
+  brandKitsTable,
   chatMediaTable,
   chatsTable,
   chatVersionOutputsTable,
@@ -19,6 +20,7 @@ import { totalmem } from "os";
 import { AwsClient } from "google-auth-library";
 import { updateUserCreditWallet } from "./common.js";
 import { addToThumbnailUpdateQueue } from "../../queues/thumbnail-update-queue.js";
+import { getCachedBrandKit } from "../../lib/redis/brand-kit-cache.ts.js";
 
 interface StreamAndHandleQuestion {
   chatQuestion: typeof chatVersionPromptsTable.$inferSelect;
@@ -26,7 +28,6 @@ interface StreamAndHandleQuestion {
   chatId: string;
   chatVersion: typeof chatVersionsTable.$inferSelect;
   socket: WebSocket;
-  type: "old" | "new";
 }
 
 export const streamAndHandleQuestion = async ({
@@ -34,9 +35,16 @@ export const streamAndHandleQuestion = async ({
   chatId,
   socket,
   chatMedia,
-  type,
   chatVersion,
 }: StreamAndHandleQuestion) => {
+  let brandKit: null | typeof brandKitsTable.$inferSelect = null;
+  if (chatQuestion.brand_kit_id) {
+    brandKit = await getCachedBrandKit(
+      chatQuestion.brand_kit_id,
+      socket.userId,
+    );
+  }
+
   const [overviewRes, mjmlAiRes, _, instructions] = await Promise.all([
     streamOverview({
       generator: getQuestionOverview,
@@ -48,7 +56,7 @@ export const streamAndHandleQuestion = async ({
     }),
     createNewMailTemplate({
       prompt: chatQuestion.prompt,
-      brandKitId: null,
+      brandKit: brandKit,
       mediaUrls: chatMedia.map((media) => media.storage_path),
     }),
     streamTemplateName(
@@ -61,9 +69,8 @@ export const streamAndHandleQuestion = async ({
   ]);
 
   const html_code = mjml2html(mjmlAiRes.outputText);
-  /*
-   * Saving to the database
-   */
+
+  // Saving to the database
   const [chatVersionOutput] = await db
     .insert(chatVersionOutputsTable)
     .values({
