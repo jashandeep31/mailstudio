@@ -19,6 +19,7 @@ import { createUserInstructions } from "../../ai/mail/user-instructions.js";
 import { updateUserCreditWallet } from "./common.js";
 import { addToThumbnailUpdateQueue } from "../../queues/thumbnail-update-queue.js";
 import { getCachedBrandKit } from "../../lib/redis/brand-kit-cache.ts.js";
+import { getMailCategory } from "../../ai/mail/get-mail-category.js";
 
 interface StreamAndHandleQuestion {
   chatQuestion: typeof chatVersionPromptsTable.$inferSelect;
@@ -57,7 +58,7 @@ export const streamAndHandleQuestion = async ({
       brandKit: brandKit,
       mediaUrls: chatMedia.map((media) => media.storage_path),
     }),
-    streamTemplateName(
+    getChatCategoryAndName(
       chatQuestion.prompt,
       socket,
       chatId,
@@ -108,20 +109,22 @@ export const streamAndHandleQuestion = async ({
     mjmlAiRes.inputTokensCost;
   await updateUserCreditWallet({ socket, totalCost });
 };
-
-const streamTemplateName = async (
+const getChatCategoryAndName = async (
   prompt: string,
   socket: WebSocket,
   chatId: string,
   chatDbId: string,
 ) => {
-  let name = "";
-  for await (const chunk of getTemplateName(prompt)) {
-    name += chunk;
-  }
+  let name = await getTemplateName(prompt);
+  let categoryId = await getMailCategory(prompt);
   // Update DB immediately when name is ready, don't wait for other operations
+  const updatingData: Record<string, string> = {};
+  updatingData["name"] = name;
+  if (categoryId) {
+    updatingData["category_id"] = categoryId;
+  }
   db.update(chatsTable)
-    .set({ name })
+    .set({ ...updatingData })
     .where(eq(chatsTable.id, chatDbId))
     .then(() => {})
     .catch(console.error);

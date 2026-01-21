@@ -1,16 +1,14 @@
 import { googleGenAi } from "../config.js";
 import { prompts } from "../../prompts/index.js";
 
-export async function* getTemplateName(prompt: string) {
+export async function getTemplateName(prompt: string): Promise<string> {
   const systemInstruction = prompts["system.getTemplateName"]();
-  const response = await googleGenAi.models.generateContentStream({
+  const response = await googleGenAi.models.generateContent({
     model: "models/gemini-flash-latest",
     contents: prompt,
     config: {
       systemInstruction,
     },
   });
-  for await (const chunk of response) {
-    yield chunk.text;
-  }
+  return response.text!;
 }
