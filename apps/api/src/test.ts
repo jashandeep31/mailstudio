@@ -1,6 +1,3 @@
-import { brandKitsTable, db } from "@repo/db";
-import { getBrankitInAIFormatedWay } from "./ai/utils.js";
-
 export async function test() {
   console.log(`Test is fired 🔥 up `);
   // const [brandkit] = await db.select().from(brandKitsTable);

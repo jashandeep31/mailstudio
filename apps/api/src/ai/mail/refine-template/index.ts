@@ -54,6 +54,7 @@ Return only the updated instructions as a single paragraph.
 
   const refinedPromptRes =
     await rewritePromptForDownstreamModel(contentWithPrompt);
+  await new Promise((resolve) => setTimeout(resolve, 1000));
   const refinedContent = buildContent(
     refinedPromptRes.outputText + "\n\n" + prevMjmlCode,
     validFiles,

@@ -66,7 +66,9 @@ export const streamAndHandleQuestion = async ({
     createUserInstructions(chatQuestion.prompt),
   ]);
 
-  const html_code = mjml2html(mjmlAiRes.outputText);
+  const html_code = mjml2html(mjmlAiRes.outputText, {
+    keepComments: false,
+  });
 
   // Saving to the database
   const [chatVersionOutput] = await db
