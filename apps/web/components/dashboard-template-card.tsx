@@ -20,6 +20,7 @@ import {
 import { RenameDialog } from "@/components/dialogs/rename-dialog";
 import { ConfirmationDialog } from "@/components/dialogs/confirmation-dialog";
 import { useUpdateChat } from "@/hooks/use-chats";
+import Image from "next/image";
 
 interface DashboardTemplateCardProps {
   id: string;
@@ -52,7 +53,9 @@ export const DashboardTemplateCard = ({
       {/* Thumbnail Section */}
       <div className="bg-muted/20 relative aspect-3/2">
         {thumbnail ? (
-          <img
+          <Image
+            width={200}
+            height={130}
             src={thumbnail}
             alt={name}
             className="h-full w-full object-cover"

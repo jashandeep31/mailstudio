@@ -5,8 +5,8 @@ import {
   updateChat,
   getChatById,
 } from "../controllers/chats/chat-controllers.js";
-import { checkChatAuth } from "../lib/redis/check-chat-auth.js";
 import { checkAuthorization } from "../middlewares/check-authorization.js";
+import { deleteChatVersion } from "../controllers/chats/chat-version-controllers.js";
 
 const routes: Router = Router();
 
@@ -18,5 +18,7 @@ routes
   .route("/:chatId")
   .get(checkAuthorization(["all"]), getChatById)
   .delete(checkAuthorization(["all"]), deleteUserChat);
-
+routes
+  .route("/delete/version/:versionId")
+  .delete(checkAuthorization(["all"]), deleteChatVersion);
 export default routes;

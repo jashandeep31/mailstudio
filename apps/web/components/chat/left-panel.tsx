@@ -28,12 +28,12 @@ export default function LeftPanel({ versions, streamingOverview }: LeftPanel) {
     streamingOverview.chatId === params.id &&
     streamingOverview.versionId === versions.at(-1)?.chat_versions.id;
 
-  const handleSubmit = (data: { mediaIds: string[]; brandKit?: string }) => {
+  const handleSubmit = (data: { mediaIds: string[]; brandKitId?: string }) => {
     sendEvent("event:refine-template-message", {
       chatId: params.id as string,
       message: userPrompt,
       media: data.mediaIds,
-      brandKitId: data.brandKit,
+      brandKitId: data.brandKitId,
       prevVersionId: versions.at(-1)?.chat_versions.id || "",
     });
   };

@@ -19,6 +19,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useChat, useUpdateChat } from "@/hooks/use-chats";
+import Image from "next/image";
 
 interface ChatFormData {
   name: string;
@@ -120,10 +121,11 @@ export default function ClientView({ id }: { id: string }) {
               <div className="bg-card group relative aspect-[16/10] overflow-hidden rounded-xl border shadow-sm">
                 {chat.thumbnail ? (
                   // eslint-disable-next-line @next/next/no-img-element
-                  <img
+                  <Image
                     src={chat.thumbnail}
                     alt={chat.name}
                     className="h-full w-full object-cover"
+                    fill
                   />
                 ) : (
                   <div className="bg-muted/20 text-muted-foreground flex h-full w-full flex-col items-center justify-center">

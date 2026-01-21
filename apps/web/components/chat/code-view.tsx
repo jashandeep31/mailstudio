@@ -13,7 +13,7 @@ export const CodeView = ({ html }: { html: string | undefined }) => {
 
   return (
     <div className="grid">
-      <pre className="m-0 grid max-h-[99vh] w-full overflow-y-auto pb-12">
+      <pre className="m-0 grid max-h-[99vh] w-full overflow-y-auto pb-[50vh]">
         <code className="language-html">{html}</code>
       </pre>
     </div>
