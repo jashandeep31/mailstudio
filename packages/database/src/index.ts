@@ -16,6 +16,7 @@ export * from "./schema/accounts.js";
 export * from "./schema/users.js";
 export * from "./schema/chats.js";
 export * from "./schema/brand-kits.js";
+export * from "./schema/chat-categories.js";
 export * from "./schema/chat-media.js";
 export * from "./schema/user-test-mails.js";
 export * from "./schema/user-otps.js";

@@ -30,7 +30,7 @@ export const chatsTable = pgTable("chats", {
     .default("0"),
   like_count: integer("like_count").notNull().default(0),
   category_id: uuid("category_id").references(() => chatCategoriesTable.id, {
-    onDelete: "cascade",
+    onDelete: "set null",
   }),
   created_at: timestamp("created_at", { withTimezone: true })
     .notNull()
