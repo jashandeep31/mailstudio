@@ -1,6 +1,6 @@
 "use client";
 
-import { Pencil, Trash2 } from "lucide-react";
+import { Pencil, PencilLine, Trash2 } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuItem,
@@ -13,6 +13,7 @@ import { MoreHorizontal } from "lucide-react";
 import { ConfirmationDialog } from "@/components/dialogs/confirmation-dialog";
 import { RenameDialog } from "@/components/dialogs/rename-dialog";
 import { useUpdateChat } from "@/hooks/use-chats";
+import { useRouter } from "next/navigation";
 
 interface ChatItemProps {
   chat: {
@@ -23,6 +24,7 @@ interface ChatItemProps {
 }
 
 export function ChatItem({ chat, onDelete }: ChatItemProps) {
+  const router = useRouter();
   const { mutate: updateChat, isPending: isUpdating } = useUpdateChat();
 
   const handleRename = (newName: string) => {
@@ -51,6 +53,15 @@ export function ChatItem({ chat, onDelete }: ChatItemProps) {
             <span>Rename</span>
           </DropdownMenuItem>
         </RenameDialog>
+
+        <DropdownMenuItem
+          onClick={() => {
+            router.push(`/dashboard/templates/manage/${chat.id}`);
+          }}
+        >
+          <PencilLine className="text-muted-foreground" />
+          <span>Manage</span>
+        </DropdownMenuItem>
 
         <DropdownMenuSeparator />
         <ConfirmationDialog

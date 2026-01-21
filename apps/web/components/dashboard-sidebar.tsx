@@ -31,11 +31,11 @@ const mainNav = [
     url: "/dashboard/brand-kits",
     icon: Hexagon,
   },
-  {
-    title: "Broadcast",
-    url: "/dashboard/broadcast",
-    icon: Radio,
-  },
+  // {
+  //   title: "Broadcast",
+  //   url: "/dashboard/broadcast",
+  //   icon: Radio,
+  // },
   {
     title: "Marketplace",
     url: "/dashboard/marketplace",

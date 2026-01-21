@@ -7,8 +7,11 @@ import { Button } from "@repo/ui/components/button";
 import { Input } from "@repo/ui/components/input";
 
 import { MailTemplateCard } from "@/components/mail-template-card";
+import { useMarketplaceTemplates } from "@/hooks/use-marketplace";
+import { Loader2 } from "lucide-react";
 
 export default function ClientView() {
+  const { data: templates, isLoading } = useMarketplaceTemplates();
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [selectedType, setSelectedType] = useState("all");
@@ -85,17 +88,16 @@ export default function ClientView() {
         </div>
       </div>
 
-      {/* Template Grid */}
+      {isLoading && (
+        <div className="flex h-96 items-center justify-center">
+          <Loader2 className="text-muted-foreground h-8 w-8 animate-spin" />
+        </div>
+      )}
+
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-        {/* Sample templates - in real app this would be filtered data */}
-        <MailTemplateCard />
-        <MailTemplateCard />
-        <MailTemplateCard />
-        <MailTemplateCard />
-        <MailTemplateCard />
-        <MailTemplateCard />
-        <MailTemplateCard />
-        <MailTemplateCard />
+        {templates?.map((template) => (
+          <MailTemplateCard key={template.id} template={template} />
+        ))}
       </div>
     </div>
   );
