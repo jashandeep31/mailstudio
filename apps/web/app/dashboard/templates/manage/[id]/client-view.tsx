@@ -115,7 +115,6 @@ export default function ClientView({ id }: { id: string }) {
                     Back to Templates
                   </Link>
                 </Button>
-                <h2 className="text-lg font-medium">Preview</h2>
               </div>
 
               <div className="bg-card group relative aspect-[16/10] overflow-hidden rounded-xl border shadow-sm">
@@ -145,12 +144,6 @@ export default function ClientView({ id }: { id: string }) {
                     </p>
                   </div>
                 )}
-
-                <div className="absolute top-4 right-4 opacity-0 transition-opacity group-hover:opacity-100">
-                  <div className="bg-background/80 rounded border px-2 py-1 text-xs shadow-sm backdrop-blur">
-                    Read-only Preview
-                  </div>
-                </div>
               </div>
             </div>
 

@@ -9,6 +9,7 @@ import internalRoutes from "./routes/internal-routes.js";
 import paymentRoutes from "./routes/payment-routes.js";
 import utilRoutes from "./routes/util-routes.js";
 import brandKitRoutes from "./routes/brandkit-routes.js";
+import marketplaceRoutes from "./routes/marketplace-routes.js";
 
 import cookiesParser from "cookie-parser";
 import { checkAuthorization } from "./middlewares/check-authorization.js";
@@ -62,6 +63,7 @@ app.use("/api/v1/internal", internalRoutes);
 app.use("/api/v1/payments", paymentRoutes);
 app.use("/api/v1/utils", utilRoutes);
 app.use("/api/v1/brandkits", brandKitRoutes);
+app.use("/api/v1/marketplace", marketplaceRoutes);
 // Testing route of the application
 app.get("/", checkAuthorization(["all"]), (req, res, next) => {
   res.status(200).json({ message: "hello" });
