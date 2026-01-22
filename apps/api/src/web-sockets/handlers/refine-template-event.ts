@@ -6,6 +6,7 @@ import {
   chatVersionPromptsTable,
   chatVersionOutputsTable,
   brandKitsTable,
+  chatsTable,
 } from "@repo/db";
 import { validateMediaIds } from "./handle-question-event.js";
 import { SocketEventSchemas } from "@repo/shared";
@@ -104,6 +105,13 @@ export const refineTemplateHandler = async ({
         data.message,
         prevOutput?.generation_instructions || "",
       ),
+      // updating the chat updated_at so that we can arrange the chats menu in the frontend
+      db
+        .update(chatsTable)
+        .set({
+          updated_at: new Date(),
+        })
+        .where(eq(chatsTable.id, data.chatId)),
     ]);
 
   const html_code = mjml2html(refinedMJMLResponse.outputText);

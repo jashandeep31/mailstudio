@@ -1,6 +1,7 @@
 import { chatsTable } from "@repo/db";
 import { CircleDollarSign, Heart } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
 
 export const MailTemplateCard = ({
   template,
@@ -8,7 +9,10 @@ export const MailTemplateCard = ({
   template: typeof chatsTable.$inferSelect;
 }) => {
   return (
-    <div className="bg-background w-full overflow-clip rounded-md border">
+    <Link
+      href={`/dashboard/marketplace/template/${template.id}`}
+      className="bg-background block w-full overflow-clip rounded-md border"
+    >
       <div className="relative aspect-3/2">
         {template.thumbnail && <Image fill src={template.thumbnail} alt="" />}
       </div>
@@ -29,6 +33,6 @@ export const MailTemplateCard = ({
           </div>
         </div>
       </div>
-    </div>
+    </Link>
   );
 };

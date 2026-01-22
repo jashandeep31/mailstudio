@@ -20,6 +20,7 @@ export default function ClientView() {
   // Getting the filtered data from the backend api
   const { data: templates, isLoading } = useMarketplaceTemplates({
     categoryId: selectedCategoryId === "all" ? undefined : selectedCategoryId,
+    type: selectedType === "all" ? undefined : selectedType,
   });
 
   const types = [
