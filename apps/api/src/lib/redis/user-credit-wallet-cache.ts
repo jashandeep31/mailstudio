@@ -1,5 +1,6 @@
 import { and, creditWalletsTable, db, eq } from "@repo/db";
 import { redis } from "../db.js";
+import e from "express";
 
 // Key for storing in the wallet
 const getKey = (userId: string) => `creditWallet::${userId}`;
@@ -27,8 +28,17 @@ export const getCachedUserCreditWallet = async (
  * Set the new values to the user credit wallet cachedWallet
  */
 export const revalidateUserCreditWalletCache = async (
-  wallet: typeof creditWalletsTable.$inferSelect,
+  wallet: typeof creditWalletsTable.$inferSelect | null,
+  userId?: string,
 ): Promise<void> => {
-  const key = getKey(wallet.user_id);
-  await redis.set(key, JSON.stringify(wallet));
+  if (wallet) {
+    await redis.set(getKey(wallet.user_id), JSON.stringify(wallet));
+  } else if (userId) {
+    const [wallet] = await db
+      .select()
+      .from(creditWalletsTable)
+      .where(and(eq(creditWalletsTable.user_id, userId)));
+    if (!wallet) return;
+    await redis.set(getKey(userId), JSON.stringify(wallet));
+  }
 };

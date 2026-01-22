@@ -14,6 +14,7 @@ import {
 } from "@repo/db";
 import { env } from "../../lib/env.js";
 import { v4 as uuid } from "uuid";
+import { revalidateUserCreditWalletCache } from "../../lib/redis/user-credit-wallet-cache.js";
 
 const client = new DodoPayments({
   bearerToken: env.DODO_PAYMENTS_API_KEY,
@@ -240,7 +241,7 @@ export const handleDodoPaymentWebhook = catchAsync(
         reason: "Plan Upgrade",
       });
     });
-
+    await revalidateUserCreditWalletCache(null, userId);
     res.status(200).json({ received: true });
   },
 );
