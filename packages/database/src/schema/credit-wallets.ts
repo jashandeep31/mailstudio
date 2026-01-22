@@ -13,7 +13,7 @@ export const creditWalletsTable = pgTable("credit-wallets", {
   balance: numeric("balance", {
     precision: 10,
     scale: 2,
-  }),
+  }).notNull(),
 
   user_id: uuid("user_id")
     .notNull()

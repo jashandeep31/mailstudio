@@ -38,6 +38,7 @@ const WebSocketContext = createContext<IWebSocketContext>({
 import React from "react";
 import { useRouter } from "next/navigation";
 import { useSocketEvents } from "@/zustand-store/socket-events-store";
+import { toast } from "sonner";
 
 export default function WebSocketProvider({
   children,
@@ -85,6 +86,10 @@ export default function WebSocketProvider({
           break;
         case "error:no-chat":
           router.push(`/dashboard`);
+          break;
+        case "error:wallet":
+          console.log(data);
+          toast.error(data.message || "Wallet doesn't have the enough balacne");
           break;
         default:
           addEvent({

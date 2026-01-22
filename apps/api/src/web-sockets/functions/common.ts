@@ -6,16 +6,23 @@ import {
   sql,
 } from "@repo/db";
 import WebSocket from "ws";
+import { revalidateUserCreditWalletCache } from "../../lib/redis/user-credit-wallet-cache.js";
 
 interface updateUserCreditWallet {
   socket: WebSocket;
   totalCost: number;
 }
+
+/**
+ * Updates the user's credit wallet
+ * @param socket - The WebSocket connection
+ * @param totalCost - The total cost of the operation
+ */
 export const updateUserCreditWallet = async ({
   socket,
   totalCost,
 }: updateUserCreditWallet) => {
-  await db.transaction(async (tx) => {
+  const wallet = await db.transaction(async (tx) => {
     //TODO: better mechanism to handle the wallet is needed
     const [wallet] = await tx
       .update(creditWalletsTable)
@@ -44,5 +51,9 @@ export const updateUserCreditWallet = async ({
         })
         .where(eq(creditWalletsTable.user_id, socket.userId));
     }
+    return wallet;
   });
+  if (wallet) {
+    await revalidateUserCreditWalletCache(wallet);
+  }
 };

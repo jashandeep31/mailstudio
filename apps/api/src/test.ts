@@ -5,7 +5,7 @@ import { getMailCategory } from "./ai/mail/get-mail-category.js";
  * Test fuction to run the random things
  */
 export async function test() {
-  console.log(`Test is fired 🔥 up `);
+  console.log("Test is fired 🔥 up ");
   // getMailCategory(`Create the mail template for the user email verification`);
   // const categoriesList = [
   //   "authentication",

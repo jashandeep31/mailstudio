@@ -7,6 +7,7 @@ import { handleChatJoinEvent } from "./handlers/handle-chat-join-event.js";
 import { ProcesingVersions } from "../state/processing-versions-state.js";
 import { refineTemplateHandler } from "./handlers/refine-template-event.js";
 import { checkChatAuth } from "../lib/redis/check-chat-auth.js";
+import { getCachedUserCreditWallet } from "../lib/redis/user-credit-wallet-cache.js";
 
 export const SocketHandler = async (socket: WebSocket) => {
   socket.on("message", async (e) => {
@@ -23,6 +24,29 @@ export const SocketHandler = async (socket: WebSocket) => {
       switch (event) {
         case "event:new-chat": {
           const data = getParsedData(event, rawData);
+          const wallet = await getCachedUserCreditWallet(socket.userId);
+          if (!wallet) {
+            socket.send(
+              JSON.stringify({
+                key: "error:wallet",
+                data: {
+                  message: "wallet is detected",
+                },
+              }),
+            );
+            return;
+          }
+          if (Number(wallet.balance) <= 0) {
+            socket.send(
+              JSON.stringify({
+                key: "error:wallet",
+                data: {
+                  message: "wallet doesn't have the enough balance",
+                },
+              }),
+            );
+            return;
+          }
           const chat = await handleNewChatEvent(data, socket);
           await handleQuestionEvent(
             {
@@ -85,6 +109,29 @@ export const SocketHandler = async (socket: WebSocket) => {
             userId: socket.userId,
             chatId: data.chatId,
           });
+          const wallet = await getCachedUserCreditWallet(socket.userId);
+          if (!wallet) {
+            socket.send(
+              JSON.stringify({
+                key: "error:wallet",
+                data: {
+                  message: "wallet is detected",
+                },
+              }),
+            );
+            return;
+          }
+          if (Number(wallet.balance) <= 0) {
+            socket.send(
+              JSON.stringify({
+                key: "error:wallet",
+                data: {
+                  message: "wallet doesn't have the enough balance",
+                },
+              }),
+            );
+            return;
+          }
           if (authStatus.status !== "ok") {
             socket.send(
               JSON.stringify({
@@ -119,11 +166,3 @@ export const getParsedData = <K extends keyof typeof SocketEventSchemas>(
   }
   return parsedResult.data as z.infer<(typeof SocketEventSchemas)[K]>;
 };
-function startStream(arg0: {
-  chatId: string;
-  socket: WebSocket;
-  questionId: any;
-  question: any;
-}) {
-  throw new Error("Function not implemented.");
-}

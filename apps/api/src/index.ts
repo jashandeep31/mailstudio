@@ -21,16 +21,16 @@ import { test } from "./test.js";
 import { errorHandler } from "./middlewares/error-hanlder.js";
 import { handleDodoPaymentWebhook } from "./controllers/payments/dodo-payments.js";
 import { checkAllPromptFiles } from "./prompts/index.js";
-import { redis } from "./lib/db.js";
 
+// TODO: think of the better alternative to this approach
 // Global error handlers to prevent server crashes
-process.on("unhandledRejection", (reason, promise) => {
-  console.error("Unhandled Rejection at:", promise, "reason:", reason);
-});
+// process.on("unhandledRejection", (reason, promise) => {
+//   console.error("Unhandled Rejection at:", promise, "reason:", reason);
+// });
 
-process.on("uncaughtException", (error) => {
-  console.error("Uncaught Exception:", error);
-});
+// process.on("uncaughtException", (error) => {
+//   console.error("Uncaught Exception:", error);
+// });
 
 const RANDOM_CODE = Math.floor(Math.random() * 100);
 
@@ -40,13 +40,27 @@ checkAllPromptFiles();
 // app config.
 const app = express();
 
+// TODO: fix this spellings in the dodo payments as we as the code
 app.post(
   "/api/v1/payments/dodo-webhoook",
   express.raw({ type: "application/json" }),
   handleDodoPaymentWebhook,
 );
-
 app.use(express.json());
+
+// global middleware to log the request and response
+app.use(
+  (req: express.Request, res: express.Response, next: express.NextFunction) => {
+    const startTime = Date.now();
+    res.on("finish", () => {
+      const duration = Date.now() - startTime;
+      console.log(
+        `[${new Date().toISOString()}] ${req.method} ${req.originalUrl} ${res.statusCode} - ${duration}ms`,
+      );
+    });
+    next();
+  },
+);
 app.use(
   cors({
     origin: "http://localhost:3000",
@@ -105,5 +119,5 @@ ws.on("connection", async (socket, req) => {
 });
 test();
 server.listen(env.PORT, () => {
-  console.log(`Server is running at ${env.PORT}`);
+  console.log(`Server is running at 🔥 ${env.PORT}`);
 });

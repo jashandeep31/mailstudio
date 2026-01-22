@@ -43,7 +43,7 @@ export const checkAllPromptFiles = () => {
   Object.entries(prompts).forEach(([key, prompt]) => {
     const text = prompt();
     if (!text) {
-      console.log(`Warning ⚠️⚠️⚠️⚠️: Prompt '${key}' is empty`);
+      console.log(`Warning ⚠️ ⚠️: Prompt '${key}' is empty`);
     }
   });
 };
