@@ -12,13 +12,15 @@ import { Loader2 } from "lucide-react";
 import { useCategories } from "@/hooks/use-utils";
 
 export default function ClientView() {
-  const { data: templates, isLoading } = useMarketplaceTemplates({
-    categoryId: "d8220e75-0d83-4d89-82c6-42a7743e580a",
-  });
   const { data: categories } = useCategories();
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState("all");
+  const [selectedCategoryId, setSelectedCategoryId] = useState("all");
   const [selectedType, setSelectedType] = useState("all");
+
+  // Getting the filtered data from the backend api
+  const { data: templates, isLoading } = useMarketplaceTemplates({
+    categoryId: selectedCategoryId === "all" ? undefined : selectedCategoryId,
+  });
 
   const types = [
     { id: "all", label: "All" },
@@ -50,14 +52,22 @@ export default function ClientView() {
           <div>
             <h3 className="mb-3 text-sm font-medium">Categories</h3>
             <div className="flex flex-wrap gap-2">
+              <Button
+                key={"all"}
+                variant={selectedCategoryId === "all" ? "default" : "outline"}
+                size="sm"
+                onClick={() => setSelectedCategoryId("all")}
+              >
+                All
+              </Button>
               {categories?.map((category) => (
                 <Button
                   key={category.id}
                   variant={
-                    selectedCategory === category.id ? "default" : "outline"
+                    selectedCategoryId === category.id ? "default" : "outline"
                   }
                   size="sm"
-                  onClick={() => setSelectedCategory(category.id)}
+                  onClick={() => setSelectedCategoryId(category.id)}
                 >
                   {category.name}
                 </Button>

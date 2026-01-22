@@ -6,6 +6,6 @@ export const useMarketplaceTemplates = (
   filters: z.infer<typeof getMarketplaceTemplatesFilterSchema>,
 ) =>
   useQuery({
-    queryKey: ["marketplace-templates"],
+    queryKey: ["marketplace-templates", filters],
     queryFn: () => getMarketplaceTemplates(filters),
   });
