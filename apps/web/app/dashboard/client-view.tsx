@@ -45,26 +45,6 @@ const ClientView = () => {
           ))}
         </div>
       </div>
-      <div className="container mt-12 lg:mt-36">
-        <h2 className="text-md font-bold md:text-lg lg:text-xl">
-          Explore Templates
-        </h2>
-        <div className="mt-6 grid grid-cols-1 gap-6 md:grid-cols-3 lg:grid-cols-4">
-          {data?.map((template) => (
-            <MailTemplateCard key={template.id} template={template} />
-          ))}
-        </div>
-      </div>
-      <div className="container mt-12 lg:mt-36">
-        <h2 className="text-md font-bold md:text-lg lg:text-xl">
-          Explore Templates
-        </h2>
-        <div className="mt-6 grid grid-cols-1 gap-6 md:grid-cols-3 lg:grid-cols-4">
-          {data?.map((template) => (
-            <MailTemplateCard key={template.id} template={template} />
-          ))}
-        </div>
-      </div>
     </div>
   );
 };

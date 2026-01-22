@@ -1,7 +1,7 @@
 "use client";
 import { useDeleteBrandKit, useUserBrandKits } from "@/hooks/use-brandkits";
 import React, { useState } from "react";
-import { MoreVertical, Trash2 } from "lucide-react";
+import { MoreVertical, Trash2, Loader2 } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -13,11 +13,12 @@ import { Button } from "@repo/ui/components/button";
 import { BrandKitDialog } from "@/components/dialogs/brand-kit-dialog";
 import { ConfirmationDialog } from "@/components/dialogs/confirmation-dialog";
 import { toast } from "sonner";
+import Image from "next/image";
 
 export default function ClientView() {
   const [dialogOpen, setDialogOpen] = useState(false);
   const brandkitsRes = useUserBrandKits();
-  const { mutate: deleteBrandKit, isPending: isDeleting } = useDeleteBrandKit();
+  const { mutate: deleteBrandKit } = useDeleteBrandKit();
 
   const handleDelete = (id: string) => {
     const toastId = toast.loading("Deleting brand kit...");
@@ -31,7 +32,16 @@ export default function ClientView() {
     });
   };
   if (brandkitsRes.isLoading) {
-    return <h1>Loading..</h1>;
+    return (
+      <div className="mx-3 mt-3 md:mx-12 md:mt-12">
+        <div className="flex h-96 items-center justify-center">
+          <div className="text-muted-foreground flex items-center gap-2">
+            <Loader2 className="h-6 w-6 animate-spin" />
+            <span>Loading brand kits...</span>
+          </div>
+        </div>
+      </div>
+    );
   }
   return (
     <>
@@ -82,7 +92,8 @@ export default function ClientView() {
                   <div className="flex flex-1 items-center justify-center">
                     {brandKit.logo_url ? (
                       <div className="overflow-hidden rounded-lg">
-                        <img
+                        <Image
+                          fill
                           src={brandKit.logo_url}
                           alt={brandKit.name}
                           className="h-20 w-20 object-contain"

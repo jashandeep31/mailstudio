@@ -1,8 +1,5 @@
-// on the basis ov
-
 import { WebSocket } from "ws";
 
-// userid::chatid
 interface ProcesingVersion {
   chatId: string;
   questionId: string;
@@ -13,5 +10,3 @@ interface ProcesingVersion {
   abortController: AbortController;
 }
 export const ProcesingVersions = new Map<string, ProcesingVersion>();
-
-export const UserOngoingChats = new Map<string, Set<string>>();

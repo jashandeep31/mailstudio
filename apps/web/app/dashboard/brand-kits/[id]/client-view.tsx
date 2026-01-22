@@ -12,9 +12,8 @@ export default function ClientView() {
   if (brandKitRes.error || !brandKitRes.data)
     return <h1>Something went wrong </h1>;
   return (
-    <div className="p-6">
+    <div className="mx-3 mt-3 mb-12 md:mx-12 md:mt-12">
       <h1 className="mb-8 text-2xl font-semibold">Edit Brand Kit</h1>
-
       <CreateOrUpdateBrandKitForm defaultValues={brandKitRes.data} />
     </div>
   );

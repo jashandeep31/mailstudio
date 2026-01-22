@@ -6,8 +6,8 @@ import { useForm } from "react-hook-form";
 import { Input } from "@repo/ui/components/input";
 import { Label } from "@repo/ui/components/label";
 import { Button } from "@repo/ui/components/button";
+import { Textarea } from "@repo/ui/components/textarea";
 import { brandKitsTable } from "@repo/db";
-import { useCreateBrandKit } from "@/hooks/use-brandkits";
 
 export default function CreateOrUpdateBrandKitForm({
   defaultValues,
@@ -30,54 +30,58 @@ export default function CreateOrUpdateBrandKitForm({
         <div className="space-y-4">
           <h2 className="text-lg font-medium">Basic Information</h2>
 
-          <div className="space-y-2">
-            <Label htmlFor="name">Company Name</Label>
-            <Input
-              id="name"
-              placeholder="Enter company name"
-              {...register("name")}
-            />
-            {errors.name && (
-              <p className="text-destructive text-sm">{errors.name.message}</p>
-            )}
-          </div>
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+            <div className="space-y-2">
+              <Label htmlFor="name">Company Name</Label>
+              <Input
+                id="name"
+                placeholder="Enter company name"
+                {...register("name")}
+              />
+              {errors.name && (
+                <p className="text-destructive text-sm">
+                  {errors.name.message}
+                </p>
+              )}
+            </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="website_url">Website URL</Label>
-            <Input
-              id="website_url"
-              type="url"
-              placeholder="https://example.com"
-              {...register("website_url")}
-            />
-            {errors.website_url && (
-              <p className="text-destructive text-sm">
-                {errors.website_url.message}
-              </p>
-            )}
-          </div>
+            <div className="space-y-2">
+              <Label htmlFor="website_url">Website URL</Label>
+              <Input
+                id="website_url"
+                type="url"
+                placeholder="https://example.com"
+                {...register("website_url")}
+              />
+              {errors.website_url && (
+                <p className="text-destructive text-sm">
+                  {errors.website_url.message}
+                </p>
+              )}
+            </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="brand_summary">Brand Summary</Label>
-            <Input id="brand_summary" {...register("brand_summary")} />
-            {errors.brand_summary && (
-              <p className="text-destructive text-sm">
-                {errors.brand_summary.message}
-              </p>
-            )}
-          </div>
+            <div className="space-y-2">
+              <Label htmlFor="brand_summary">Brand Summary</Label>
+              <Input id="brand_summary" {...register("brand_summary")} />
+              {errors.brand_summary && (
+                <p className="text-destructive text-sm">
+                  {errors.brand_summary.message}
+                </p>
+              )}
+            </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="brand_design_style">Design Style</Label>
-            <Input
-              id="brand_design_style"
-              {...register("brand_design_style")}
-            />
-            {errors.brand_design_style && (
-              <p className="text-destructive text-sm">
-                {errors.brand_design_style.message}
-              </p>
-            )}
+            <div className="space-y-2">
+              <Label htmlFor="brand_design_style">Design Style</Label>
+              <Input
+                id="brand_design_style"
+                {...register("brand_design_style")}
+              />
+              {errors.brand_design_style && (
+                <p className="text-destructive text-sm">
+                  {errors.brand_design_style.message}
+                </p>
+              )}
+            </div>
           </div>
         </div>
 
@@ -187,46 +191,51 @@ export default function CreateOrUpdateBrandKitForm({
         <div className="space-y-4">
           <h2 className="text-lg font-medium">Legal Information</h2>
 
-          <div className="space-y-2">
-            <Label htmlFor="address">Address</Label>
-            <Input
-              id="address"
-              placeholder="Company address"
-              {...register("address")}
-            />
-            {errors.address && (
-              <p className="text-destructive text-sm">
-                {errors.address.message}
-              </p>
-            )}
-          </div>
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+            <div className="space-y-2">
+              <Label htmlFor="address">Address</Label>
+              <Textarea
+                id="address"
+                placeholder="Company address"
+                rows={3}
+                {...register("address")}
+              />
+              {errors.address && (
+                <p className="text-destructive text-sm">
+                  {errors.address.message}
+                </p>
+              )}
+            </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="copyright">Copyright Text</Label>
-            <Input
-              id="copyright"
-              placeholder="© 2024 Company Name. All rights reserved."
-              {...register("copyright")}
-            />
-            {errors.copyright && (
-              <p className="text-destructive text-sm">
-                {errors.copyright.message}
-              </p>
-            )}
-          </div>
+            <div className="space-y-2">
+              <Label htmlFor="copyright">Copyright Text</Label>
+              <Textarea
+                id="copyright"
+                placeholder="© 2024 Company Name. All rights reserved."
+                rows={2}
+                {...register("copyright")}
+              />
+              {errors.copyright && (
+                <p className="text-destructive text-sm">
+                  {errors.copyright.message}
+                </p>
+              )}
+            </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="desclaimer">Disclaimer</Label>
-            <Input
-              id="desclaimer"
-              placeholder="Legal disclaimer text"
-              {...register("desclaimer")}
-            />
-            {errors.desclaimer && (
-              <p className="text-destructive text-sm">
-                {errors.desclaimer.message}
-              </p>
-            )}
+            <div className="space-y-2 md:col-span-2">
+              <Label htmlFor="desclaimer">Disclaimer</Label>
+              <Textarea
+                id="desclaimer"
+                placeholder="Legal disclaimer text"
+                rows={3}
+                {...register("desclaimer")}
+              />
+              {errors.desclaimer && (
+                <p className="text-destructive text-sm">
+                  {errors.desclaimer.message}
+                </p>
+              )}
+            </div>
           </div>
         </div>
 

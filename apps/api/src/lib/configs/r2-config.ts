@@ -15,6 +15,7 @@ export const r2Client = new S3Client({
   },
 });
 
+// This is done so that always be aware of using this function anywhere its not for it use the presigned url for the user uploads
 /**
  * @deprecated this for the internal buffer
  */
