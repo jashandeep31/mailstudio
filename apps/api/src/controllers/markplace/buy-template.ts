@@ -1,8 +1,7 @@
 import { Request, Response } from "express";
 import { catchAsync } from "../../lib/catch-async.js";
-import { never, z } from "zod";
+import { z } from "zod";
 import { AppError } from "../../lib/app-error.js";
-import { getCachedUserCreditWallet } from "../../lib/redis/user-credit-wallet-cache.js";
 import {
   chatsTable,
   chatVersionOutputsTable,
@@ -17,14 +16,15 @@ import {
   and,
   gte,
 } from "@repo/db";
+import { addToThumbnailUpdateQueue } from "../../queues/thumbnail-update-queue.js";
 
 const buyTemplateSchema = z.object({
   id: z.string(),
 });
 export const buyTemplate = catchAsync(async (req: Request, res: Response) => {
   if (!req.user) throw new AppError("Authentication is required", 400);
+  const userId = req.user.id;
   const parsedData = buyTemplateSchema.parse(req.body);
-  const wallet = await getCachedUserCreditWallet(req.user.id);
 
   const [template] = await db
     .select()
@@ -33,13 +33,8 @@ export const buyTemplate = catchAsync(async (req: Request, res: Response) => {
 
   if (!template) throw new AppError("Template not found ", 404);
   if (!template.public) throw new AppError("Template is not public", 400);
-  if (!wallet) {
-    throw new AppError("Wallet not found", 400);
-  }
 
   const chat = await db.transaction(async (tx) => {
-    if (!req.user) throw new AppError("Authentication is required", 400);
-
     const [prevChatVersion] = await tx
       .select()
       .from(chatVersionsTable)
@@ -64,8 +59,12 @@ export const buyTemplate = catchAsync(async (req: Request, res: Response) => {
     const [newChat] = await tx
       .insert(chatsTable)
       .values({
-        ...template,
-        user_id: req.user.id,
+        name: template.name,
+        public: false,
+        price: template.price,
+        like_count: 0,
+        category_id: template.category_id,
+        user_id: userId,
       })
       .returning();
 
@@ -75,7 +74,7 @@ export const buyTemplate = catchAsync(async (req: Request, res: Response) => {
       .values({
         ...prevChatVersion.chat_versions,
         chat_id: newChat.id,
-        user_id: req.user.id,
+        user_id: userId,
         version_number: 1,
       })
       .returning();
@@ -100,7 +99,7 @@ export const buyTemplate = catchAsync(async (req: Request, res: Response) => {
       })
       .where(
         and(
-          eq(creditWalletsTable.user_id, req.user.id),
+          eq(creditWalletsTable.user_id, userId),
           gte(creditWalletsTable.balance, template.price),
         ),
       )
@@ -110,20 +109,20 @@ export const buyTemplate = catchAsync(async (req: Request, res: Response) => {
     }
 
     await tx.insert(creditTransactionsTable).values({
-      wallet_id: wallet.id,
+      wallet_id: updatedWallet.id,
       amount: template.price,
       after_balance: updatedWallet.balance,
       type: "spent",
-      user_id: req.user.id,
+      user_id: userId,
       reason: `Purchased the template ${template.name}`,
     });
     return newChat;
   });
+  addToThumbnailUpdateQueue(chat.id);
   res.status(200).json({
     status: "success",
     data: {
       id: chat.id,
-      redirect_url: `/chat/${chat.id}`,
     },
   });
 });
