@@ -3,7 +3,6 @@ import { useDeleteChat } from "@/hooks/use-chats";
 import {
   Sidebar,
   SidebarContent,
-  SidebarFooter,
   SidebarHeader,
 } from "@repo/ui/components/sidebar";
 import { Mail, ShoppingBag, Hexagon, Plus } from "lucide-react";
@@ -48,14 +47,13 @@ export function DashboardSidebar() {
   const { mutate: deleteChat } = useDeleteChat();
 
   return (
-    <Sidebar className="border-0 group-data-[side=left]:border-0 md:mt-14">
+    <Sidebar className="bg-background border-0 group-data-[side=left]:border-0 md:mt-14">
       <SidebarHeader className="bg-background">
         <MainNav items={mainNav} />
       </SidebarHeader>
       <SidebarContent className="bg-background">
         <ChatList onDeleteChat={deleteChat} />
       </SidebarContent>
-      <SidebarFooter />
     </Sidebar>
   );
 }
