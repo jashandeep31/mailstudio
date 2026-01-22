@@ -14,6 +14,8 @@ import {
   creditWalletsTable,
   sql,
   creditTransactionsTable,
+  and,
+  gte,
 } from "@repo/db";
 
 const buyTemplateSchema = z.object({
@@ -31,8 +33,8 @@ export const buyTemplate = catchAsync(async (req: Request, res: Response) => {
 
   if (!template) throw new AppError("Template not found ", 404);
   if (!template.public) throw new AppError("Template is not public", 400);
-  if (!wallet || Number(wallet.balance) < Number(template.price)) {
-    throw new AppError("Wallet doesn't have sufficent funds ", 400);
+  if (!wallet) {
+    throw new AppError("Wallet not found", 400);
   }
 
   const chat = await db.transaction(async (tx) => {
@@ -96,9 +98,16 @@ export const buyTemplate = catchAsync(async (req: Request, res: Response) => {
       .set({
         balance: sql`${creditWalletsTable.balance} - ${template.price}`,
       })
-      .where(eq(creditWalletsTable.user_id, req.user.id))
+      .where(
+        and(
+          eq(creditWalletsTable.user_id, req.user.id),
+          gte(creditWalletsTable.balance, template.price),
+        ),
+      )
       .returning();
-    if (!updatedWallet) throw new AppError("something went wrong", 500);
+    if (!updatedWallet) {
+      throw new AppError("Wallet doesn't have sufficient funds", 400);
+    }
 
     await tx.insert(creditTransactionsTable).values({
       wallet_id: wallet.id,
