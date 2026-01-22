@@ -1,8 +1,11 @@
 import { useQuery } from "@tanstack/react-query";
 import { getMarketplaceTemplates } from "../services/marketplace-services";
-
-export const useMarketplaceTemplates = () =>
+import { z } from "zod";
+import { getMarketplaceTemplatesFilterSchema } from "@repo/shared";
+export const useMarketplaceTemplates = (
+  filters: z.infer<typeof getMarketplaceTemplatesFilterSchema>,
+) =>
   useQuery({
     queryKey: ["marketplace-templates"],
-    queryFn: getMarketplaceTemplates,
+    queryFn: () => getMarketplaceTemplates(filters),
   });

@@ -12,7 +12,9 @@ import { Loader2 } from "lucide-react";
 import { useCategories } from "@/hooks/use-utils";
 
 export default function ClientView() {
-  const { data: templates, isLoading } = useMarketplaceTemplates();
+  const { data: templates, isLoading } = useMarketplaceTemplates({
+    categoryId: "d8220e75-0d83-4d89-82c6-42a7743e580a",
+  });
   const { data: categories } = useCategories();
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");

@@ -7,7 +7,6 @@ const KEY = `categories:all`;
 export const getCategories = catchAsync(async (req: Request, res: Response) => {
   const cachedCategoreies = await redis.get(KEY);
   if (cachedCategoreies) {
-    console.log(`redis db hit as passed`);
     res
       .status(200)
       .json({ success: true, data: JSON.parse(cachedCategoreies) });
