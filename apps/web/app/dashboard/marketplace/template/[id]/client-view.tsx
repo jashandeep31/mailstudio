@@ -23,7 +23,7 @@ export default function ClientView() {
   // Loading state
   if (isLoading) {
     return (
-      <div className="mx-12 mt-12">
+      <div className="mx-3 mt-3 md:mx-12 md:mt-12">
         <Link
           className={buttonVariants({ variant: "ghost" })}
           href={"/dashboard/marketplace"}
@@ -43,7 +43,7 @@ export default function ClientView() {
   // Not found state
   if (isError || !template) {
     return (
-      <div className="mx-12 mt-12">
+      <div className="mx-3 mt-3 md:mx-12 md:mt-12">
         <Link
           className={buttonVariants({ variant: "ghost" })}
           href="/dashboard/marketplace"
@@ -67,14 +67,14 @@ export default function ClientView() {
 
   // Main layout
   return (
-    <div className="mx-12 mt-12">
+    <div className="mx-3 mt-3 md:mx-12 md:mt-12">
       <Link
         className={buttonVariants({ variant: "ghost" })}
         href="/dashboard/marketplace"
       >
         <ArrowLeft /> Back
       </Link>
-      <div className="mt-4 grid grid-cols-1 gap-8 lg:grid-cols-2">
+      <div className="mt-4 grid grid-cols-1 gap-6 md:gap-8 lg:grid-cols-2">
         <div className="bg-muted relative aspect-3/2 overflow-hidden rounded-lg border">
           {template.thumbnail ? (
             <Image
@@ -90,9 +90,11 @@ export default function ClientView() {
           )}
         </div>
 
-        <div className="space-y-6">
+        <div className="space-y-4 md:space-y-6">
           <div className="flex flex-wrap items-center justify-between gap-4">
-            <h1 className="text-3xl font-bold">{template.name}</h1>
+            <h1 className="text-xl font-bold md:text-2xl lg:text-3xl">
+              {template.name}
+            </h1>
             <span className="bg-background text-muted-foreground rounded-md border px-3 py-1 text-sm">
               Authentication
             </span>
@@ -103,8 +105,13 @@ export default function ClientView() {
             <span>${template.price || "0"}</span>
           </div>
 
-          <div className="flex items-center gap-6">
-            <Button onClick={handleLikeClick} variant={"outline"} size={"lg"}>
+          <div className="flex flex-col items-stretch gap-3 sm:flex-row sm:items-center sm:gap-6">
+            <Button
+              onClick={handleLikeClick}
+              variant={"outline"}
+              size={"lg"}
+              className="w-full sm:w-auto"
+            >
               <Heart className="h-5 w-5" />
               <span>{template.like_count || 0} likes</span>
             </Button>

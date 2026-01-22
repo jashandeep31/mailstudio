@@ -35,7 +35,7 @@ export default function ClientView() {
   }
   return (
     <>
-      <div className="p-5">
+      <div className="mx-3 mt-3 md:mx-12 md:mt-12">
         <div className="flex items-center justify-between">
           <h1 className="text-lg font-semibold tracking-tight md:text-xl lg:text-3xl">
             My Brand kits
@@ -43,8 +43,8 @@ export default function ClientView() {
           <Button onClick={() => setDialogOpen(true)}>+ Brand Kit</Button>
           <BrandKitDialog open={dialogOpen} onOpenChange={setDialogOpen} />
         </div>
-        <div className="mt-4 md:mt-4">
-          <div className="md:grid-col-2 grid-col-1 grid grid-cols-4 gap-6">
+        <div className="mt-4 md:mt-6">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-3 md:gap-6 lg:grid-cols-4">
             {brandkitsRes?.data?.map((brandKit) => (
               <div
                 className="bg-background flex aspect-3/2 flex-col rounded-lg border p-3"

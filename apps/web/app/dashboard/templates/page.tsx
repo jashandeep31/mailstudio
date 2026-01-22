@@ -29,25 +29,24 @@ export default function TemplatesPage() {
   }
 
   return (
-    <div className="space-y-8 px-6 py-8">
+    <div className="mx-3 mt-3 md:mx-12 md:mt-12 md:space-y-8">
       {/* Header */}
-      <div className="flex flex-wrap items-center justify-between gap-4">
-        <div className="space-y-1">
-          <h1 className="text-3xl font-semibold tracking-tight">
-            My Templates
-          </h1>
-          <p className="text-muted-foreground">
-            Manage and edit your email designs.
-          </p>
-        </div>
+      <div className="">
+        <h1 className="text-lg font-semibold tracking-tight md:text-xl lg:text-3xl">
+          My Templates
+        </h1>
+        <p className="text-muted-foreground text-sm md:text-base">
+          Manage and edit your email designs.
+        </p>
+      </div>
+      <div className="my-6 flex justify-end md:my-auto md:justify-start">
         <Link href="/dashboard" className={buttonVariants()}>
           <Plus className="h-4 w-4" />
           New Template
         </Link>
       </div>
-
       {/* Grid */}
-      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-3 md:gap-6 lg:grid-cols-4">
         {templates?.map((template) => (
           <DashboardTemplateCard
             key={template.id}

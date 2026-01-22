@@ -30,13 +30,15 @@ export default function ClientView() {
   ];
 
   return (
-    <div className="container mx-auto mt-12 px-4 py-6">
+    <div className="mx-3 mt-3 md:mx-12 md:mt-12">
       {/* Header with Search */}
-      <div className="mb-8 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+      <div className="mb-3 flex flex-col gap-4 md:mb-8 lg:flex-row lg:items-center lg:justify-between">
         <div>
-          <h1 className="mb-2 text-2xl font-bold">Mail Template Marketplace</h1>
+          <h1 className="text-lg font-semibold tracking-tight md:text-xl lg:text-3xl">
+            Mail Template Marketplace
+          </h1>
         </div>
-        <div className="relative max-w-md lg:max-w-sm">
+        {/* <div className="relative max-w-md lg:max-w-sm">
           <Search className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 transform" />
           <Input
             placeholder="Search templates..."
@@ -44,14 +46,16 @@ export default function ClientView() {
             onChange={(e) => setSearchQuery(e.target.value)}
             className="pl-10"
           />
-        </div>
+        </div> */}
       </div>
 
       {/* Filter Buttons */}
-      <div className="mb-8 space-y-4">
+      <div className="mb-6 space-y-4 md:mb-8">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
           <div>
-            <h3 className="mb-3 text-sm font-medium">Categories</h3>
+            <h3 className="text-muted-foreground mb-3 text-sm font-medium">
+              Categories
+            </h3>
             <div className="flex flex-wrap gap-2">
               <Button
                 key={"all"}
@@ -77,7 +81,9 @@ export default function ClientView() {
           </div>
 
           <div>
-            <h3 className="mb-3 text-sm font-medium">Type</h3>
+            <h3 className="text-muted-foreground mb-3 text-sm font-medium">
+              Type
+            </h3>
             <div className="flex flex-wrap gap-2">
               {types.map((type) => (
                 <Button
@@ -100,7 +106,7 @@ export default function ClientView() {
         </div>
       )}
 
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-3 md:gap-6 lg:grid-cols-4">
         {templates?.map((template) => (
           <MailTemplateCard key={template.id} template={template} />
         ))}
