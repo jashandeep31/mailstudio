@@ -48,7 +48,7 @@ export function DashboardSidebar() {
   const { mutate: deleteChat } = useDeleteChat();
 
   return (
-    <Sidebar className="mt-16 border-0 group-data-[side=left]:border-0">
+    <Sidebar className="border-0 group-data-[side=left]:border-0 md:mt-14">
       <SidebarHeader className="bg-background">
         <MainNav items={mainNav} />
       </SidebarHeader>
