@@ -42,7 +42,7 @@ const app = express();
 
 // TODO: fix this spellings in the dodo payments as we as the code
 app.post(
-  "/api/v1/payments/dodo-webhoook",
+  "/api/v1/payments/dodo-webhook",
   express.raw({ type: "application/json" }),
   handleDodoPaymentWebhook,
 );

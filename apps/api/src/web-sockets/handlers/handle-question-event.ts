@@ -9,7 +9,7 @@ import {
   uploadMediaTable,
 } from "@repo/db";
 import { SocketEventSchemas } from "@repo/shared";
-import z from "zod";
+import { z } from "zod";
 import { WebSocket } from "ws";
 import { streamAndHandleQuestion } from "../functions/stream-and-handle-question.js";
 

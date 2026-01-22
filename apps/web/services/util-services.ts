@@ -1,7 +1,7 @@
 import { BASE_URL } from "@/lib/contants";
 import { getPreSignedUrlSchema } from "@repo/shared";
 import axios from "axios";
-import z from "zod";
+import { z } from "zod";
 
 export const getPresignedUrl = async (
   data: z.infer<typeof getPreSignedUrlSchema>,

@@ -1,13 +1,7 @@
 import { Request, Response } from "express";
 import { catchAsync } from "../../lib/catch-async.js";
 import { and, chatsTable, db, eq } from "@repo/db";
-import z from "zod";
-
-const getMarketplaceTemplatesFilterSchema = z.object({
-  categoryId: z.string().optional(),
-  type: z.string().optional(),
-  query: z.string().optional(),
-});
+import { getMarketplaceTemplatesFilterSchema } from "@repo/shared";
 
 export const getMarketplaceTemplates = catchAsync(
   async (req: Request, res: Response) => {

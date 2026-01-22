@@ -9,7 +9,7 @@ import {
 } from "@repo/db";
 import { SocketEventSchemas } from "@repo/shared";
 import WebSocket from "ws";
-import z from "zod";
+import { z } from "zod";
 
 export const handleChatJoinEvent = async (
   data: z.infer<(typeof SocketEventSchemas)["event:joined-chat"]>,

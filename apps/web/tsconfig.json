@@ -17,5 +17,8 @@
     "next.config.js",
     ".next/types/**/*.ts"
   ],
+  "declaration": true,
+  "emitDeclarationOnly": false,
+  "composite": true,
   "exclude": ["node_modules"]
 }

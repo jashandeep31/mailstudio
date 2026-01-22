@@ -2,7 +2,7 @@ import type WebSocket from "ws";
 import { SocketEventSchemas, SocketEventKeySchema } from "@repo/shared";
 import { handleNewChatEvent } from "./handlers/handle-new-chat-event.js";
 import { handleQuestionEvent } from "./handlers/handle-question-event.js";
-import z from "zod";
+import { z } from "zod";
 import { handleChatJoinEvent } from "./handlers/handle-chat-join-event.js";
 import { ProcesingVersions } from "../state/processing-versions-state.js";
 import { refineTemplateHandler } from "./handlers/refine-template-event.js";

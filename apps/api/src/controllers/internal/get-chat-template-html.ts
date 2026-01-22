@@ -1,4 +1,4 @@
-import z from "zod";
+import { z } from "zod";
 import { catchAsync } from "../../lib/catch-async.js";
 import { Request, Response, NextFunction } from "express";
 import {

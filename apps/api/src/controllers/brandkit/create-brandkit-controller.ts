@@ -1,7 +1,7 @@
 import { AppError } from "../../lib/app-error.js";
 import { Request, Response } from "express";
 import { catchAsync } from "../../lib/catch-async.js";
-import z from "zod";
+import { z } from "zod";
 import axios from "axios";
 import { env } from "../../lib/env.js";
 import { brandKitsTable, db } from "@repo/db";

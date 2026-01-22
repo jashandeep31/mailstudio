@@ -51,3 +51,7 @@ export const getPreSignedUrlSchema = z.object({
   fileName: z.string(),
   size: z.number(),
 });
+
+export const testSchema1 = z.object({
+  name: z.string().optional(),
+});

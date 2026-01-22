@@ -9,7 +9,7 @@ import {
 } from "@repo/db";
 import { validateMediaIds } from "./handle-question-event.js";
 import { SocketEventSchemas } from "@repo/shared";
-import z from "zod";
+import { z } from "zod";
 import { v4 as uuid } from "uuid";
 import { refineMailTemplate } from "../../ai/mail/refine-template/index.js";
 import mjml2html from "mjml";

@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import { catchAsync } from "../../lib/catch-async.js";
 import { AppError } from "../../lib/app-error.js";
 import { and, brandKitsTable, db, eq } from "@repo/db";
-import z from "zod";
+import { z } from "zod";
 
 export const getUserBrandKits = catchAsync(
   async (req: Request, res: Response) => {

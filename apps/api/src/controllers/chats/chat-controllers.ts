@@ -2,7 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import { catchAsync } from "../../lib/catch-async.js";
 import { AppError } from "../../lib/app-error.js";
 import { and, chatsTable, db, desc, eq } from "@repo/db";
-import z from "zod";
+import { z } from "zod";
 
 export const getAllUserChats = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
