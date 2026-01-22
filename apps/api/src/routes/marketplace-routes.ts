@@ -4,9 +4,12 @@ import {
   getMarketplaceTemplates,
 } from "../controllers/markplace/get-templates.js";
 import { purchaseTemplate } from "../controllers/markplace/purchase-template.js";
+import { checkAuthorization } from "../middlewares/check-authorization.js";
 
 const routes: Router = Router();
 routes.route("/templates").get(getMarketplaceTemplates);
 routes.route("/templates/:id").get(getMarketplaceTemplateById);
-routes.route("/purchase-template").post(purchaseTemplate);
+routes
+  .route("/purchase-template")
+  .post(checkAuthorization(["all"]), purchaseTemplate);
 export default routes;

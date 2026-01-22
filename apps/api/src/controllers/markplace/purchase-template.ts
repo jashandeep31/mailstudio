@@ -17,6 +17,7 @@ import {
   gte,
 } from "@repo/db";
 import { addToThumbnailUpdateQueue } from "../../queues/thumbnail-update-queue.js";
+import { revalidateUserCreditWalletCache } from "../../lib/redis/user-credit-wallet-cache.js";
 
 const purchaseTemplateSchema = z.object({
   id: z.string(),
@@ -73,7 +74,6 @@ export const purchaseTemplate = catchAsync(
       const [newVersion] = await tx
         .insert(chatVersionsTable)
         .values({
-          ...prevChatVersion.chat_versions,
           chat_id: newChat.id,
           user_id: userId,
           version_number: 1,
@@ -120,6 +120,7 @@ export const purchaseTemplate = catchAsync(
       return newChat;
     });
     addToThumbnailUpdateQueue(chat.id);
+    await revalidateUserCreditWalletCache(null, userId);
     res.status(200).json({
       status: "success",
       data: {

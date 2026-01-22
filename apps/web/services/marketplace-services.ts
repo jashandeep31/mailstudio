@@ -1,5 +1,5 @@
 import { BASE_URL } from "@/lib/contants";
-import { chatsTable } from "@repo/db";
+import { chatCategoriesTable, chatsTable } from "@repo/db";
 import { getMarketplaceTemplatesFilterSchema } from "@repo/shared";
 import axios from "axios";
 import { z } from "zod";
@@ -20,7 +20,15 @@ export const getMarketplaceTemplates = async (
 
 export const getMarketplaceTemplateById = async (
   id: string,
-): Promise<typeof chatsTable.$inferSelect> => {
+): Promise<{
+  chat: typeof chatsTable.$inferSelect;
+  category: typeof chatCategoriesTable.$inferSelect;
+  user: {
+    firstName: string;
+    lastName: string;
+    avatar: string;
+  };
+}> => {
   const res = await axios.get(`${BASE_URL}/api/v1/marketplace/templates/${id}`);
   return res.data.data;
 };
@@ -33,6 +41,9 @@ export const purchaseTemplate = async (id: string): Promise<{ id: string }> => {
   const res = await axios.post(
     `${BASE_URL}/api/v1/marketplace/purchase-template`,
     { id },
+    {
+      withCredentials: true,
+    },
   );
   return res.data.data;
 };

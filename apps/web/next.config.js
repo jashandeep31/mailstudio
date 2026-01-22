@@ -7,6 +7,11 @@ const nextConfig = {
         hostname: "r2.devsradar.com",
         port: "",
       },
+      {
+        protocol: "https",
+        hostname: "lh3.googleusercontent.com",
+        port: "",
+      },
     ],
   },
 };
