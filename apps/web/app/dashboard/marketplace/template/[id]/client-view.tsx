@@ -122,7 +122,7 @@ export default function ClientView() {
           </div>
 
           {template.user && (
-            <div className="mt-2 mt-3 flex items-center gap-3">
+            <div className="mt-2 flex items-center gap-3 md:mt-3">
               <h3 className="text-muted-foreground text-sm font-medium">
                 Created by
               </h3>

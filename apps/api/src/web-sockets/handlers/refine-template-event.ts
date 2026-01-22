@@ -145,9 +145,7 @@ export const refineTemplateHandler = async ({
     },
   );
 
-  const processingVersion = ProcesingVersions.get(
-    `${socket.userId}::${chatVersion.chat_id}`,
-  );
+  const processingVersion = ProcesingVersions.get(`${chatVersion.chat_id}`);
   if (processingVersion) {
     for (const localSocket of processingVersion.sockets) {
       localSocket.send(
@@ -164,7 +162,7 @@ export const refineTemplateHandler = async ({
   }
   // updating the thumbnail of the refine-template
   addToThumbnailUpdateQueue(data.chatId);
-  ProcesingVersions.delete(`${socket.userId}::${chatVersion.chat_id}`);
+  ProcesingVersions.delete(`${chatVersion.chat_id}`);
   const totalCost =
     refinedMJMLResponse.outputTokensCost +
     refinedMJMLResponse.inputTokensCost +

@@ -41,7 +41,7 @@ export default function PaymentsClientView() {
     <div className="space-y-4">
       <div className="grid gap-4">
         {payments.map((payment) => (
-          <div key={payment.id} className="rounded-lg border p-4">
+          <div key={payment.id} className="bg-background rounded-lg border p-4">
             <div className="flex items-center justify-between">
               <div>
                 <h3 className="font-medium capitalize">{payment.provider}</h3>

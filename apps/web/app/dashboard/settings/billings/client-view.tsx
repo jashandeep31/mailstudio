@@ -41,7 +41,7 @@ export default function BillingClientView() {
     <div className="space-y-4">
       <div className="grid gap-4">
         {billings.map((billing) => (
-          <div key={billing.id} className="rounded-lg border p-4">
+          <div key={billing.id} className="bg-background rounded-lg border p-4">
             <div className="flex items-center justify-between">
               <div>
                 <h3 className="font-medium">

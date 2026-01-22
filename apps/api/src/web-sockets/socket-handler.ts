@@ -74,9 +74,7 @@ export const SocketHandler = async (socket: WebSocket) => {
             return;
           }
           await handleChatJoinEvent(data, socket);
-          const ProcesingVersion = ProcesingVersions.get(
-            `${socket.userId}::${data.chatId}`,
-          );
+          const ProcesingVersion = ProcesingVersions.get(`${data.chatId}`);
           if (!ProcesingVersion) return;
           socket.send(
             JSON.stringify({
@@ -95,9 +93,7 @@ export const SocketHandler = async (socket: WebSocket) => {
 
         case "event:left-chat": {
           const data = getParsedData(event, rawData);
-          const ProcesingVersion = ProcesingVersions.get(
-            `${socket.userId}::${data.chatId}`,
-          );
+          const ProcesingVersion = ProcesingVersions.get(`${data.chatId}`);
           if (!ProcesingVersion) return;
           ProcesingVersion.sockets.delete(socket);
           break;

@@ -26,6 +26,7 @@ const MainCommandMenu = () => {
   }, []);
 
   const commandsList: { label: string; href: string }[] = [
+    { label: "Dashboard", href: "/dashboard" },
     { label: "New Chat", href: "/dashboard" },
     { label: "My Templates", href: "/dashboard/templates" },
     { label: "Marketplace", href: "/dashboard/marketplace" },
@@ -39,7 +40,7 @@ const MainCommandMenu = () => {
         <CommandInput placeholder="Type a command or search..." />
         <CommandList>
           <CommandEmpty>No results found.</CommandEmpty>
-          <CommandGroup heading="Suggestions">
+          <CommandGroup heading="Quick Actions">
             {commandsList.map((command) => (
               <CommandItem
                 className="p-1 text-sm"

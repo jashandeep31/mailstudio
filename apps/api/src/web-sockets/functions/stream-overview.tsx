@@ -28,7 +28,7 @@ export const streamOverview = async ({
   chatId,
   addCurrentSocket,
 }: streamOverview): streamOverviewOutput => {
-  const ProcesingVersionKey = `${socket.userId}::${chatId}`;
+  const ProcesingVersionKey = `${chatId}`;
   const isProcessing = ProcesingVersions.get(ProcesingVersionKey);
   const streamDataTemplate = {
     chatId,

@@ -82,9 +82,8 @@ export const streamAndHandleQuestion = async ({
       generation_instructions: instructions,
     })
     .returning();
-  const processingVersion = ProcesingVersions.get(
-    `${socket.userId}::${chatVersion.chat_id}`,
-  );
+  const processingVersion = ProcesingVersions.get(`${chatVersion.chat_id}`);
+
   if (processingVersion) {
     for (const localSocket of processingVersion.sockets) {
       localSocket.send(
@@ -99,7 +98,7 @@ export const streamAndHandleQuestion = async ({
       );
     }
   }
-  ProcesingVersions.delete(`${socket.userId}::${chatId}`);
+  ProcesingVersions.delete(`${chatId}`);
   // updating the thumbnail of new-template
   addToThumbnailUpdateQueue(chatId);
   const totalCost =

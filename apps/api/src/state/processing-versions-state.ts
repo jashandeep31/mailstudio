@@ -13,3 +13,5 @@ interface ProcesingVersion {
   abortController: AbortController;
 }
 export const ProcesingVersions = new Map<string, ProcesingVersion>();
+
+export const UserOngoingChats = new Map<string, Set<string>>();

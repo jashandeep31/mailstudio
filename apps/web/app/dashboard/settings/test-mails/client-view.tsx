@@ -84,7 +84,7 @@ const TestMailsClientView = () => {
           />
         </div>
 
-        <Table>
+        <Table className="bg-background">
           <TableHeader>
             <TableRow>
               <TableHead>Email</TableHead>

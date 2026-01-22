@@ -1,0 +1,75 @@
+"use client";
+
+import React from "react";
+import { Plus, Loader2 } from "lucide-react";
+import { buttonVariants } from "@repo/ui/components/button";
+import { DashboardTemplateCard } from "@/components/dashboard-template-card";
+import { toast } from "sonner";
+import { useChats, useDeleteChat } from "@/hooks/use-chats";
+import Link from "next/link";
+
+export default function ClientView() {
+  const { data: templates, isLoading } = useChats();
+  const { mutate: deleteTemplate } = useDeleteChat();
+
+  const handleDuplicate = (id: string) => {
+    toast.info(`Duplicate feature coming soon for ${id}`);
+  };
+
+  const handleDelete = (id: string) => {
+    deleteTemplate(id);
+  };
+
+  if (isLoading) {
+    return (
+      <div className="flex h-96 items-center justify-center">
+        <Loader2 className="text-muted-foreground h-8 w-8 animate-spin" />
+      </div>
+    );
+  }
+
+  return (
+    <div className="mx-3 mt-3 md:mx-12 md:mt-12 md:space-y-8">
+      {/* Header */}
+      <div className="flex flex-col justify-between md:flex-row">
+        <div className="">
+          <h1 className="text-lg font-semibold tracking-tight md:text-xl lg:text-3xl">
+            My Templates
+          </h1>
+          <p className="text-muted-foreground text-sm md:text-base">
+            Manage and edit your email designs.
+          </p>
+        </div>
+        <div className="my-6 flex justify-end md:my-auto md:justify-start">
+          <Link href="/dashboard" className={buttonVariants()}>
+            <Plus className="h-4 w-4" />
+            New Template
+          </Link>
+        </div>
+      </div>
+      {/* Grid */}
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-3 md:gap-6 lg:grid-cols-4">
+        {templates?.map((template) => (
+          <DashboardTemplateCard
+            key={template.id}
+            id={template.id}
+            name={template.name}
+            thumbnail={template.thumbnail || undefined}
+            lastModified={new Date(template.updated_at).toLocaleDateString()}
+            onDuplicate={handleDuplicate}
+            onDelete={handleDelete}
+          />
+        ))}
+
+        {/* Empty State */}
+        {templates?.length === 0 && (
+          <div className="col-span-full py-12 text-center">
+            <p className="text-muted-foreground">
+              No templates found. Create one to get started!
+            </p>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
