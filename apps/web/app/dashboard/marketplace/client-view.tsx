@@ -30,7 +30,7 @@ export default function ClientView() {
   ];
 
   return (
-    <div className="container mx-auto px-4 py-6">
+    <div className="container mx-auto mt-12 px-4 py-6">
       {/* Header with Search */}
       <div className="mb-8 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
         <div>
