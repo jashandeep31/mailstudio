@@ -8,6 +8,7 @@ import { Label } from "@repo/ui/components/label";
 import { Button } from "@repo/ui/components/button";
 import { Textarea } from "@repo/ui/components/textarea";
 import { brandKitsTable } from "@repo/db";
+import Image from "next/image";
 import { useUploadMedia } from "@/hooks/use-media-upload";
 import { useEffect, useState } from "react";
 import { createManualBrandKit } from "@/services/brandkit-services";
@@ -19,10 +20,12 @@ export default function CreateOrUpdateBrandKitForm({
 }) {
   // Logo states
   const [logoId, setLogoId] = useState<null | string>(null);
+  const [logoPreview, setLogoPreview] = useState<string | null>(null);
   const { uploadState: logoUploadState, uploadMediaFun: logoUploadFunc } =
     useUploadMedia();
   // logo small icons state
   const [iconLogoId, setIconLogoId] = useState<null | string>(null);
+  const [iconLogoPreview, setIconLogoPreview] = useState<string | null>(null);
   const {
     uploadState: iconLogoUploadState,
     uploadMediaFun: logoIconUploadFunc,
@@ -53,9 +56,19 @@ export default function CreateOrUpdateBrandKitForm({
   }
   const handleLogoUpload = (file: File) => {
     logoUploadFunc(file, "brandKitLogo");
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setLogoPreview(reader.result as string);
+    };
+    reader.readAsDataURL(file);
   };
   const handleIconLogoUpload = (file: File) => {
     logoIconUploadFunc(file, "brandKitIconLogo");
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setIconLogoPreview(reader.result as string);
+    };
+    reader.readAsDataURL(file);
   };
   useEffect(() => {
     if (logoUploadState.state === "uploaded") setLogoId(logoUploadState.id);
@@ -132,44 +145,106 @@ export default function CreateOrUpdateBrandKitForm({
           <div className="grid gap-4 md:grid-cols-2 md:gap-6">
             <div className="space-y-2">
               <Label htmlFor="logo_url">Logo URL</Label>
-              <Input
-                id="logoId"
-                placeholder="https://example.com/logo.png"
-                type="file"
-                onChange={(e) => {
-                  const file = e.target.files?.[0];
-                  if (file) handleLogoUpload(file);
-                }}
-              />
-              {logoUploadState.state === "uploading" ? (
-                <p className="text-xs text-green-800">
-                  Uploading {logoUploadState.percentage}
-                </p>
-              ) : null}
-              {logoUploadState.state === "uploaded" ? (
-                <p className="text-xs text-green-800">Uploading Sucess</p>
-              ) : null}
+              <div className="mb-2 flex items-center gap-3">
+                {logoPreview ? (
+                  <div className="bg-muted relative h-20 w-20 overflow-hidden rounded border">
+                    <Image
+                      src={logoPreview}
+                      alt="New logo preview"
+                      fill
+                      className="object-contain p-1"
+                    />
+                  </div>
+                ) : defaultValues?.logo_url ? (
+                  <div className="bg-muted relative h-20 w-20 overflow-hidden rounded border">
+                    <Image
+                      src={defaultValues.logo_url}
+                      alt="Current logo"
+                      fill
+                      className="object-contain p-1"
+                    />
+                  </div>
+                ) : (
+                  <div className="bg-muted flex h-20 w-20 items-center justify-center rounded border">
+                    <span className="text-muted-foreground text-xs">
+                      No logo
+                    </span>
+                  </div>
+                )}
+                <div className="flex-1">
+                  <Input
+                    id="logoId"
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (file) handleLogoUpload(file);
+                    }}
+                  />
+                  {logoUploadState.state === "uploading" && (
+                    <p className="mt-1 text-xs text-green-800">
+                      Uploading {logoUploadState.percentage}%
+                    </p>
+                  )}
+                  {logoUploadState.state === "uploaded" && (
+                    <p className="mt-1 text-xs text-green-800">
+                      Upload Success
+                    </p>
+                  )}
+                </div>
+              </div>
             </div>
 
             <div className="space-y-2">
               <Label htmlFor="icon_logo_url">Icon Logo URL</Label>
-              <Input
-                id="iconLogoId"
-                type="file"
-                onChange={(e) => {
-                  const file = e.target.files?.[0];
-                  if (file) handleIconLogoUpload(file);
-                }}
-              />
-
-              {iconLogoUploadState.state === "uploading" ? (
-                <p className="text-xs text-green-800">
-                  Uploading {iconLogoUploadState.percentage}
-                </p>
-              ) : null}
-              {iconLogoUploadState.state === "uploaded" ? (
-                <p className="text-xs text-green-800">Uploading Sucess</p>
-              ) : null}
+              <div className="mb-2 flex items-center gap-3">
+                {iconLogoPreview ? (
+                  <div className="bg-muted relative h-20 w-20 overflow-hidden rounded border">
+                    <Image
+                      src={iconLogoPreview}
+                      alt="New icon preview"
+                      fill
+                      className="object-contain p-1"
+                    />
+                  </div>
+                ) : defaultValues?.icon_logo_url ? (
+                  <div className="bg-muted relative h-20 w-20 overflow-hidden rounded border">
+                    <Image
+                      src={defaultValues.icon_logo_url}
+                      alt="Current icon logo"
+                      fill
+                      className="object-contain p-1"
+                    />
+                  </div>
+                ) : (
+                  <div className="bg-muted flex h-20 w-20 items-center justify-center rounded border">
+                    <span className="text-muted-foreground text-xs">
+                      No icon
+                    </span>
+                  </div>
+                )}
+                <div className="flex-1">
+                  <Input
+                    id="iconLogoId"
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (file) handleIconLogoUpload(file);
+                    }}
+                  />
+                  {iconLogoUploadState.state === "uploading" && (
+                    <p className="mt-1 text-xs text-green-800">
+                      Uploading {iconLogoUploadState.percentage}%
+                    </p>
+                  )}
+                  {iconLogoUploadState.state === "uploaded" && (
+                    <p className="mt-1 text-xs text-green-800">
+                      Upload Success
+                    </p>
+                  )}
+                </div>
+              </div>
             </div>
 
             <div className="space-y-2">
