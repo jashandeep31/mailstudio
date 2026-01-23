@@ -36,6 +36,17 @@ export const createBrandKit = async (data: unknown) => {
   return res.data.data;
 };
 
+export const createManualBrandKit = async (data: unknown) => {
+  const res = await axios.post(
+    `${BASE_URL}/api/v1/brandkits/create-manual`,
+    data,
+    {
+      withCredentials: true,
+    },
+  );
+  return res.data.data;
+};
+
 export const deleteBrandKit = async (id: string): Promise<void> => {
   await axios.delete(`${BASE_URL}/api/v1/brandkits/${id}`, {
     withCredentials: true,

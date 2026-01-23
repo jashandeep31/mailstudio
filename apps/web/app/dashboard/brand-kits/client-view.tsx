@@ -91,16 +91,16 @@ export default function ClientView() {
                 >
                   <div className="flex flex-1 items-center justify-center">
                     {brandKit.logo_url ? (
-                      <div className="overflow-hidden rounded-lg">
+                      <div className="relative h-30 w-30 overflow-hidden rounded-lg">
                         <Image
                           fill
                           src={brandKit.logo_url}
                           alt={brandKit.name}
-                          className="h-20 w-20 object-contain"
+                          className="object-contain"
                         />
                       </div>
                     ) : (
-                      <div className="bg-muted flex h-20 w-20 items-center justify-center rounded-lg text-2xl font-semibold uppercase">
+                      <div className="bg-muted flex h-30 w-30 items-center justify-center rounded-lg text-2xl font-semibold uppercase">
                         {brandKit.name[0]}
                       </div>
                     )}

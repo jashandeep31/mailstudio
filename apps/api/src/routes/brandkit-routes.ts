@@ -7,6 +7,7 @@ import {
   getUserBrandKits,
 } from "../controllers/brandkit/brandkit-controller.js";
 import { updateBrandKit } from "../controllers/brandkit/update-brandkit-controller.js";
+import { createManualBrandkit } from "../controllers/brandkit/create-manual-brandkit.js";
 
 const routes: Router = Router();
 
@@ -14,6 +15,9 @@ routes
   .route("/")
   .get(checkAuthorization(["all"]), getUserBrandKits)
   .post(checkAuthorization(["all"]), createBrandKit);
+routes
+  .route("/create-manual")
+  .post(checkAuthorization(["all"]), createManualBrandkit);
 routes
   .route("/:id")
   .get(checkAuthorization(["all"]), getUserBrandKitById)

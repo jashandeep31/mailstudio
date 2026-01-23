@@ -1,5 +1,5 @@
-import React from "react";
+import ClientView from "./client-view";
 
-export const page = () => {
-  return <div>page</div>;
-};
+export default function page() {
+  return <ClientView />;
+}

@@ -10,6 +10,7 @@ import { Textarea } from "@repo/ui/components/textarea";
 import { brandKitsTable } from "@repo/db";
 import { useUploadMedia } from "@/hooks/use-media-upload";
 import { useEffect, useState } from "react";
+import { createManualBrandKit } from "@/services/brandkit-services";
 
 export default function CreateOrUpdateBrandKitForm({
   defaultValues,
@@ -33,12 +34,22 @@ export default function CreateOrUpdateBrandKitForm({
     formState: { errors },
   } = useForm<z.infer<typeof createBrandkitSchema>>({
     resolver: zodResolver(createBrandkitSchema),
-    defaultValues: { ...defaultValues },
+    defaultValues: {
+      ...defaultValues,
+      name: "test website ",
+      website_url: "https://jashan.dev",
+    },
   });
   function onSubmit(data: z.infer<typeof createBrandkitSchema>) {
     if (logoId) data["logoId"] = logoId;
     if (iconLogoId) data["iconLogoId"] = iconLogoId;
-    console.log(data);
+    if (defaultValues) {
+      // TODO: send to the updating funtion
+    } else {
+      //TODO: send to the new fuction
+      const res = createManualBrandKit(data);
+      console.log(res);
+    }
   }
   const handleLogoUpload = (file: File) => {
     logoUploadFunc(file, "brandKitLogo");
