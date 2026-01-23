@@ -11,7 +11,10 @@ import { brandKitsTable } from "@repo/db";
 import Image from "next/image";
 import { useUploadMedia } from "@/hooks/use-media-upload";
 import { useEffect, useState } from "react";
-import { createManualBrandKit } from "@/services/brandkit-services";
+import {
+  createManualBrandKit,
+  updateBrandKit,
+} from "@/services/brandkit-services";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { queryClient } from "@/app/provider";
@@ -52,7 +55,14 @@ export default function CreateOrUpdateBrandKitForm({
     if (iconLogoId) data["iconLogoId"] = iconLogoId;
     const toastId = toast.loading("Creating brand kit...");
     if (defaultValues) {
-      // TODO: send to the updating funtion
+      //  await
+
+      const res = await updateBrandKit({ ...data, id: defaultValues.id });
+      if (res.status === "success") {
+        toast.success("Brand kit updated successfully", { id: toastId });
+        router.push(`/dashboard/brand-kits`);
+        queryClient.invalidateQueries({ queryKey: ["user-brand-kits"] });
+      }
     } else {
       const res = await createManualBrandKit(data);
       if (res.status === "success") {
@@ -65,6 +75,7 @@ export default function CreateOrUpdateBrandKitForm({
       }
     }
   }
+  // Handling the logo upload to the server
   const handleLogoUpload = (file: File) => {
     logoUploadFunc(file, "brandKitLogo");
     const reader = new FileReader();
@@ -73,6 +84,7 @@ export default function CreateOrUpdateBrandKitForm({
     };
     reader.readAsDataURL(file);
   };
+  // Handling the icon logo upload to the server
   const handleIconLogoUpload = (file: File) => {
     logoIconUploadFunc(file, "brandKitIconLogo");
     const reader = new FileReader();
@@ -81,6 +93,8 @@ export default function CreateOrUpdateBrandKitForm({
     };
     reader.readAsDataURL(file);
   };
+
+  // Handling the logo upload states
   useEffect(() => {
     if (logoUploadState.state === "uploaded") setLogoId(logoUploadState.id);
     if (iconLogoUploadState.state === "uploaded")

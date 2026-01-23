@@ -22,11 +22,11 @@ export const getUserBrandKitById = async (
 
 export const updateBrandKit = async (
   data: unknown,
-): Promise<typeof brandKitsTable.$inferSelect> => {
+): Promise<{ status: string; data: { id: string } }> => {
   const res = await axios.put(`${BASE_URL}/api/v1/brandkits/update`, data, {
     withCredentials: true,
   });
-  return res.data.data;
+  return res.data;
 };
 
 export const createBrandKit = async (data: unknown) => {
