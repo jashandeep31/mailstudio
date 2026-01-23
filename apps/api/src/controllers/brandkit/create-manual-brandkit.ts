@@ -31,14 +31,18 @@ export const createManualBrandkit = catchAsync(
     }
 
     // TODO: make it the transaction and remove from the deleting hte images
-    await db.transaction(async (tx) => {
-      await tx.insert(brandKitsTable).values({
-        user_id: userId,
-        ...parsedData,
-        logo_url: urlsData.logo_url,
-        icon_logo_url: urlsData.icon_logo_url,
-      });
+    const brandKit = await db.transaction(async (tx) => {
+      const [brandKit] = await tx
+        .insert(brandKitsTable)
+        .values({
+          user_id: userId,
+          ...parsedData,
+          logo_url: urlsData.logo_url,
+          icon_logo_url: urlsData.icon_logo_url,
+        })
+        .returning();
       // Making the uplaod to used so we don't delte it
+      if (!brandKit) throw new AppError("Failed to create brandkit ", 500);
       const mediaIds: string[] = [
         parsedData.logoId,
         parsedData.iconLogoId,
@@ -49,10 +53,13 @@ export const createManualBrandkit = catchAsync(
           .set({ used: true })
           .where(inArray(uploadMediaTable.id, mediaIds));
       }
+      return brandKit;
     });
     res.status(201).json({
       status: "success",
-      message: "Brand Kit is created",
+      data: {
+        id: brandKit.id,
+      },
     });
     return;
   },

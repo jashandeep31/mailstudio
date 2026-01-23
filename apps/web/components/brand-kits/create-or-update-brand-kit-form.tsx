@@ -12,12 +12,16 @@ import Image from "next/image";
 import { useUploadMedia } from "@/hooks/use-media-upload";
 import { useEffect, useState } from "react";
 import { createManualBrandKit } from "@/services/brandkit-services";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
+import { queryClient } from "@/app/provider";
 
 export default function CreateOrUpdateBrandKitForm({
   defaultValues,
 }: {
   defaultValues?: typeof brandKitsTable.$inferSelect;
 }) {
+  const router = useRouter();
   // Logo states
   const [logoId, setLogoId] = useState<null | string>(null);
   const [logoPreview, setLogoPreview] = useState<string | null>(null);
@@ -43,15 +47,22 @@ export default function CreateOrUpdateBrandKitForm({
       website_url: "https://jashan.dev",
     },
   });
-  function onSubmit(data: z.infer<typeof createBrandkitSchema>) {
+  async function onSubmit(data: z.infer<typeof createBrandkitSchema>) {
     if (logoId) data["logoId"] = logoId;
     if (iconLogoId) data["iconLogoId"] = iconLogoId;
+    const toastId = toast.loading("Creating brand kit...");
     if (defaultValues) {
       // TODO: send to the updating funtion
     } else {
-      //TODO: send to the new fuction
-      const res = createManualBrandKit(data);
-      console.log(res);
+      const res = await createManualBrandKit(data);
+      if (res.status === "success") {
+        console.log(res.data);
+        toast.success("Brand kit created successfully", { id: toastId });
+        router.push(`/dashboard/brand-kits`);
+        queryClient.invalidateQueries({ queryKey: ["user-brand-kits"] });
+      } else {
+        toast.error("Failed to create brand kit", { id: toastId });
+      }
     }
   }
   const handleLogoUpload = (file: File) => {
