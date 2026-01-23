@@ -1,6 +1,7 @@
 import { BASE_URL } from "@/lib/contants";
 import { getPreSignedUrlSchema } from "@repo/shared";
 import axios from "axios";
+import { redirect } from "next/navigation";
 import { z } from "zod";
 
 export const getPresignedUrl = async (
@@ -23,4 +24,14 @@ export const getCategories = async (): Promise<
   const res = await axios.get(`${BASE_URL}/api/v1/utils/categories`);
 
   return res.data.data;
+};
+
+export const logoutUser = async (): Promise<void> => {
+  const res = await axios.get(`${BASE_URL}/api/v1/logout`, {
+    withCredentials: true,
+  });
+  console.log(res);
+  if (res.status === 200) {
+    redirect("/");
+  }
 };

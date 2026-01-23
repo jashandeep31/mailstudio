@@ -1,14 +1,6 @@
 "use client";
 
-import {
-  Moon,
-  Sun,
-  Settings,
-  CreditCard,
-  Package,
-  LogOut,
-  User,
-} from "lucide-react";
+import { Moon, Sun, Settings, CreditCard, LogOut } from "lucide-react";
 import Link from "next/link";
 import { useTheme } from "next-themes";
 import { Button } from "@repo/ui/components/button";
@@ -26,6 +18,7 @@ import {
   AvatarImage,
 } from "@repo/ui/components/avatar";
 import { useUserMetadata } from "@/hooks/use-user";
+import { logoutUser } from "@/services/util-services";
 
 const ProfileDropdown = () => {
   const { theme, setTheme } = useTheme();
@@ -76,7 +69,7 @@ const ProfileDropdown = () => {
         </DropdownMenuItem>
 
         <DropdownMenuSeparator />
-        <DropdownMenuItem>
+        <DropdownMenuItem onClick={logoutUser}>
           <LogOut className="mr-2 h-4 w-4" />
           <span>Log out</span>
         </DropdownMenuItem>

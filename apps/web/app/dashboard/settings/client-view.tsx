@@ -32,13 +32,13 @@ import {
   getProSubscriptionUrl,
   getSubsriptionManagementUrl,
 } from "@/services/payment-services";
+import { logoutUser } from "@/services/util-services";
 
 const ClientView = () => {
   const { theme, setTheme } = useTheme();
 
-  const handleLogout = () => {
-    // TODO: Implement logout logic
-    console.log("Logout clicked");
+  const handleLogout = async () => {
+    await logoutUser();
   };
   const handlePlanUpgrade = useCallback(async () => {
     const res = await getProSubscriptionUrl();
