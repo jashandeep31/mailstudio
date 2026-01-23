@@ -1,6 +1,8 @@
 import { getPresignedUrl } from "@/services/util-services";
+import { getPreSignedUrlSchema } from "@repo/shared";
 import axios from "axios";
 import { useState } from "react";
+import { z } from "zod";
 type MediaData =
   | {
       state: "nothing";
@@ -19,9 +21,12 @@ export const useUploadMedia = () => {
     state: "nothing",
   });
 
-  const presignedUrl = async (file: File) => {
+  const presignedUrl = async (
+    file: File,
+    type: z.infer<typeof getPreSignedUrlSchema>["key"],
+  ) => {
     return await getPresignedUrl({
-      key: "attachment",
+      key: type,
       fileName: file.name,
       size: file.size,
       contentType: file.type,
@@ -53,15 +58,18 @@ export const useUploadMedia = () => {
       console.log(e);
     }
   };
-  const uploadMedia = async (file: File) => {
+  const uploadMedia = async (
+    file: File,
+    type: z.infer<typeof getPreSignedUrlSchema>["key"],
+  ) => {
     setUploadState({
       state: "nothing",
     });
-    const response = await presignedUrl(file);
+    const response = await presignedUrl(file, type);
     uploadToStorage(response.url, response.key, file);
   };
   return {
     uploadState,
-    uploadMedia,
+    uploadMediaFun: uploadMedia,
   };
 };

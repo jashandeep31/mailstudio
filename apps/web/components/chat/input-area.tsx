@@ -39,7 +39,7 @@ export default function InputArea({
   const [uploadedFiles, setUploadedFiles] = React.useState<UploadedFile[]>([]);
   const textareaRef = React.useRef<HTMLTextAreaElement>(null);
   const fileInputRef = React.useRef<HTMLInputElement>(null);
-  const { uploadState, uploadMedia } = useUploadMedia();
+  const { uploadState, uploadMediaFun } = useUploadMedia();
   const baseHeight = 100;
   const maxHeight = baseHeight * 1.5;
   const MAX_FILES = 2;
@@ -68,10 +68,10 @@ export default function InputArea({
       if (nextFile) {
         setUploadingFile({ file: nextFile, percentage: 0 });
         setUploadQueue((prev) => prev.slice(1));
-        uploadMedia(nextFile);
+        uploadMediaFun(nextFile, "attachment");
       }
     }
-  }, [uploadQueue, uploadingFile, uploadMedia]);
+  }, [uploadQueue, uploadingFile, uploadMediaFun]);
 
   // Monitor upload state changes
   React.useEffect(() => {

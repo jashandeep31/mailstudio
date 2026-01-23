@@ -1,9 +1,7 @@
 import { Request, Response } from "express";
 import { catchAsync } from "../../lib/catch-async.js";
 import { AppError } from "../../lib/app-error.js";
-import z, { object } from "zod";
 import { r2GetSignedUrl } from "../../lib/configs/r2-config.js";
-import { v4 as uuidv4 } from "uuid";
 import { uploadRegistry } from "../../lib/configs/upload-registery.js";
 import { db, uploadMediaTable } from "@repo/db";
 import { getPreSignedUrlSchema } from "@repo/shared";
@@ -31,6 +29,11 @@ export const getPreSignedUrl = catchAsync(
       case "attachment":
         mediaAccessPath = uploadConfig.getPathKey(fileName);
         break;
+
+      case "brandKitLogo":
+        mediaAccessPath = uploadConfig.getPathKey(fileName);
+        break;
+
       default:
         throw new AppError("Invalid upload key", 400);
     }

@@ -8,12 +8,25 @@ import { Label } from "@repo/ui/components/label";
 import { Button } from "@repo/ui/components/button";
 import { Textarea } from "@repo/ui/components/textarea";
 import { brandKitsTable } from "@repo/db";
+import { useUploadMedia } from "@/hooks/use-media-upload";
+import { useEffect, useState } from "react";
 
 export default function CreateOrUpdateBrandKitForm({
   defaultValues,
 }: {
   defaultValues?: typeof brandKitsTable.$inferSelect;
 }) {
+  // Logo states
+  const [logoId, setLogoId] = useState<null | string>(null);
+  const { uploadState: logoUploadState, uploadMediaFun: logoUploadFunc } =
+    useUploadMedia();
+  // logo small icons state
+  const [iconLogoId, setIconLogoId] = useState<null | string>(null);
+  const {
+    uploadState: iconLogoUploadState,
+    uploadMediaFun: logoIconUploadFunc,
+  } = useUploadMedia();
+
   const {
     register,
     handleSubmit,
@@ -22,7 +35,25 @@ export default function CreateOrUpdateBrandKitForm({
     resolver: zodResolver(createBrandkitSchema),
     defaultValues: { ...defaultValues },
   });
-  function onSubmit(data: z.infer<typeof createBrandkitSchema>) {}
+  function onSubmit(data: z.infer<typeof createBrandkitSchema>) {
+    if (logoId) data["logoId"] = logoId;
+    if (iconLogoId) data["iconLogoId"] = iconLogoId;
+    console.log(data);
+  }
+  const handleLogoUpload = (file: File) => {
+    logoUploadFunc(file, "brandKitLogo");
+  };
+  const handleIconLogoUpload = (file: File) => {
+    logoIconUploadFunc(file, "brandKitIconLogo");
+  };
+  useEffect(() => {
+    if (logoUploadState.state === "uploaded") setLogoId(logoUploadState.id);
+    if (iconLogoUploadState.state === "uploaded")
+      setIconLogoId(iconLogoUploadState.id);
+    return () => {
+      return;
+    };
+  }, [logoUploadState, iconLogoUploadState]);
 
   return (
     <div>
@@ -87,47 +118,62 @@ export default function CreateOrUpdateBrandKitForm({
 
         <div className="space-y-4">
           <h2 className="text-lg font-medium">Brand Assets</h2>
+          <div className="grid gap-4 md:grid-cols-2 md:gap-6">
+            <div className="space-y-2">
+              <Label htmlFor="logo_url">Logo URL</Label>
+              <Input
+                id="logoId"
+                placeholder="https://example.com/logo.png"
+                type="file"
+                onChange={(e) => {
+                  const file = e.target.files?.[0];
+                  if (file) handleLogoUpload(file);
+                }}
+              />
+              {logoUploadState.state === "uploading" ? (
+                <p className="text-xs text-green-800">
+                  Uploading {logoUploadState.percentage}
+                </p>
+              ) : null}
+              {logoUploadState.state === "uploaded" ? (
+                <p className="text-xs text-green-800">Uploading Sucess</p>
+              ) : null}
+            </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="logo_url">Logo URL</Label>
-            <Input
-              id="logo_url"
-              placeholder="https://example.com/logo.png"
-              {...register("logo_url")}
-            />
-            {errors.logo_url && (
-              <p className="text-destructive text-sm">
-                {errors.logo_url.message}
-              </p>
-            )}
-          </div>
+            <div className="space-y-2">
+              <Label htmlFor="icon_logo_url">Icon Logo URL</Label>
+              <Input
+                id="iconLogoId"
+                type="file"
+                onChange={(e) => {
+                  const file = e.target.files?.[0];
+                  if (file) handleIconLogoUpload(file);
+                }}
+              />
 
-          <div className="space-y-2">
-            <Label htmlFor="icon_logo_url">Icon Logo URL</Label>
-            <Input
-              id="icon_logo_url"
-              placeholder="https://example.com/icon.png"
-              {...register("icon_logo_url")}
-            />
-            {errors.icon_logo_url && (
-              <p className="text-destructive text-sm">
-                {errors.icon_logo_url.message}
-              </p>
-            )}
-          </div>
+              {iconLogoUploadState.state === "uploading" ? (
+                <p className="text-xs text-green-800">
+                  Uploading {iconLogoUploadState.percentage}
+                </p>
+              ) : null}
+              {iconLogoUploadState.state === "uploaded" ? (
+                <p className="text-xs text-green-800">Uploading Sucess</p>
+              ) : null}
+            </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="font_family">Font Family</Label>
-            <Input
-              id="font_family"
-              placeholder="Inter, Arial, sans-serif"
-              {...register("font_family")}
-            />
-            {errors.font_family && (
-              <p className="text-destructive text-sm">
-                {errors.font_family.message}
-              </p>
-            )}
+            <div className="space-y-2">
+              <Label htmlFor="font_family">Font Family</Label>
+              <Input
+                id="font_family"
+                placeholder="Inter, Arial, sans-serif"
+                {...register("font_family")}
+              />
+              {errors.font_family && (
+                <p className="text-destructive text-sm">
+                  {errors.font_family.message}
+                </p>
+              )}
+            </div>
           </div>
         </div>
 
