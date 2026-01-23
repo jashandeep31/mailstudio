@@ -10,8 +10,8 @@ export const createBrandkitSchema = z.object({
   copyright: z.string().nullable().optional(),
   desclaimer: z.string().nullable().optional(),
 
-  logo_url: z.string().nullable().optional(),
-  icon_logo_url: z.string().nullable().optional(),
+  logoId: z.string().nullable().optional(),
+  iconLogoId: z.string().nullable().optional(),
 
   primary_color: z.string().nullable().optional(),
   secondary_color: z.string().nullable().optional(),
