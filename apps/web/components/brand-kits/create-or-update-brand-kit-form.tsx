@@ -46,8 +46,6 @@ export default function CreateOrUpdateBrandKitForm({
     resolver: zodResolver(createBrandkitSchema),
     defaultValues: {
       ...defaultValues,
-      name: "test website ",
-      website_url: "https://jashan.dev",
     },
   });
   async function onSubmit(data: z.infer<typeof createBrandkitSchema>) {
