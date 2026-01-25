@@ -57,7 +57,7 @@ const page = async () => {
               <Sparkles className="h-4 w-4" /> Start Generating
             </Link>
             <Link
-              href="/marketplace"
+              href="/dashboard/marketplace"
               className={cn(
                 buttonVariants({ variant: "outline", size: "lg" }),
                 "gap-2",
@@ -301,24 +301,6 @@ const page = async () => {
           </div>
         </div>
       </section>
-
-      {/* Footer */}
-      <footer className="border-t py-6 md:px-8 md:py-0">
-        <div className="container mx-auto flex flex-col items-center justify-between gap-4 md:h-24 md:flex-row">
-          <p className="text-muted-foreground text-center text-sm leading-loose text-balance md:text-left">
-            Built by{" "}
-            <a
-              href="https://x.com/jashandeep31"
-              target="_blank"
-              rel="noreferrer"
-              className="font-medium underline underline-offset-4"
-            >
-              @jashandeep31
-            </a>
-            .
-          </p>
-        </div>
-      </footer>
     </div>
   );
 };

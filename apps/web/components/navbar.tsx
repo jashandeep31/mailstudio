@@ -13,13 +13,15 @@ export default function Navbar() {
       link: "/",
     },
     { label: "About", link: "/about" },
-    { label: "Contact", link: "/contact" },
+    { label: "Contact", link: "/contact-us" },
   ];
   return (
     <div className="py-3">
-      <div className="container flex justify-between items-center">
+      <div className="container flex items-center justify-between">
         <div className="flex items-center gap-12">
-          <h2 className="text-lg font-bold">Mail Studio</h2>
+          <Link href={"/"}>
+            <h2 className="text-lg font-bold">Mail Studio</h2>
+          </Link>
           <div className="flex items-center gap-6">
             {navbarLinks.map((navLink) => (
               <nav key={navLink.link} className="text-sm">
