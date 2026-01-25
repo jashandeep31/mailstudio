@@ -32,7 +32,7 @@ const page = async () => {
         <div className="z-10 mx-auto max-w-4xl space-y-4">
           <div className="focus:ring-ring bg-secondary text-secondary-foreground hover:bg-secondary/80 mb-4 inline-flex items-center rounded-full border border-transparent px-2.5 py-0.5 text-xs font-semibold transition-colors focus:ring-2 focus:ring-offset-2 focus:outline-none">
             <span className="mr-2 flex h-2 w-2 rounded-full bg-sky-500"></span>
-            v1.0 is now live
+            Beta Version
           </div>
 
           <h1 className="from-foreground to-foreground/70 bg-gradient-to-r bg-clip-text pb-2 text-4xl font-extrabold tracking-tight text-transparent sm:text-5xl md:text-6xl lg:text-7xl">
