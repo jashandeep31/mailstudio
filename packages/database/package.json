@@ -9,7 +9,8 @@
     "drizzle:generate": "tsx node_modules/drizzle-kit/bin.cjs generate",
     "drizzle:push": "tsx node_modules/drizzle-kit/bin.cjs push",
     "drizzle:studio": "tsx node_modules/drizzle-kit/bin.cjs studio",
-    "dev": "tsc-watch --onSuccess \"node dist/index.js\""
+    "dev": "tsc-watch --onSuccess \"node dist/index.js\"",
+    "build": "tsx node_modules/drizzle-kit/bin.cjs generate"
   },
   "exports": {
     ".": "./dist/index.js"
