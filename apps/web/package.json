@@ -5,7 +5,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev --port 3000",
-    "build": "npx turbo build --filter=@repo/db  && npx turbo build --filter=@repo/shared && next build",
+    "build": "next build",
     "start": "next start",
     "lint": "eslint --max-warnings 0",
     "check-types": "next typegen && tsc --noEmit"
