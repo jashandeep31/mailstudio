@@ -1,0 +1,6 @@
+{
+  "buildCommand": "npx turbo build && npx turbo db:generate && pnpm velite && next build",
+  "installCommand": "pnpm install",
+  "framework": "nextjs",
+  "outputDirectory": ".next"
+}
