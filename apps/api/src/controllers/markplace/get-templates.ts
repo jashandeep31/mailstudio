@@ -14,7 +14,6 @@ import { AppError } from "../../lib/app-error.js";
 
 export const getMarketplaceTemplates = catchAsync(
   async (req: Request, res: Response) => {
-    console.log(JSON.stringify(req.query));
     const { categoryId, type, query } =
       getMarketplaceTemplatesFilterSchema.parse(req.query);
 
