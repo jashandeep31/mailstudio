@@ -10,7 +10,7 @@
     "drizzle:push": "tsx node_modules/drizzle-kit/bin.cjs push",
     "drizzle:studio": "tsx node_modules/drizzle-kit/bin.cjs studio",
     "dev": "tsc-watch --onSuccess \"node dist/index.js\"",
-    "build": "tsx node_modules/drizzle-kit/bin.cjs generate"
+    "build": "tsx node_modules/drizzle-kit/bin.cjs generate && npx tsc"
   },
   "exports": {
     ".": "./dist/index.js"
