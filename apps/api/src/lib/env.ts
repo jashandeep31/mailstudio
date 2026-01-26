@@ -3,6 +3,7 @@ dotenv.config();
 
 export const env = {
   PORT: process.env.PORT!,
+  ENVOIRONMENT: process.env.ENVOIRONMENT!,
   GOOGLE_AUTH_CLIENT_ID: process.env.GOOGLE_AUTH_CLIENT_ID!,
   GOOGLE_AUTH_SECRET_KEY: process.env.GOOGLE_AUTH_SECRET_KEY!,
   GOOGLE_AUTH_REDIRECT_URI: process.env.GOOGLE_AUTH_REDIRECT_URI!,

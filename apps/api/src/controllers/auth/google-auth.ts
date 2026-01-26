@@ -55,6 +55,8 @@ export const googleAuthCallbackController = catchAsync(
       avatar: parsedPayload.picture,
       provider: "google",
     });
+    const isProd = env.ENVOIRONMENT !== "development";
+
     res.cookie(
       "session",
       JSON.stringify({
@@ -63,10 +65,11 @@ export const googleAuthCallbackController = catchAsync(
       }),
       {
         httpOnly: true,
-        secure: true,
-        sameSite: "none",
-        domain: ".mailstudio.dev",
+        secure: isProd,
+        sameSite: isProd ? "none" : "lax",
         path: "/",
+        domain: isProd ? ".mailstudio.dev" : undefined,
+        maxAge: 1000 * 60 * 60 * 24 * 30, // 30 days
       },
     );
     res.redirect(`${env.FRONTEND_URL}/dashboard`);
