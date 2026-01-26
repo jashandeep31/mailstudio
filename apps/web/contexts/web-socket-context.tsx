@@ -106,6 +106,7 @@ export default function WebSocketProvider({
     try {
       const ws = new WebSocket(
         `ws://${BASE_URL.replace("https://", "").replace("http://", "")}`,
+        // "ws://localhost:8000",
       );
 
       ws.onopen = () => {

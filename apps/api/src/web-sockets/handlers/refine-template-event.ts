@@ -22,7 +22,10 @@ import { updateUserInstructions } from "../../ai/mail/user-instructions.js";
 import { updateUserCreditWallet } from "../functions/common.js";
 import { addToThumbnailUpdateQueue } from "../../queues/thumbnail-update-queue.js";
 import { getCachedBrandKit } from "../../lib/redis/brand-kit-cache.ts.js";
-import { saveOngoingNewChatVersion } from "../../lib/redis/new-chat-version-cache.js";
+import {
+  removeOngoingNewChatVersion,
+  saveOngoingNewChatVersion,
+} from "../../lib/redis/new-chat-version-cache.js";
 
 interface RefineTemplateHandler {
   data: z.infer<(typeof SocketEventSchemas)["event:refine-template-message"]>;
@@ -121,6 +124,7 @@ export const refineTemplateHandler = async ({
 
   const html_code = mjml2html(refinedMJMLResponse.outputText);
 
+  await removeOngoingNewChatVersion(data.chatId);
   const { chatVersion, chatQuestion, chatOutput } = await db.transaction(
     async (tx) => {
       const [chatVersion] = await tx

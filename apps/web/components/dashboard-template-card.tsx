@@ -54,10 +54,11 @@ export const DashboardTemplateCard = ({
       <div className="bg-muted/20 relative aspect-3/2">
         {thumbnail ? (
           <Image
-            fill
             src={thumbnail}
             alt={name}
             className="h-full w-full object-cover"
+            width={100}
+            height={75}
           />
         ) : (
           <div className="text-muted-foreground/20 flex h-full w-full items-center justify-center">

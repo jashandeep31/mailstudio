@@ -31,3 +31,6 @@ export const saveOngoingNewChatVersion = async (data: ChatVersionAggregate) => {
     5 * 60,
   );
 };
+export const removeOngoingNewChatVersion = async (id: string) => {
+  await redis.del(getKey(id));
+};

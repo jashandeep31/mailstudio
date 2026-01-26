@@ -19,14 +19,20 @@ export const updateUserInstructions = async (
   prompt: string,
   prevInstructions: string,
 ) => {
-  const systemInstruction = prompts["system.updateUserInstructions"]();
+  try {
+    const systemInstruction = prompts["system.updateUserInstructions"]();
 
-  const response = await googleGenAi.models.generateContent({
-    model: "models/gemini-flash-latest",
-    contents: [{ text: prompt }, { text: prevInstructions }],
-    config: {
-      systemInstruction,
-    },
-  });
-  return response.text!;
+    const response = await googleGenAi.models.generateContent({
+      model: "models/gemini-flash-latest",
+      contents: [{ text: prompt }, { text: prevInstructions }],
+      config: {
+        systemInstruction,
+      },
+    });
+    console.log(`system upated`);
+    return response.text!;
+  } catch (e) {
+    console.log(e);
+    return "";
+  }
 };

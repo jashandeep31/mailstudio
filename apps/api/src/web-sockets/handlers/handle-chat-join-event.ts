@@ -44,7 +44,7 @@ export const handleChatJoinEvent = async (
       data: {
         versions: [
           ...versions.reverse(),
-          ...(OngoingVersion ? [JSON.parse(OngoingVersion)] : []),
+          ...(OngoingVersion ? [OngoingVersion] : []),
         ],
       },
     }),

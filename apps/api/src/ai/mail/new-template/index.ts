@@ -8,7 +8,6 @@ import {
   getValidFiles,
 } from "../utils/file-upload.js";
 import { buildContent } from "../utils/content-builder.js";
-import { retryWithDelay } from "../utils/retry.js";
 import { AiFunctionResponse } from "../../types.js";
 import {
   getBrankitInAIFormatedWay,
@@ -62,15 +61,13 @@ const refinePrompt = async (
   console.log("Refining prompt...");
 
   const MODEL = models["gemini-3-pro-preview"];
-  const response = await retryWithDelay(() =>
-    googleGenAi.models.generateContent({
-      model: MODEL.name,
-      contents: content,
-      config: {
-        systemInstruction: prompts["system.newTemplate.properPrompt"](),
-      },
-    }),
-  );
+  const response = await googleGenAi.models.generateContent({
+    model: MODEL.name,
+    contents: content,
+    config: {
+      systemInstruction: prompts["system.newTemplate.properPrompt"](),
+    },
+  });
 
   return parseAiFunctionResponse(
     response,
@@ -84,15 +81,14 @@ const generateTemplate = async (
 ): Promise<AiFunctionResponse> => {
   console.log("Generating template...");
   const MODEL = models["gemini-3-pro-preview"];
-  const response = await retryWithDelay(() =>
-    googleGenAi.models.generateContent({
-      model: MODEL.name,
-      contents: content,
-      config: {
-        systemInstruction: prompts["system.newTemplate.generation"](),
-      },
-    }),
-  );
+  const response = await googleGenAi.models.generateContent({
+    model: MODEL.name,
+    contents: content,
+    config: {
+      systemInstruction: prompts["system.newTemplate.generation"](),
+    },
+  });
+
   return parseAiFunctionResponse(
     response,
     MODEL.getInputTokensPrice,

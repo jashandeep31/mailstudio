@@ -21,26 +21,16 @@ import { test } from "./test.js";
 import { errorHandler } from "./middlewares/error-hanlder.js";
 import { handleDodoPaymentWebhook } from "./controllers/payments/dodo-payments.js";
 import { checkAllPromptFiles } from "./prompts/index.js";
+import { redis } from "./lib/db.js";
 
-// TODO: think of the better alternative to this approach
-// Global error handlers to prevent server crashes
-// process.on("unhandledRejection", (reason, promise) => {
-//   console.error("Unhandled Rejection at:", promise, "reason:", reason);
-// });
-
-// process.on("uncaughtException", (error) => {
-//   console.error("Uncaught Exception:", error);
-// });
-
+redis.flushdb();
 const RANDOM_CODE = Math.floor(Math.random() * 100);
 
 // check the prompt and warn in the console when not found
-// TODO: replace it with the throwing the error instead of just the warning
 checkAllPromptFiles();
 // app config.
 const app = express();
 
-// TODO: fix this spellings in the dodo payments as we as the code
 app.post(
   "/api/v1/payments/dodo-webhook",
   express.raw({ type: "application/json" }),
@@ -84,7 +74,6 @@ app.use("/api/v1/marketplace", marketplaceRoutes);
 app.get("/", checkAuthorization(["all"]), (req, res, next) => {
   res.status(200).json({ message: "hello" });
 });
-
 app.get("/test", (req, res) => {
   const session = req.cookies.session;
   res.status(200).json({
@@ -97,15 +86,15 @@ app.get("/test", (req, res) => {
 app.use(errorHandler);
 const ws = new WebSocketServer({
   server,
-  // verifyClient: (info, done) => {
-  //   const origin = info.origin;
-  //   if (!origin || !ALLOWED_DOMAINS.includes(origin)) {
-  //     console.log("❌ WS blocked from:", origin);
-  //     return done(false, 403, "Forbidden");
-  //   }
-  //   console.log("✅ WS allowed from:", origin);
-  //   done(true);
-  // },
+  verifyClient: (info, done) => {
+    const origin = info.origin;
+    if (!origin || !ALLOWED_DOMAINS.includes(origin)) {
+      console.log("❌ WS blocked from:", origin);
+      return done(false, 403, "Forbidden");
+    }
+    console.log("✅ WS allowed from:", origin);
+    done(true);
+  },
 });
 
 ws.on("connection", async (socket, req) => {
