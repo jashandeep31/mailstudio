@@ -104,7 +104,9 @@ export default function WebSocketProvider({
   );
   const connect = useCallback(() => {
     try {
-      const ws = new WebSocket(`ws://${BASE_URL.replace("https://", "")}`);
+      const ws = new WebSocket(
+        `ws://${BASE_URL.replace("https://", "").replace("http://", "")}`,
+      );
 
       ws.onopen = () => {
         socketRef.current = ws;

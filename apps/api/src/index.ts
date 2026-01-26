@@ -97,6 +97,15 @@ app.get("/test", (req, res) => {
 app.use(errorHandler);
 const ws = new WebSocketServer({
   server,
+  // verifyClient: (info, done) => {
+  //   const origin = info.origin;
+  //   if (!origin || !ALLOWED_DOMAINS.includes(origin)) {
+  //     console.log("❌ WS blocked from:", origin);
+  //     return done(false, 403, "Forbidden");
+  //   }
+  //   console.log("✅ WS allowed from:", origin);
+  //   done(true);
+  // },
 });
 
 ws.on("connection", async (socket, req) => {

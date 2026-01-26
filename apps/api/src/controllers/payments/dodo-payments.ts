@@ -144,6 +144,8 @@ export const handleDodoPaymentWebhook = catchAsync(
     const productId = subscription.product_id;
     const settlementAmount = paymentData.settlement_amount / 100;
     const taxAmount = (paymentData.settlement_tax ?? 0) / 100;
+    const price = subscription.recurring_pre_tax_amount / 100;
+
     const newCredits = productId === plan ? 10 : 0;
 
     await db.transaction(async (tx) => {
@@ -189,7 +191,7 @@ export const handleDodoPaymentWebhook = catchAsync(
           subscription_id: subscriptionId,
           customer_id: customerId,
           active: true,
-          price: String(newCredits),
+          price: String(price),
           active_from: new Date(subscription.created_at),
           renew_at: new Date(subscription.next_billing_date),
           ends_at: subscription.cancel_at_next_billing_date

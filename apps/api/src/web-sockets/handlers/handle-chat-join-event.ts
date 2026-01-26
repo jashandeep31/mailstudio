@@ -10,6 +10,7 @@ import {
 import { SocketEventSchemas } from "@repo/shared";
 import WebSocket from "ws";
 import { z } from "zod";
+import { redis } from "../../lib/db.js";
 
 export const handleChatJoinEvent = async (
   data: z.infer<(typeof SocketEventSchemas)["event:joined-chat"]>,
@@ -35,11 +36,15 @@ export const handleChatJoinEvent = async (
     .orderBy(desc(chatVersionsTable.created_at));
 
   // sending the chat data  to the user
+  const newQuestion = await redis.get(`chat-question::${data.chatId}`);
   socket.send(
     JSON.stringify({
       key: "res:chat-data",
       data: {
-        versions: versions.reverse(),
+        versions: [
+          ...versions.reverse(),
+          ...(newQuestion ? [JSON.parse(newQuestion)] : []),
+        ],
       },
     }),
   );
