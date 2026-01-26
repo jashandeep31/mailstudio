@@ -5,17 +5,7 @@
     "build": {
       "dependsOn": ["^build"],
       "inputs": ["$TURBO_DEFAULT$", ".env*"],
-      "outputs": [".next/**", "!.next/cache/**"]
-    },
-    "build#api": {
-      "outputs": ["dist/**"]
-    },
-    "build#@repo/shared": {
-      "outputs": ["dist/**"]
-    },
-
-    "build#@repo/db": {
-      "outputs": ["dist/**"]
+      "outputs": [".next/**", "!.next/cache/**", "dist/**"]
     },
     "lint": {
       "dependsOn": ["^lint"]

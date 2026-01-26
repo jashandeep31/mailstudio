@@ -22,6 +22,8 @@ const client = new DodoPayments({
   webhookKey: env.DODO_PAYMENTS_WEBHOOK_SECRET,
 });
 
+const plan = env.DODO_STARTER_PRODUCT_ID;
+
 export const getProSubscriptonUrl = catchAsync(
   async (req: Request, res: Response) => {
     if (!req.user) throw new AppError("Authentication is required", 400);
@@ -139,10 +141,10 @@ export const handleDodoPaymentWebhook = catchAsync(
     }
 
     const subscription = await client.subscriptions.retrieve(subscriptionId);
-
+    const productId = subscription.product_id;
     const settlementAmount = paymentData.settlement_amount / 100;
     const taxAmount = (paymentData.settlement_tax ?? 0) / 100;
-    const newCredits = subscription.recurring_pre_tax_amount / 100;
+    const newCredits = productId === plan ? 10 : 0;
 
     await db.transaction(async (tx) => {
       const [paymentTransaction] = await tx
