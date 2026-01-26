@@ -61,7 +61,14 @@ export const googleAuthCallbackController = catchAsync(
         id: user.id,
         role: user.role,
       }),
+      {
+        httpOnly: true,
+        secure: true,
+        sameSite: "none",
+        domain: ".mailstudio.dev",
+        path: "/",
+      },
     );
-    res.redirect(`${env.FRONTEND_URL}/dashboard`)
+    res.redirect(`${env.FRONTEND_URL}/dashboard`);
   },
 );

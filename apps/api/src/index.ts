@@ -63,7 +63,7 @@ app.use(
 );
 app.use(
   cors({
-    origin: "https://mailstudio.dev",
+    origin: "https://www.mailstudio.dev",
     credentials: true,
   }),
 );
