@@ -1,32 +1,27 @@
-FROM node:20-slim AS base
+
+# Base image
+FROM node:20-alpine AS base
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
 RUN corepack enable
 RUN pnpm install turbo --global
-
 WORKDIR /app
 
-
-FROM base AS builder
-COPY . .
-RUN rm -rf apps/web
-RUN rm -rf packages/ui
-RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
-RUN npm run build 
-
-# removing the source files
-RUN  rm -rf apps/api/src
-RUN  rm -rf packages/database/src
-RUN  rm -rf packages/shared/src
-RUN find . -type d -name "src" -exec rm -rf {} +
-
-FROM node:20-slim AS runner
+# Prepare stage (prune monorepo for api)
+FROM base AS prepare
 RUN corepack enable
-ENV NODE_ENV=production
-WORKDIR /app
+COPY . .
+RUN turbo prune api --docker
 
+# Builder stage (install deps + build)
+FROM base AS builder
+COPY --from=prepare /app/out/json/ .
+RUN pnpm install
+COPY --from=prepare /app/out/full/ .
+RUN pnpm turbo build
+
+# Runner stage (production container)
+FROM base AS runner
 COPY --from=builder /app/apps/api ./apps/api
-COPY --from=builder /app/pnpm-lock.yaml ./
-COPY --from=builder /app/pnpm-workspace.yaml ./
-RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --prod --frozen-lockfile
 CMD ["npm" , "start"]
+# docker build -t test -f ./apps/api/Dockerfile .
