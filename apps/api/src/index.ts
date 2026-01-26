@@ -61,9 +61,10 @@ app.use(
     next();
   },
 );
+const ALLOWED_DOMAINS: string[] = env.ALLOWED_DOMAINS.split(",");
 app.use(
   cors({
-    origin: "https://www.mailstudio.dev",
+    origin: ALLOWED_DOMAINS,
     credentials: true,
   }),
 );
