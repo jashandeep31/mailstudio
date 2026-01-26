@@ -39,6 +39,7 @@ import React from "react";
 import { useRouter } from "next/navigation";
 import { useSocketEvents } from "@/zustand-store/socket-events-store";
 import { toast } from "sonner";
+import { BASE_URL } from "@/lib/contants";
 
 export default function WebSocketProvider({
   children,
@@ -103,7 +104,7 @@ export default function WebSocketProvider({
   );
   const connect = useCallback(() => {
     try {
-      const ws = new WebSocket("ws://localhost:8000");
+      const ws = new WebSocket(`ws://${BASE_URL}`);
 
       ws.onopen = () => {
         socketRef.current = ws;
