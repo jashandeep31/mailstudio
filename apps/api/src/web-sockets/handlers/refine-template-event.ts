@@ -22,7 +22,7 @@ import { updateUserInstructions } from "../../ai/mail/user-instructions.js";
 import { updateUserCreditWallet } from "../functions/common.js";
 import { addToThumbnailUpdateQueue } from "../../queues/thumbnail-update-queue.js";
 import { getCachedBrandKit } from "../../lib/redis/brand-kit-cache.ts.js";
-import { redis } from "../../lib/db.js";
+import { saveOngoingNewChatVersion } from "../../lib/redis/new-chat-version-cache.js";
 
 interface RefineTemplateHandler {
   data: z.infer<(typeof SocketEventSchemas)["event:refine-template-message"]>;
@@ -72,14 +72,10 @@ export const refineTemplateHandler = async ({
     created_at: new Date(),
   };
   // Saving the data to the redis so that on the refresh web can send it back to the user
-  await redis.set(
-    `chat-question::${data.chatId}`,
-    JSON.stringify({
-      chat_versions: DummyVersion,
-      chat_version_prompts: DummyQuestion,
-      chat_version_outputs: null,
-    }),
-  );
+  await saveOngoingNewChatVersion({
+    chat_versions: DummyVersion,
+    chat_version_prompts: DummyQuestion,
+  });
   socket.send(
     JSON.stringify({
       key: "res:new-version",
