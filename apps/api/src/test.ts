@@ -1,18 +1,19 @@
-import {
-  chatCategoriesTable,
-  db,
-  usersTable,
-  eq,
-  creditWalletsTable,
-} from "@repo/db";
-import slugify from "slugify";
-import { getMailCategory } from "./ai/mail/get-mail-category.js";
-import { getCachedUserCreditWallet } from "./lib/redis/user-credit-wallet-cache.js";
-/**
- * Test fuction to run the random things
- */
+import { googleGenAi } from "./ai/config.js";
+
 export async function test() {
   console.log("Test is fired 🔥 up ");
+  try {
+    const res = await googleGenAi.models.generateContent({
+      model: "gemini-3-pro-preview",
+      contents: [{ text: "How to write the professional email" }],
+      config: {
+        systemInstruction: "You are a professional email writer1",
+      },
+    });
+    console.log(res);
+  } catch (e) {
+    console.log(e);
+  }
 
   // getMailCategory(`Create the mail template for the user email verification`);
   // const categoriesList = [
@@ -22,7 +23,6 @@ export async function test() {
   //   "marketing",
   //   "notification",
   //   "support",
-  //   "other",
   // ];
   //
   // for (const category of categoriesList) {
