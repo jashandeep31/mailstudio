@@ -1,4 +1,5 @@
 import {
+  DeleteObjectCommand,
   PutObjectCommand,
   PutObjectCommandInput,
   S3Client,
@@ -50,4 +51,14 @@ export const r2GetSignedUrl = async ({
     ContentType: contentType,
   });
   return await getSignedUrl(r2Client, command, { expiresIn: 60 });
+};
+
+export const r2RemoveObject = async (fullPath: string) => {
+  const key = fullPath.replace(env.CLOUDFLARE_R2_PUBLIC_DOMAIN + "/", "");
+  console.log(key);
+  const command = new DeleteObjectCommand({
+    Bucket: env.CLOUDFLARE_R2_BUCKET_NAME,
+    Key: key,
+  });
+  return await r2Client.send(command);
 };
