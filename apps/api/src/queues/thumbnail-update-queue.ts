@@ -5,7 +5,9 @@ import { v4 as uuid } from "uuid";
 import { uploadObjectToR2 } from "../lib/configs/r2-config.js";
 import { chatsTable, db, eq } from "@repo/db";
 
-const templateUpdateQueue = new Queue("thumbnail-update");
+const templateUpdateQueue = new Queue("thumbnail-update", {
+  connection: { url: env.REDIS_URL },
+});
 
 export async function addToThumbnailUpdateQueue(chatId: string) {
   await templateUpdateQueue.add("thumbnail-update", {
@@ -46,7 +48,7 @@ new Worker(
   {
     //TODO: fix the connection in the production
     connection: {
-      port: 6379,
+      url: env.REDIS_URL,
     },
     concurrency: 1,
   },
