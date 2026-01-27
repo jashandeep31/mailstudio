@@ -43,7 +43,7 @@ import { toast } from "sonner";
 const WS_URL =
   process.env.NODE_ENV === "production"
     ? "wss://www.api.mailstudio.dev"
-    : "ws://localhost:4000";
+    : "ws://localhost:8000";
 export default function WebSocketProvider({
   children,
 }: {

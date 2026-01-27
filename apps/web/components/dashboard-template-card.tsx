@@ -57,8 +57,8 @@ export const DashboardTemplateCard = ({
             src={thumbnail}
             alt={name}
             className="h-full w-full object-cover"
-            width={100}
-            height={75}
+            width={600}
+            height={450}
           />
         ) : (
           <div className="text-muted-foreground/20 flex h-full w-full items-center justify-center">
