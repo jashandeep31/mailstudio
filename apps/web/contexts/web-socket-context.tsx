@@ -39,8 +39,11 @@ import React from "react";
 import { useRouter } from "next/navigation";
 import { useSocketEvents } from "@/zustand-store/socket-events-store";
 import { toast } from "sonner";
-import { BASE_URL } from "@/lib/contants";
 
+const WS_URL =
+  process.env.NODE_ENV === "production"
+    ? "wss://www.api.mailstudio.dev"
+    : "ws://localhost:4000";
 export default function WebSocketProvider({
   children,
 }: {
@@ -105,7 +108,7 @@ export default function WebSocketProvider({
   const connect = useCallback(() => {
     try {
       const ws = new WebSocket(
-        `ws://${BASE_URL.replace("https://", "").replace("http://", "")}`,
+        WS_URL,
         // "ws://localhost:8000",
       );
 
