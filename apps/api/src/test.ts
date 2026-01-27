@@ -14,7 +14,7 @@ export async function test() {
   // } catch (e) {
   //   console.log(e);
   // }
-
+  //
   // getMailCategory(`Create the mail template for the user email verification`);
   // const categoriesList = [
   //   "authentication",
