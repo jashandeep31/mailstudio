@@ -19,17 +19,20 @@ RUN pnpm install --frozen-lockfile
 
 COPY --from=prepare /app/out/full/ .
 RUN pnpm turbo build
+RUN find /app -type d -name "node_modules" -prune -exec rm -rf '{}' +
 
-# 🔥 Remove devDependencies AFTER build
-RUN pnpm prune --prod
+RUN --mount=type=cache,id=pnpm,target=/pnpm/store \
+    pnpm install --prod --frozen-lockfile
 
 # ---------- RUNTIME ----------
 FROM node:20-alpine AS runner
 WORKDIR /app
 ENV NODE_ENV=production
-
 COPY --from=builder /app ./
-RUN  rm -rf apps/api/src  packages/shared/src packages/database/src
+
+
 WORKDIR /app/apps/api
+
+
 CMD ["node", "dist/index.js"]
 # docker build -t test -f ./apps/api/Dockerfile .
