@@ -204,7 +204,7 @@ const ClientView = () => {
                   <span className="text-primary text-lg font-semibold">
                     10$
                     <span className="text-muted-foreground text-xs font-normal">
-                      /month
+                      .en /month
                     </span>
                   </span>
                 </div>
