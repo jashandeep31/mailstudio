@@ -2,7 +2,7 @@ import { Job, Queue, Worker } from "bullmq";
 import { env } from "../lib/env.js";
 import axios from "axios";
 import { v4 as uuid } from "uuid";
-import { uploadObjectToR2 } from "../lib/configs/r2-config.js";
+import { r2RemoveObject, uploadObjectToR2 } from "../lib/configs/r2-config.js";
 import { chatsTable, db, eq } from "@repo/db";
 
 const templateUpdateQueue = new Queue("thumbnail-update", {
@@ -28,8 +28,6 @@ new Worker(
       { responseType: "arraybuffer" },
     );
     const buffer = Buffer.from(response.data);
-    console.log(buffer);
-    console.log(response.status);
     const mimeType = response.headers["content-type"] || "image/png";
     const fileKey = `chat-thumbnails/${uuid()}.png`;
     uploadObjectToR2({
@@ -38,6 +36,18 @@ new Worker(
       body: buffer,
     });
     const publicUrl = `${env.CLOUDFLARE_R2_PUBLIC_DOMAIN}/${fileKey}`;
+
+    // Freeing up the space
+    const [chat] = await db
+      .select()
+      .from(chatsTable)
+      .where(eq(chatsTable.id, job.data.id));
+    if (!chat) return;
+    if (chat.thumbnail) {
+      await r2RemoveObject(chat.thumbnail);
+    }
+
+    // Updating the thumbnail url
     await db
       .update(chatsTable)
       .set({
@@ -46,7 +56,6 @@ new Worker(
       .where(eq(chatsTable.id, job.data.id));
   },
   {
-    //TODO: fix the connection in the production
     connection: {
       url: env.REDIS_URL,
     },

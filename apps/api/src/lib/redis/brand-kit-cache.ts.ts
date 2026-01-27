@@ -27,3 +27,7 @@ export const getCachedBrandKit = async (
   await redis.set(getKey(id, userId), JSON.stringify(brandKit), "EX", 60 * 5);
   return brandKit;
 };
+
+export const delCachedBrandKit = async (id: string, userId: string) => {
+  await redis.del(getKey(id, userId));
+};

@@ -3,6 +3,7 @@ import { catchAsync } from "../../lib/catch-async.js";
 import { AppError } from "../../lib/app-error.js";
 import { and, brandKitsTable, db, eq } from "@repo/db";
 import { z } from "zod";
+import { r2RemoveObject } from "../../lib/configs/r2-config.js";
 
 export const getUserBrandKits = catchAsync(
   async (req: Request, res: Response) => {
@@ -46,14 +47,21 @@ export const deleteBrandKit = catchAsync(
   async (req: Request, res: Response) => {
     if (!req.user) throw new AppError("Authorization is required", 400);
     const parsedData = deleteBrandKitSchema.parse(req.params);
-    await db
+    const [brandkit] = await db
       .delete(brandKitsTable)
       .where(
         and(
           eq(brandKitsTable.user_id, req.user.id),
           eq(brandKitsTable.id, parsedData.id),
         ),
-      );
+      )
+      .returning();
+
+    // Freeing up the space`
+    if (brandkit && brandkit.logo_url) await r2RemoveObject(brandkit.logo_url);
+    if (brandkit && brandkit.icon_logo_url)
+      await r2RemoveObject(brandkit.icon_logo_url);
+
     res.status(200).json({
       message: "Deleted the brandkit",
     });

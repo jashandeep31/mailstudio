@@ -1,12 +1,13 @@
 "use client";
 
 import React from "react";
-import { Plus, Loader2 } from "lucide-react";
+import { Plus } from "lucide-react";
 import { buttonVariants } from "@repo/ui/components/button";
 import { DashboardTemplateCard } from "@/components/dashboard-template-card";
 import { toast } from "sonner";
 import { useChats, useDeleteChat } from "@/hooks/use-chats";
 import Link from "next/link";
+import CommonLoader from "@/components/common-loader";
 
 export default function ClientView() {
   const { data: templates, isLoading } = useChats();
@@ -20,13 +21,7 @@ export default function ClientView() {
     deleteTemplate(id);
   };
 
-  if (isLoading) {
-    return (
-      <div className="flex h-96 items-center justify-center">
-        <Loader2 className="text-muted-foreground h-8 w-8 animate-spin" />
-      </div>
-    );
-  }
+  if (isLoading) return <CommonLoader />;
 
   return (
     <div className="mx-3 mt-3 md:mx-12 md:mt-12 md:space-y-8">

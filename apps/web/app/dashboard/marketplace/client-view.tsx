@@ -1,19 +1,14 @@
 "use client";
 
 import React, { useState } from "react";
-import { Search } from "lucide-react";
-
 import { Button } from "@repo/ui/components/button";
-import { Input } from "@repo/ui/components/input";
-
 import { MailTemplateCard } from "@/components/mail-template-card";
 import { useMarketplaceTemplates } from "@/hooks/use-marketplace";
-import { Loader2 } from "lucide-react";
 import { useCategories } from "@/hooks/use-utils";
+import CommonLoader from "@/components/common-loader";
 
 export default function ClientView() {
   const { data: categories } = useCategories();
-  const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategoryId, setSelectedCategoryId] = useState("all");
   const [selectedType, setSelectedType] = useState("all");
 
@@ -38,15 +33,6 @@ export default function ClientView() {
             Mail Template Marketplace
           </h1>
         </div>
-        {/* <div className="relative max-w-md lg:max-w-sm">
-          <Search className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 transform" />
-          <Input
-            placeholder="Search templates..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-10"
-          />
-        </div> */}
       </div>
 
       {/* Filter Buttons */}
@@ -100,11 +86,7 @@ export default function ClientView() {
         </div>
       </div>
 
-      {isLoading && (
-        <div className="flex h-96 items-center justify-center">
-          <Loader2 className="text-muted-foreground h-8 w-8 animate-spin" />
-        </div>
-      )}
+      {isLoading && <CommonLoader />}
 
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-3 md:gap-6 lg:grid-cols-4">
         {templates?.map((template) => (

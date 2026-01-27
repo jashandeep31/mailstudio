@@ -11,6 +11,7 @@ import {
   and,
   inArray,
 } from "@repo/db";
+import { delCachedBrandKit } from "../../lib/redis/brand-kit-cache.ts.js";
 
 const updateBrandkitSchema = createBrandkitSchema.extend({ id: z.string() });
 
@@ -64,6 +65,8 @@ export const updateBrandKit = catchAsync(
           .where(inArray(uploadMediaTable.id, mediaIds));
       }
     });
+
+    await delCachedBrandKit(parsedData.id, userId);
 
     res.status(200).json({
       status: "success",

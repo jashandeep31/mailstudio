@@ -14,6 +14,7 @@ import { BrandKitDialog } from "@/components/dialogs/brand-kit-dialog";
 import { ConfirmationDialog } from "@/components/dialogs/confirmation-dialog";
 import { toast } from "sonner";
 import Image from "next/image";
+import CommonLoader from "@/components/common-loader";
 
 export default function ClientView() {
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -32,16 +33,7 @@ export default function ClientView() {
     });
   };
   if (brandkitsRes.isLoading) {
-    return (
-      <div className="mx-3 mt-3 md:mx-12 md:mt-12">
-        <div className="flex h-96 items-center justify-center">
-          <div className="text-muted-foreground flex items-center gap-2">
-            <Loader2 className="h-6 w-6 animate-spin" />
-            <span>Loading brand kits...</span>
-          </div>
-        </div>
-      </div>
-    );
+    return <CommonLoader />;
   }
   return (
     <>
