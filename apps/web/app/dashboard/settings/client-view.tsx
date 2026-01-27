@@ -202,7 +202,7 @@ const ClientView = () => {
                       : "Free Plan"}
                   </h4>
                   <span className="text-primary text-lg font-semibold">
-                    ${planRes.data.price}
+                    10$
                     <span className="text-muted-foreground text-xs font-normal">
                       /month
                     </span>
