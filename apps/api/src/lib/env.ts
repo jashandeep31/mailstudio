@@ -3,7 +3,7 @@ dotenv.config();
 
 export const env = {
   PORT: process.env.PORT!,
-  ENVOIRONMENT: process.env.ENVOIRONMENT!,
+  ENVOIRONMENT: process.env.ENVOIRONMENT! as "development" | "production",
   ALLOWED_DOMAINS: process.env.ALLOWED_DOMAINS!,
   GOOGLE_AUTH_CLIENT_ID: process.env.GOOGLE_AUTH_CLIENT_ID!,
   REDIS_URL: process.env.REDIS_URL!,
@@ -28,6 +28,8 @@ export const env = {
   INTERNAL_API_KEY: process.env.INTERNAL_API_KEY!,
   PROFIT_PERCENTAGE: Number(process.env.PROFIT_PERCENTAGE!),
   SCREENSHOT_SERVICE_URL: process.env.SCREENSHOT_SERVICE_URL!,
+  DODO_PRODUCT_PRO: process.env.DODO_PRODUCT_PRO!,
+  DODO_PRODUCT_PRO_PLUS: process.env.DODO_PRODUCT_PRO_PLUS!,
 } as const;
 
 // Validate env variables

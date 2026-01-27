@@ -94,17 +94,16 @@ export const handlePaymentSuccessWebhook = async ({
       user_id: userId,
       amount: String(settlementAmount),
       payment_transaction_id: paymentTransaction.id,
-      plan_type: "starter_pack",
+      plan_type: "pro",
     });
 
     await tx
       .update(plansTable)
       .set({
         updated_at: new Date(),
-        plan_type: "starter_pack",
+        plan_type: "pro",
         subscription_id: subscriptionId,
         customer_id: customerId,
-        active: true,
         price: String(price),
         active_from: new Date(subscription.created_at),
         renew_at: new Date(subscription.next_billing_date),

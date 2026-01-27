@@ -2,20 +2,18 @@ import { Request, Response } from "express";
 import { catchAsync } from "../../lib/catch-async.js";
 import { AppError } from "../../lib/app-error.js";
 import DodoPayments from "dodopayments";
-import {
-  billingsTable,
-  creditTransactionsTable,
-  creditWalletsTable,
-  db,
-  eq,
-  paymentTransactionsTable,
-  plansTable,
-  usersTable,
-} from "@repo/db";
+import { db, eq, plansTable, usersTable } from "@repo/db";
 import { env } from "../../lib/env.js";
 import { v4 as uuid } from "uuid";
-import { revalidateUserCreditWalletCache } from "../../lib/redis/user-credit-wallet-cache.js";
 import { handlePaymentSuccessWebhook } from "./functions/payment-success.js";
+import { handleSubscriptionCancelledWebhook } from "./functions/subscription-canceled.js";
+import { handleSubscriptionRenewedWebhook } from "./functions/subscription-renewed.js";
+import { handleSubscriptionOnHoldWebhook } from "./functions/subscription-on-hold.js";
+import { handleSubscriptionExpiredWebhook } from "./functions/subscription-expired.js";
+import { handleSubscriptionFailedWebhook } from "./functions/subscription-failed.js";
+import { handleSubscriptionPlanChangedWebhook } from "./functions/subscription-plan-changed.js";
+import { handleSubscriptionUpdatedWebhook } from "./functions/subscription-updated.js";
+import { handleSubscriptionActiveWebhook } from "./functions/subscription-active.js";
 
 export const dodoPaymentClient = new DodoPayments({
   bearerToken: env.DODO_PAYMENTS_API_KEY,
@@ -104,15 +102,67 @@ export const handleDodoPaymentWebhook = catchAsync(
     });
 
     switch (event.type) {
+      // TODO: Remove the payment success web hook
       case "payment.succeeded":
-        await handlePaymentSuccessWebhook({
+        if (env.ENVOIRONMENT === "production") {
+          await handlePaymentSuccessWebhook({
+            event,
+            res,
+          });
+        }
+        break;
+      case "subscription.cancelled":
+        await handleSubscriptionCancelledWebhook({
+          event,
+          res,
+        });
+        break;
+      case "subscription.renewed":
+        await handleSubscriptionRenewedWebhook({
+          event,
+          res,
+        });
+        break;
+      case "subscription.on_hold":
+        await handleSubscriptionOnHoldWebhook({
+          event,
+          res,
+        });
+        break;
+      case "subscription.expired":
+        await handleSubscriptionExpiredWebhook({
+          event,
+          res,
+        });
+        break;
+      case "subscription.failed":
+        await handleSubscriptionFailedWebhook({
+          event,
+          res,
+        });
+        break;
+      case "subscription.plan_changed":
+        await handleSubscriptionPlanChangedWebhook({
+          event,
+          res,
+        });
+        break;
+      case "subscription.updated":
+        await handleSubscriptionUpdatedWebhook({
+          event,
+          res,
+        });
+        break;
+      case "subscription.active":
+        await handleSubscriptionActiveWebhook({
           event,
           res,
         });
         break;
       default:
-        res.status(200).json({ received: true });
+        break;
     }
+    res.status(200).json({ received: true });
     return;
   },
 );
