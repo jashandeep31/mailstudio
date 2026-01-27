@@ -9,17 +9,24 @@ import {
 } from "drizzle-orm/pg-core";
 import { usersTable } from "./users.js";
 
-export const planTypeEnum = pgEnum("plan_type", ["free", "starter_pack"]);
+export const planTypeEnum = pgEnum("plan_type", ["free", "pro", "pro_plus"]);
+export const subscriptionStatusEnum = pgEnum("subscription_status", [
+  "on_hold",
+  "active",
+  "canceled",
+  "paused",
+  "unpaid",
+]);
 
 export const plansTable = pgTable("plans", {
   id: uuid("id").defaultRandom().primaryKey(),
   plan_type: planTypeEnum().notNull(),
+  subscription_status: subscriptionStatusEnum().notNull().default("unpaid"),
   user_id: uuid("user_id")
     .notNull()
     .unique()
     .references(() => usersTable.id),
 
-  active: boolean("active").notNull(),
   subscription_id: varchar("subscription_id"),
   customer_id: varchar("customer_id", { length: 255 }), // sub_*
 
