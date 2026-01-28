@@ -1,14 +1,13 @@
 import axios from "axios";
 import { BASE_URL } from "@/lib/contants";
+import { planTypeEnum } from "@repo/db";
 
-export const getProSubscriptionUrl = async (): Promise<{ url: string }> => {
-  const res = await axios.post(
-    `${BASE_URL}/api/v1/payments/upgrade`,
-    {},
-    {
-      withCredentials: true,
-    },
-  );
+export const getProSubscriptionUrl = async (data: {
+  type: (typeof planTypeEnum.enumValues)[number];
+}): Promise<{ url: string }> => {
+  const res = await axios.post(`${BASE_URL}/api/v1/payments/upgrade`, data, {
+    withCredentials: true,
+  });
   return res.data.data;
 };
 

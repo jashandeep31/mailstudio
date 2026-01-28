@@ -3,6 +3,13 @@ import DodoPayments from "dodopayments";
 import { db, plansTable, eq, planTypeEnum } from "@repo/db";
 import { env } from "../../../lib/env.js";
 
+/**
+  Objectives of this function 
+  1. Handle the sub active only 
+  2. Make the user sub active as per webhook data no manual calculation  should have to be their 
+  3. Don't handle anything of billing or payment that will get handled by the payment.succeses or the other alternate controllers 
+  */
+
 export const handleSubscriptionActiveWebhook = async ({
   event,
 }: {

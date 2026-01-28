@@ -1,15 +1,6 @@
 "use client";
-import React, { useCallback } from "react";
-import {
-  Moon,
-  Sun,
-  LogOut,
-  CreditCard,
-  Wallet,
-  Settings,
-  ChevronRight,
-  Monitor,
-} from "lucide-react";
+import React from "react";
+import { Moon, Sun, LogOut, Wallet, Monitor } from "lucide-react";
 import { useTheme } from "next-themes";
 import { Button } from "@repo/ui/components/button";
 import {
@@ -18,8 +9,8 @@ import {
   CardHeader,
   CardTitle,
 } from "@repo/ui/components/card";
-import { Skeleton } from "@repo/ui/components/skeleton";
 import { SettingsNav } from "@/components/settings/settings-nav";
+import { PlanCard } from "@/components/settings/plan-card";
 import {
   Select,
   SelectContent,
@@ -28,10 +19,6 @@ import {
   SelectValue,
 } from "@repo/ui/components/select";
 import { useUserMetadata, useUserPlan } from "@/hooks/use-user";
-import {
-  getProSubscriptionUrl,
-  getSubsriptionManagementUrl,
-} from "@/services/payment-services";
 import { logoutUser } from "@/services/util-services";
 
 const ClientView = () => {
@@ -40,15 +27,6 @@ const ClientView = () => {
   const handleLogout = async () => {
     await logoutUser();
   };
-  const handlePlanUpgrade = useCallback(async () => {
-    const res = await getProSubscriptionUrl();
-    window.location.href = res.url;
-  }, []);
-
-  const handleSubscriptionManagement = useCallback(async () => {
-    const res = await getSubsriptionManagementUrl();
-    window.location.href = res.url;
-  }, []);
   const planRes = useUserPlan();
   const userMetadata = useUserMetadata();
 
@@ -124,115 +102,7 @@ const ClientView = () => {
         </div>
 
         {/* Current Plan Section - Card */}
-        {planRes.isLoading && (
-          <Card>
-            <CardHeader>
-              <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-3">
-                  <Skeleton className="h-8 w-8 rounded-lg" />
-                  <div className="space-y-2">
-                    <Skeleton className="h-5 w-32" />
-                    <Skeleton className="h-3 w-40" />
-                  </div>
-                </div>
-                <Skeleton className="h-9 w-28" />
-              </div>
-            </CardHeader>
-            <CardContent>
-              <div className="bg-muted/50 rounded-lg border p-4">
-                <div className="mb-3 flex items-center justify-between">
-                  <Skeleton className="h-5 w-24" />
-                  <Skeleton className="h-5 w-20" />
-                </div>
-                <div className="space-y-2">
-                  <Skeleton className="h-3 w-full" />
-                  <Skeleton className="h-3 w-3/4" />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        )}
-        {planRes.data && (
-          <Card>
-            <CardHeader>
-              <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-3">
-                  <div className="bg-primary/10 flex h-8 w-8 items-center justify-center rounded-lg">
-                    <CreditCard className="text-primary h-4 w-4" />
-                  </div>
-                  <div>
-                    <CardTitle className="text-base">
-                      {planRes.data.plan_type
-                        .toUpperCase()
-                        .split("_")
-                        .join(" ")}
-                    </CardTitle>
-                    <p className="text-muted-foreground text-xs">
-                      Renewal date:{" "}
-                      {new Date(planRes.data.renew_at).toLocaleDateString()}
-                    </p>
-                  </div>
-                </div>
-                {planRes.data.plan_type == "free" ? (
-                  <Button
-                    size="sm"
-                    className="gap-2"
-                    onClick={handlePlanUpgrade}
-                  >
-                    <Settings className="h-4 w-4" />
-                    Upgrade plan
-                  </Button>
-                ) : (
-                  <Button
-                    size="sm"
-                    variant="secondary"
-                    onClick={handleSubscriptionManagement}
-                  >
-                    Manage Plan
-                  </Button>
-                )}
-              </div>
-            </CardHeader>
-            <CardContent>
-              <div className="bg-muted/50 rounded-lg border p-4">
-                <div className="mb-3 flex items-center justify-between">
-                  <h4 className="text-foreground text-sm font-medium">
-                    {planRes.data.plan_type === "starter_pack"
-                      ? "Starter Pack"
-                      : "Free Plan"}
-                  </h4>
-                  <span className="text-primary text-lg font-semibold">
-                    10$
-                    <span className="text-muted-foreground text-xs font-normal">
-                      /month
-                    </span>
-                  </span>
-                </div>
-                {planRes.data.plan_type === "starter_pack" && (
-                  <ul className="text-muted-foreground space-y-2 text-xs">
-                    <li className="flex items-center gap-2">
-                      <ChevronRight className="h-3 w-3 shrink-0" />
-                      <span>Get 10 credits each month</span>
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <ChevronRight className="h-3 w-3 shrink-0" />
-                      <span>Create or buy templates.</span>
-                    </li>
-
-                    <li className="flex items-center gap-2">
-                      <ChevronRight className="h-3 w-3 shrink-0" />
-                      <span>Create up to 5 brand kits</span>
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <ChevronRight className="h-3 w-3 shrink-0" />
-                      <span>500 test mails to your own email ids.</span>
-                    </li>
-                  </ul>
-                )}
-              </div>
-            </CardContent>
-          </Card>
-        )}
+        <PlanCard planData={planRes.data} isLoading={planRes.isLoading} />
 
         {/* Credits Section - Card */}
         <Card>

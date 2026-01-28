@@ -81,7 +81,6 @@ export const createUser = async ({
     await tx.insert(plansTable).values({
       user_id: user.id,
       plan_type: "free",
-      active: true,
       subscription_id: null,
       price: "0.00",
       active_from: new Date(),
