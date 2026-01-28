@@ -19,9 +19,9 @@ import { SocketHandler } from "./web-sockets/socket-handler.js";
 import cookie from "cookie";
 import { test } from "./test.js";
 import { errorHandler } from "./middlewares/error-hanlder.js";
-import { handleDodoPaymentWebhook } from "./controllers/payments/dodo-payments.js";
 import { checkAllPromptFiles } from "./prompts/index.js";
 import { redis } from "./lib/db.js";
+import { handleDodoPaymentWebhook } from "./controllers/payments/dodo-webhook.js";
 
 redis.flushdb();
 const RANDOM_CODE = Math.floor(Math.random() * 100);
@@ -38,11 +38,8 @@ const app = express();
 // );
 app.use(express.json());
 
-app.post(
-  "/api/v1/payments/dodo-webhook",
-  // express.raw({ type: "application/json" }),
-  handleDodoPaymentWebhook,
-);
+app.post("/api/v1/payments/dodo-webhook", handleDodoPaymentWebhook);
+
 // global middleware to log the request and response
 app.use(
   (req: express.Request, res: express.Response, next: express.NextFunction) => {

@@ -4,16 +4,20 @@ import {
   paymentTransactionsTable,
   eq,
   billingsTable,
-  creditWalletsTable,
-  creditTransactionsTable,
 } from "@repo/db";
 import DodoPayments from "dodopayments";
 import { Response } from "express";
-import { dodoPaymentClient } from "../dodo-payments.js";
-import { env } from "../../../lib/env.js";
 import { AppError } from "../../../lib/app-error.js";
-import { revalidateUserCreditWalletCache } from "../../../lib/redis/user-credit-wallet-cache.js";
+import { getPlanInfo } from "../../../lib/get-user-info.js";
+import { dodoPaymentClient } from "../dodo-payments.js";
 
+/**
+ * Objectives of this function:
+ * 1. Record the payment transaction
+ * 2. Create billing record
+ * 3. Handle idempotency (prevent duplicate payments if webhook strikes twice)
+ * 4. DO NOT handle subscription status, credits, or plan updates (handled by subscription.active webhook)
+ */
 export const handlePaymentSuccessWebhook = async ({
   event,
   res,
@@ -27,42 +31,61 @@ export const handlePaymentSuccessWebhook = async ({
   const subscriptionId = paymentData.subscription_id;
   const customerId = paymentData.customer.customer_id;
 
-  if (!userId || !orderId || !subscriptionId) {
+  if (!subscriptionId) return;
+  const subscription =
+    await dodoPaymentClient.subscriptions.retrieve(subscriptionId);
+  if (!subscription) return;
+
+  const plan = getPlanInfo(subscription.product_id);
+  if (!plan) return;
+
+  if (!userId || !orderId) {
     console.error("Missing required metadata in webhook payload");
     res.status(200).json({ received: true });
     return;
   }
 
+  // Verify user exists
   const [userPlan] = await db
     .select()
     .from(plansTable)
     .where(eq(plansTable.user_id, userId));
+
   if (!userPlan) {
     console.error(`User plan not found for user: ${userId}`);
     res.status(200).json({ received: true });
     return;
   }
 
-  const [existingPayment] = await db
-    .select()
-    .from(paymentTransactionsTable)
-    .where(eq(paymentTransactionsTable.invoice_id, orderId));
-  if (existingPayment) {
-    console.warn(`Duplicate payment detected for order: ${orderId}`);
-    res.status(200).json({ received: true });
-    return;
-  }
-
-  const subscription =
-    await dodoPaymentClient.subscriptions.retrieve(subscriptionId);
-  const productId = subscription.product_id;
   const settlementAmount = paymentData.settlement_amount / 100;
   const taxAmount = (paymentData.settlement_tax ?? 0) / 100;
-  const price = subscription.recurring_pre_tax_amount / 100;
-
-  const newCredits = productId == env.DODO_STARTER_PRODUCT_ID ? 10 : 0;
 
   await db.transaction(async (tx) => {
+    // Lock the user's plan to prevent race conditions
+    const [lockedPlan] = await tx
+      .select()
+      .from(plansTable)
+      .where(eq(plansTable.user_id, userId))
+      .for("update");
+
+    if (!lockedPlan) {
+      throw new AppError("User plan not found", 404);
+    }
+
+    // Check if this payment has already been processed (idempotency check)
+    const [existingPayment] = await tx
+      .select()
+      .from(paymentTransactionsTable)
+      .where(eq(paymentTransactionsTable.payment_id, paymentData.payment_id));
+
+    if (existingPayment) {
+      console.log(
+        `Payment already processed: ${paymentData.payment_id}, skipping`,
+      );
+      return;
+    }
+
+    // Insert payment transaction record
     const [paymentTransaction] = await tx
       .insert(paymentTransactionsTable)
       .values({
@@ -87,76 +110,21 @@ export const handlePaymentSuccessWebhook = async ({
       .returning();
 
     if (!paymentTransaction) {
-      throw new AppError("Payment transaction not created", 500);
+      throw new AppError("Failed to create payment transaction", 500);
     }
 
+    // Create billing record
     await tx.insert(billingsTable).values({
       user_id: userId,
       amount: String(settlementAmount),
       payment_transaction_id: paymentTransaction.id,
-      plan_type: "pro",
+      plan_type: plan.name, // Get from metadata if available
     });
 
-    await tx
-      .update(plansTable)
-      .set({
-        updated_at: new Date(),
-        plan_type: "pro",
-        subscription_id: subscriptionId,
-        customer_id: customerId,
-        price: String(price),
-        active_from: new Date(subscription.created_at),
-        renew_at: new Date(subscription.next_billing_date),
-        ends_at: subscription.cancel_at_next_billing_date
-          ? new Date(subscription.next_billing_date)
-          : null,
-        cancel_at_next_billing_date:
-          subscription.cancel_at_next_billing_date || false,
-      })
-      .where(eq(plansTable.user_id, userId));
-
-    const [wallet] = await tx
-      .select()
-      .from(creditWalletsTable)
-      .where(eq(creditWalletsTable.user_id, userId))
-      .limit(1);
-
-    if (!wallet) {
-      throw new AppError("Wallet not found", 500);
-    }
-
-    const oldBalance = Number(wallet.balance);
-    const carriedOverBalance = Math.min(oldBalance, 10);
-    const expiredAmount = oldBalance > 10 ? oldBalance - 10 : 0;
-    const newBalance = carriedOverBalance + newCredits;
-
-    await tx
-      .update(creditWalletsTable)
-      .set({
-        updated_at: new Date(),
-        balance: String(newBalance),
-      })
-      .where(eq(creditWalletsTable.user_id, userId));
-
-    if (expiredAmount > 0) {
-      await tx.insert(creditTransactionsTable).values({
-        user_id: userId,
-        wallet_id: wallet.id,
-        amount: String(expiredAmount),
-        after_balance: String(carriedOverBalance),
-        type: "expire",
-        reason: "Previous Plan Upgrade - Balance exceeds 10 credits",
-      });
-    }
-
-    await tx.insert(creditTransactionsTable).values({
-      user_id: userId,
-      wallet_id: wallet.id,
-      amount: String(newCredits),
-      after_balance: String(newBalance),
-      type: "grant",
-      reason: "Plan Upgrade",
-    });
+    console.log(
+      `Payment processed successfully for user ${userId}, payment ${paymentData.payment_id}`,
+    );
   });
-  await revalidateUserCreditWalletCache(null, userId);
+
+  res.status(200).json({ received: true });
 };
