@@ -6,7 +6,7 @@ import { DashboardSidebar } from "@/components/dashboard-sidebar";
 const layout = ({ children }: { children: React.ReactNode }) => {
   return (
     <SidebarProvider className="h-screen">
-      <header className="fixed top-0 z-50 h-14 w-full">
+      <header className="bg-background fixed top-0 z-50 h-14 w-full">
         <DashboardNavbar />
       </header>
       <DashboardSidebar />
