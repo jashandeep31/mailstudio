@@ -1,4 +1,5 @@
 import {
+  creditsGrantsTable,
   creditTransactionsTable,
   creditWalletsTable,
   db,
@@ -10,7 +11,7 @@ import { revalidateUserCreditWalletCache } from "../../lib/redis/user-credit-wal
 
 interface updateUserCreditWallet {
   socket: WebSocket;
-  totalCost: number;
+  totalConsumedAmount: number;
 }
 
 /**
@@ -18,42 +19,78 @@ interface updateUserCreditWallet {
  * @param socket - The WebSocket connection
  * @param totalCost - The total cost of the operation
  */
+
 export const updateUserCreditWallet = async ({
   socket,
-  totalCost,
+  totalConsumedAmount: totalConsumedAmount,
 }: updateUserCreditWallet) => {
-  const wallet = await db.transaction(async (tx) => {
-    //TODO: better mechanism to handle the wallet is needed
+  const result = await db.transaction(async (tx) => {
+    let costLeft = Number(totalConsumedAmount);
+    let totalDeducted = 0;
+
+    // 1️⃣ Lock grants
+    const grants = await tx.execute(sql`
+      SELECT id, remaining_amount
+      FROM ${creditsGrantsTable}
+      WHERE user_id = ${socket.userId}
+        AND remaining_amount > 0 AND is_expired = false
+      ORDER BY expires_at ASC
+      FOR UPDATE
+    `);
+
+    // 2️⃣ Deduct as much as possible
+    for (const grant of grants.rows) {
+      if (costLeft <= 0) break;
+      const remaining = Number(grant.remaining_amount);
+      const deduction = Math.min(remaining, costLeft);
+      await tx.execute(sql`
+        UPDATE ${creditsGrantsTable}
+        SET remaining_amount = remaining_amount - ${deduction},
+            updated_at = NOW()
+        WHERE id = ${grant.id}
+      `);
+      costLeft -= deduction;
+      totalDeducted += deduction;
+    }
+
+    const balanceResult = await tx.execute(sql`
+      SELECT COALESCE(SUM(remaining_amount), 0) AS balance
+      FROM ${creditsGrantsTable}
+      WHERE user_id = ${socket.userId}
+    `);
+
+    if (!balanceResult.rows || balanceResult.rows.length === 0) {
+      return undefined;
+    }
+
+    const newBalance = Number(balanceResult.rows[0]?.balance); // will be 0 if fully drained
+
+    // 4️⃣ Update wallet summary
     const [wallet] = await tx
       .update(creditWalletsTable)
       .set({
+        balance: String(newBalance),
         updated_at: new Date(),
-        balance: sql`${creditWalletsTable.balance} - ${totalCost}`,
       })
       .where(eq(creditWalletsTable.user_id, socket.userId))
       .returning();
-    if (!wallet) return;
-    await tx.insert(creditTransactionsTable).values({
-      wallet_id: wallet.id,
-      user_id: socket.userId,
-      amount: String(Number(totalCost).toFixed(2)),
-      after_balance: Number(wallet.balance) > 0 ? wallet.balance : String(0),
-      type: "spent",
-      reason: "Spent on the ai creation",
-    });
-    if (Number(wallet.balance) < 0) {
-      // updaing the wallet again so that if its in the negative then we can handle it
-      await tx
-        .update(creditWalletsTable)
-        .set({
-          updated_at: new Date(),
-          balance: String(0),
-        })
-        .where(eq(creditWalletsTable.user_id, socket.userId));
+
+    // 5️⃣ Log only what was actually deducted
+    if (totalDeducted > 0 && wallet) {
+      await tx.insert(creditTransactionsTable).values({
+        wallet_id: wallet.id,
+        user_id: socket.userId,
+        amount: String(totalDeducted.toFixed(2)), // actual spent
+        after_balance: String(newBalance),
+        type: "spent",
+        reason: "Spent on AI creation",
+      });
     }
+
     return wallet;
   });
-  if (wallet) {
-    await revalidateUserCreditWalletCache(wallet);
+
+  if (result) {
+    await revalidateUserCreditWalletCache(result);
   }
 };

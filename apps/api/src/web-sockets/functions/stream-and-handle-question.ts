@@ -106,7 +106,7 @@ export const streamAndHandleQuestion = async ({
     overviewRes.inputTokesnCost +
     mjmlAiRes.outputTokensCost +
     mjmlAiRes.inputTokensCost;
-  await updateUserCreditWallet({ socket, totalCost });
+  await updateUserCreditWallet({ socket, totalConsumedAmount: totalCost });
 };
 const getChatCategoryAndName = async (
   prompt: string,

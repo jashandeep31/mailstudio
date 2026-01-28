@@ -177,5 +177,5 @@ export const refineTemplateHandler = async ({
     refinedMJMLResponse.inputTokensCost +
     overviewRes.outputTokensCost +
     overviewRes.inputTokesnCost;
-  await updateUserCreditWallet({ socket, totalCost });
+  await updateUserCreditWallet({ socket, totalConsumedAmount: totalCost });
 };
