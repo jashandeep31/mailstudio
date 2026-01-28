@@ -1,7 +1,17 @@
 import { Response } from "express";
 import DodoPayments from "dodopayments";
-import { db, plansTable, eq, planTypeEnum } from "@repo/db";
+import {
+  db,
+  plansTable,
+  eq,
+  planTypeEnum,
+  creditsGrantsTable,
+  creditWalletsTable,
+  sql,
+} from "@repo/db";
 import { env } from "../../../lib/env.js";
+import { revalidateUserCreditWalletCache } from "../../../lib/redis/user-credit-wallet-cache.js";
+import { dodoPaymentClient } from "../dodo-payments.js";
 
 /**
   Objectives of this function 
@@ -25,6 +35,9 @@ export const handleSubscriptionActiveWebhook = async ({
   const customerId = data.customer.customer_id;
 
   if (!userId || !orderId || !subscriptionId || !customerId) return;
+  const subscription =
+    await dodoPaymentClient.subscriptions.retrieve(subscriptionId);
+  console.log(subscription);
 
   const [userPlan] = await db
     .select()
@@ -41,24 +54,58 @@ export const handleSubscriptionActiveWebhook = async ({
   const plan = getPlan(productId);
   if (!plan) return;
 
-  await db
-    .update(plansTable)
-    .set({
-      plan_type: plan.name,
-      subscription_id: subscriptionId,
-      subscription_status: "active",
-      customer_id: customerId,
-      price: String(preTaxAmount),
-      active_from: new Date(data.created_at),
-      renew_at: new Date(data.next_billing_date),
-      ends_at: data.cancel_at_next_billing_date
-        ? new Date(data.next_billing_date)
-        : data.expires_at
-          ? new Date(data.expires_at)
-          : null,
-      cancel_at_next_billing_date: data.cancel_at_next_billing_date || false,
-    })
-    .where(eq(plansTable.user_id, userId));
+  await db.transaction(async (tx) => {
+    await tx
+      .update(plansTable)
+      .set({
+        plan_type: plan.name,
+        subscription_id: subscriptionId,
+        subscription_status: "active",
+        customer_id: customerId,
+        price: String(preTaxAmount),
+        active_from: new Date(data.created_at),
+        renew_at: new Date(data.next_billing_date),
+        ends_at: data.cancel_at_next_billing_date
+          ? new Date(data.next_billing_date)
+          : data.expires_at
+            ? new Date(data.expires_at)
+            : null,
+        cancel_at_next_billing_date: data.cancel_at_next_billing_date || false,
+      })
+      .where(eq(plansTable.user_id, userId));
+
+    // 1. Adding the credits to wallet
+    // 2. Creating the credit typeof
+    const [wallet] = await db
+      .select()
+      .from(creditWalletsTable)
+      .where(eq(creditWalletsTable.user_id, userId));
+    if (!wallet) return;
+
+    // Creating the wallet new grant so that we can expire it a time
+    await tx.insert(creditsGrantsTable).values({
+      user_id: userId,
+      wallet_id: wallet.id,
+      type: "monthly",
+      initial_amount: String(plan.creditsCount),
+      remaining_amount: String(plan.creditsCount),
+      expires_at: new Date(data.next_billing_date),
+      is_expired: false,
+      reason: `Upgrade to ${plan.name} plan`,
+    });
+
+    //  updating the wallet balance just adding the new balance
+    // Remmoval of the old credits will get done by redis
+    // TODO: need to fix this soon may can  get the user wallet ot somewhere around double few mintues neeed to check this
+    await tx
+      .update(creditWalletsTable)
+      .set({
+        balance: sql`${creditWalletsTable.balance} + ${plan.creditsCount}`,
+      })
+      .where(eq(creditWalletsTable.id, wallet.id));
+  }); // here is logic of renweing the credits of the user
+
+  await revalidateUserCreditWalletCache(null, userId);
 };
 
 // Getting the current user plan

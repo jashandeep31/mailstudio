@@ -1,4 +1,5 @@
 import {
+  boolean,
   numeric,
   pgEnum,
   pgTable,
@@ -54,4 +55,42 @@ export const creditTransactionsTable = pgTable("credit_transactions", {
   reason: varchar({ length: 255 }),
   created_at: timestamp().defaultNow(),
   updated_at: timestamp().defaultNow(),
+});
+
+export const creditTypeEnum = pgEnum("credit_type", [
+  "monthly", // Expires monthly
+  "referral", // Expires yearly
+  "purchased", // Expires yearly
+  "promotional", // Custom expiration
+]);
+export const creditsGrantsTable = pgTable("credits_grants", {
+  id: uuid().defaultRandom().primaryKey(),
+
+  wallet_id: uuid("wallet_id")
+    .notNull()
+    .references(() => creditWalletsTable.id, { onDelete: "cascade" }),
+
+  user_id: uuid("user_id")
+    .notNull()
+    .references(() => usersTable.id, { onDelete: "cascade" }),
+
+  type: creditTypeEnum().notNull(),
+
+  initial_amount: numeric("initial_amount", {
+    precision: 10,
+    scale: 2,
+  }).notNull(),
+
+  remaining_amount: numeric("remaining_amount", {
+    precision: 10,
+    scale: 2,
+  }).notNull(),
+
+  expires_at: timestamp().notNull(),
+  is_expired: boolean().default(false).notNull(),
+
+  reason: varchar({ length: 255 }),
+
+  created_at: timestamp().defaultNow().notNull(),
+  updated_at: timestamp().defaultNow().notNull(),
 });

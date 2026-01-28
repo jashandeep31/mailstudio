@@ -99,34 +99,36 @@ export const dodoCustomerSession = catchAsync(
 
 export const handleDodoPaymentWebhook = catchAsync(
   async (req: Request, res: Response) => {
-    const event = dodoPaymentClient.webhooks.unwrap(req.body.toString(), {
-      headers: {
-        "webhook-id": req.headers["webhook-id"] as string,
-        "webhook-signature": req.headers["webhook-signature"] as string,
-        "webhook-timestamp": req.headers["webhook-timestamp"] as string,
-      },
-    });
+    // const event = dodoPaymentClient.webhooks.unwrap(req.body.toString(), {
+    //   headers: {
+    //     "webhook-id": req.headers["webhook-id"] as string,
+    //     "webhook-signature": req.headers["webhook-signature"] as string,
+    //     "webhook-timestamp": req.headers["webhook-timestamp"] as string,
+    //   },
+    // });
+    const event = req.body;
 
-    // switch (event.type) {
-    //   // TODO: Remove the payment success web hook
-    //   case "payment.succeeded":
-    //     if (env.ENVOIRONMENT === "production") {
-    //       await handlePaymentSuccessWebhook({
-    //         event,
-    //         res,
-    //       });
-    //     }
-    //     break;
+    switch (event.type) {
+      // TODO: Remove the payment success web hook
+      // case "payment.succeeded":
+      //   if (env.ENVOIRONMENT === "production") {
+      //     await handlePaymentSuccessWebhook({
+      //       event,
+      //       res,
+      //     });
+      //   }
+      //   break;
 
-    //   case "subscription.active":
-    //     await handleSubscriptionActiveWebhook({
-    //       event,
-    //       res,
-    //     });
-    //     break;
-    //   default:
-    //     break;
-    // }
+      case "subscription.active":
+        console.log(`we are in the active subs case`);
+        await handleSubscriptionActiveWebhook({
+          event,
+          res,
+        });
+        break;
+      default:
+        break;
+    }
     res.status(200).json({ received: true });
     return;
   },

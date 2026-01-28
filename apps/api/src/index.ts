@@ -31,13 +31,18 @@ checkAllPromptFiles();
 // app config.
 const app = express();
 
-app.post(
-  "/api/v1/payments/dodo-webhook",
-  express.raw({ type: "application/json" }),
-  handleDodoPaymentWebhook,
-);
+// app.post(
+//   "/api/v1/payments/dodo-webhook",
+//   express.raw({ type: "application/json" }),
+//   handleDodoPaymentWebhook,
+// );
 app.use(express.json());
 
+app.post(
+  "/api/v1/payments/dodo-webhook",
+  // express.raw({ type: "application/json" }),
+  handleDodoPaymentWebhook,
+);
 // global middleware to log the request and response
 app.use(
   (req: express.Request, res: express.Response, next: express.NextFunction) => {
