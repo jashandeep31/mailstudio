@@ -6,12 +6,14 @@ import { db, eq, plansTable, usersTable } from "@repo/db";
 import { env } from "../../lib/env.js";
 import { v4 as uuid } from "uuid";
 
+// Dodopayments client to access the different things of the dodopayments instead of using the http
 export const dodoPaymentClient = new DodoPayments({
   bearerToken: env.DODO_PAYMENTS_API_KEY,
   environment: env.DODO_PAYMENTS_ENVIRONMENT,
   webhookKey: env.DODO_PAYMENTS_WEBHOOK_SECRET,
 });
 
+// Controller to create the paying url
 export const getProSubscriptonUrl = catchAsync(
   async (req: Request, res: Response) => {
     if (!req.user) throw new AppError("Authentication is required", 400);
@@ -38,9 +40,12 @@ export const getProSubscriptonUrl = catchAsync(
       ],
       subscription_data: {},
       customer: {
-        // TODO: remove this while moving to the production
         email: (() => {
-          if (env.DODO_PAYMENTS_ENVIRONMENT == "test_mode") {
+          // To make the unique session as easy to debug the things in the development env
+          if (
+            env.ENVOIRONMENT == "development" &&
+            env.DODO_PAYMENTS_ENVIRONMENT === "test_mode"
+          ) {
             return (
               req.user.email.split("@")[0]! +
               Math.floor(Math.random() * 1000) +
@@ -72,6 +77,7 @@ export const getProSubscriptonUrl = catchAsync(
   },
 );
 
+// Createing the custom customer session to manage his things
 export const dodoCustomerSession = catchAsync(
   async (req: Request, res: Response) => {
     if (!req.user) throw new AppError("Authentication is required", 400);
@@ -94,46 +100,3 @@ export const dodoCustomerSession = catchAsync(
     return;
   },
 );
-
-// case "subscription.cancelled":
-//   await handleSubscriptionCancelledWebhook({
-//     event,
-//     res,
-//   });
-//   break;
-// case "subscription.renewed":
-//   await handleSubscriptionRenewedWebhook({
-//     event,
-//     res,
-//   });
-//   break;
-// case "subscription.on_hold":
-//   await handleSubscriptionOnHoldWebhook({
-//     event,
-//     res,
-//   });
-//   break;
-// case "subscription.expired":
-//   await handleSubscriptionExpiredWebhook({
-//     event,
-//     res,
-//   });
-//   break;
-// case "subscription.failed":
-//   await handleSubscriptionFailedWebhook({
-//     event,
-//     res,
-//   });
-//   break;
-// case "subscription.plan_changed":
-//   await handleSubscriptionPlanChangedWebhook({
-//     event,
-//     res,
-//   });
-//   break;
-// case "subscription.updated":
-//   await handleSubscriptionUpdatedWebhook({
-//     event,
-//     res,
-//   });
-//   break;

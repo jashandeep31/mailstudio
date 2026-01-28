@@ -1,16 +1,6 @@
 import express from "express";
 import cors from "cors";
 import { env } from "./lib/env.js";
-// Routes only
-import authRoutes from "./routes/auth-routes.js";
-import userRoutes from "./routes/user-routes.js";
-import chatRoutes from "./routes/chat-routes.js";
-import internalRoutes from "./routes/internal-routes.js";
-import paymentRoutes from "./routes/payment-routes.js";
-import utilRoutes from "./routes/util-routes.js";
-import brandKitRoutes from "./routes/brandkit-routes.js";
-import marketplaceRoutes from "./routes/marketplace-routes.js";
-
 import cookiesParser from "cookie-parser";
 import { checkAuthorization } from "./middlewares/check-authorization.js";
 import { createServer } from "node:http";
@@ -22,23 +12,36 @@ import { errorHandler } from "./middlewares/error-hanlder.js";
 import { checkAllPromptFiles } from "./prompts/index.js";
 import { redis } from "./lib/db.js";
 import { handleDodoPaymentWebhook } from "./controllers/payments/dodo-webhook.js";
+import authRoutes from "./routes/auth-routes.js";
+import userRoutes from "./routes/user-routes.js";
+import chatRoutes from "./routes/chat-routes.js";
+import internalRoutes from "./routes/internal-routes.js";
+import paymentRoutes from "./routes/payment-routes.js";
+import utilRoutes from "./routes/util-routes.js";
+import brandKitRoutes from "./routes/brandkit-routes.js";
+import marketplaceRoutes from "./routes/marketplace-routes.js";
 
-redis.flushdb();
-const RANDOM_CODE = Math.floor(Math.random() * 100);
-
-// check the prompt and warn in the console when not found
-checkAllPromptFiles();
-// app config.
 const app = express();
 
-// app.post(
-//   "/api/v1/payments/dodo-webhook",
-//   express.raw({ type: "application/json" }),
-//   handleDodoPaymentWebhook,
-// );
+// dodo-webhook needed to passed the raw body
+app.post(
+  "/api/v1/payments/dodo-webhook",
+  express.raw({ type: "application/json" }),
+  handleDodoPaymentWebhook,
+);
+
 app.use(express.json());
 
-app.post("/api/v1/payments/dodo-webhook", handleDodoPaymentWebhook);
+// cors of application
+const ALLOWED_DOMAINS: string[] = env.ALLOWED_DOMAINS.split(",");
+app.use(
+  cors({
+    origin: ALLOWED_DOMAINS,
+    credentials: true,
+  }),
+);
+app.use(cookiesParser());
+const server = createServer(app);
 
 // global middleware to log the request and response
 app.use(
@@ -53,15 +56,6 @@ app.use(
     next();
   },
 );
-const ALLOWED_DOMAINS: string[] = env.ALLOWED_DOMAINS.split(",");
-app.use(
-  cors({
-    origin: ALLOWED_DOMAINS,
-    credentials: true,
-  }),
-);
-app.use(cookiesParser());
-const server = createServer(app);
 
 // routes of all application
 app.use("/api/v1", authRoutes);
@@ -72,18 +66,12 @@ app.use("/api/v1/payments", paymentRoutes);
 app.use("/api/v1/utils", utilRoutes);
 app.use("/api/v1/brandkits", brandKitRoutes);
 app.use("/api/v1/marketplace", marketplaceRoutes);
+
 // Testing route of the application
 app.get("/", checkAuthorization(["all"]), (req, res, next) => {
   res.status(200).json({ message: "hello" });
 });
-app.get("/test", (req, res) => {
-  const session = req.cookies.session;
-  res.status(200).json({
-    message: "Hello world",
-    code: RANDOM_CODE,
-    session,
-  });
-});
+
 // GLOBAL ERROR HANDLING
 app.use(errorHandler);
 const ws = new WebSocketServer({
@@ -118,7 +106,14 @@ ws.on("connection", async (socket, req) => {
     console.log(`Error: ${e}`);
   }
 });
-test();
+
+// Dev things
+if (env.ENVOIRONMENT === "development") {
+  test();
+  checkAllPromptFiles();
+  redis.flushdb();
+}
+
 server.listen(env.PORT, () => {
   console.log(`Server is running at 🔥 ${env.PORT}`);
 });

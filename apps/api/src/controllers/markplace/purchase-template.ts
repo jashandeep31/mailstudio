@@ -1,7 +1,4 @@
 import { Request, Response } from "express";
-import { catchAsync } from "../../lib/catch-async.js";
-import { templateLiteral, z } from "zod";
-import { AppError } from "../../lib/app-error.js";
 import {
   chatsTable,
   chatVersionOutputsTable,
@@ -18,6 +15,9 @@ import {
   usersTable,
 } from "@repo/db";
 import { addToThumbnailUpdateQueue } from "../../queues/thumbnail-update-queue.js";
+import { catchAsync } from "../../lib/catch-async.js";
+import { z } from "zod";
+import { AppError } from "../../lib/app-error.js";
 import { revalidateUserCreditWalletCache } from "../../lib/redis/user-credit-wallet-cache.js";
 
 const purchaseTemplateSchema = z.object({
@@ -29,6 +29,12 @@ export const purchaseTemplate = catchAsync(
     const userId = req.user.id;
     const parsedData = purchaseTemplateSchema.parse(req.body);
 
+    if (1 === 1) {
+      throw new AppError(
+        "Please complete me i wanna reduce  the credits from the granst too ",
+        400,
+      );
+    }
     const [template] = await db
       .select()
       .from(chatsTable)

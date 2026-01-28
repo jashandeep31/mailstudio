@@ -2,17 +2,17 @@ import { catchAsync } from "../../lib/catch-async.js";
 import { Response, Request } from "express";
 import { handleSubscriptionActiveWebhook } from "./functions/subscription-active.js";
 import { handlePaymentSuccessWebhook } from "./functions/payment-success.js";
+import { dodoPaymentClient } from "./dodo-payments.js";
 
 export const handleDodoPaymentWebhook = catchAsync(
   async (req: Request, res: Response) => {
-    // const event = dodoPaymentClient.webhooks.unwrap(req.body.toString(), {
-    //   headers: {
-    //     "webhook-id": req.headers["webhook-id"] as string,
-    //     "webhook-signature": req.headers["webhook-signature"] as string,
-    //     "webhook-timestamp": req.headers["webhook-timestamp"] as string,
-    //   },
-    // });
-    const event = req.body;
+    const event = dodoPaymentClient.webhooks.unwrap(req.body.toString(), {
+      headers: {
+        "webhook-id": req.headers["webhook-id"] as string,
+        "webhook-signature": req.headers["webhook-signature"] as string,
+        "webhook-timestamp": req.headers["webhook-timestamp"] as string,
+      },
+    });
 
     switch (event.type) {
       case "payment.succeeded":

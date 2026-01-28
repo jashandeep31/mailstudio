@@ -17,9 +17,8 @@ interface updateUserCreditWallet {
 /**
  * Updates the user's credit wallet
  * @param socket - The WebSocket connection
- * @param totalCost - The total cost of the operation
+ * @param totalConsumedAmount- The total cost of the operation
  */
-
 export const updateUserCreditWallet = async ({
   socket,
   totalConsumedAmount: totalConsumedAmount,
