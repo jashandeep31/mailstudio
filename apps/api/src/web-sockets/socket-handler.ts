@@ -8,6 +8,8 @@ import { ProcesingVersions } from "../state/processing-versions-state.js";
 import { refineTemplateHandler } from "./handlers/refine-template-event.js";
 import { checkChatAuth } from "../lib/redis/check-chat-auth.js";
 import { getCachedUserCreditWallet } from "../lib/redis/user-credit-wallet-cache.js";
+import { env } from "../lib/env.js";
+import { newChatCase } from "./cases/new-chat.js";
 
 export const SocketHandler = async (socket: WebSocket) => {
   socket.on("message", async (e) => {
@@ -15,46 +17,14 @@ export const SocketHandler = async (socket: WebSocket) => {
       const { event: rawEvent, data: rawData } = JSON.parse(e.toString());
       const event = SocketEventKeySchema.parse(rawEvent);
       const parsedEvent = SocketEventSchemas[event].safeParse(rawData);
-      if (!parsedEvent.success) {
-        console.log(`errors`);
-        return;
-      }
+      if (!parsedEvent.success) return;
 
-      console.log(event, new Date().toLocaleDateString());
+      if (env.ENVOIRONMENT === "development")
+        console.log(event, new Date().toLocaleDateString());
+
       switch (event) {
         case "event:new-chat": {
-          const data = getParsedData(event, rawData);
-          const wallet = await getCachedUserCreditWallet(socket.userId);
-          if (!wallet) {
-            socket.send(
-              JSON.stringify({
-                key: "error:wallet",
-                data: {
-                  message: "wallet is detected",
-                },
-              }),
-            );
-            return;
-          }
-          if (Number(wallet.balance) <= 0) {
-            socket.send(
-              JSON.stringify({
-                key: "error:wallet",
-                data: {
-                  message: "wallet doesn't have the enough balance",
-                },
-              }),
-            );
-            return;
-          }
-          const chat = await handleNewChatEvent(data, socket);
-          await handleQuestionEvent(
-            {
-              ...data,
-              chatId: chat.id,
-            },
-            socket,
-          );
+          await newChatCase({ rawData, socket });
           break;
         }
 
@@ -151,6 +121,8 @@ export const SocketHandler = async (socket: WebSocket) => {
     }
   });
 };
+
+// parse and return data using the zod schema
 export const getParsedData = <K extends keyof typeof SocketEventSchemas>(
   event: K,
   rawData: unknown,
