@@ -1,0 +1,14 @@
+
+
+docker exec -t postgresql-db-1  pg_dump -U postgres mailstudio > mailstudio_backup.sql
+
+
+
+cd /home/jashan/Downloads/backup
+docker exec -it  postgresql-db-1 psql -U postgres -c "DROP DATABASE mailstudio;"
+docker exec -it  postgresql-db-1 psql -U postgres -c "CREATE DATABASE mailstudio;"
+cat mailstudio_backup.sql | docker exec -i  postgresql-db-1 psql -U postgres -d mailstudio
+
+
+
+

@@ -77,25 +77,38 @@ export default function BillingClientView() {
               </div>
             </div>
             {billing.payment && (
-              <div className="mt-3 grid grid-cols-2 gap-2 border-t pt-3 text-sm">
-                <div>
-                  <p className="text-muted-foreground">Subtotal</p>
-                  <p className="font-medium">
-                    {billing.payment.settlement_amount
-                      ? `$${parseFloat(billing.payment.settlement_amount).toFixed(2)}`
-                      : "-"}
-                  </p>
-                </div>
-                <div>
-                  <p className="text-muted-foreground">Tax</p>
-                  <p className="font-medium">
-                    {billing.payment.tax_amount
-                      ? `$${parseFloat(billing.payment.tax_amount).toFixed(2)}`
-                      : "-"}
-                  </p>
+              <div className="mt-3 border-t pt-3 text-sm">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-muted-foreground">Subtotal</p>
+                    <p className="font-medium">
+                      {billing.payment.settlement_amount &&
+                      billing.payment.tax_amount
+                        ? `$${(parseFloat(billing.payment.settlement_amount) - parseFloat(billing.payment.tax_amount)).toFixed(2)}`
+                        : billing.payment.settlement_amount
+                          ? `$${parseFloat(billing.payment.settlement_amount).toFixed(2)}`
+                          : "-"}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-muted-foreground">Tax</p>
+                    <p className="font-medium">
+                      {billing.payment.tax_amount
+                        ? `$${parseFloat(billing.payment.tax_amount).toFixed(2)}`
+                        : "-"}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-muted-foreground font-medium">Total</p>
+                    <p className="font-semibold">
+                      {billing.payment.settlement_amount
+                        ? `$${parseFloat(billing.payment.settlement_amount).toFixed(2)}`
+                        : "-"}
+                    </p>
+                  </div>
                 </div>
                 {billing.payment.payment_method && (
-                  <div className="col-span-2">
+                  <div className="mt-3 pt-3">
                     <p className="text-muted-foreground">Payment Method</p>
                     <p className="font-medium">
                       {billing.payment.payment_method}

@@ -70,38 +70,52 @@ export default function PaymentsClientView() {
                 </span>
               </div>
             </div>
-            <div className="mt-3 grid grid-cols-2 gap-2 border-t pt-3 text-sm md:grid-cols-4">
-              <div>
-                <p className="text-muted-foreground">Subtotal</p>
-                <p className="font-medium">
-                  {payment.settlement_amount
-                    ? `$${parseFloat(payment.settlement_amount).toFixed(2)}`
-                    : "-"}
-                </p>
-              </div>
-              <div>
-                <p className="text-muted-foreground">Tax</p>
-                <p className="font-medium">
-                  {payment.tax_amount
-                    ? `$${parseFloat(payment.tax_amount).toFixed(2)}`
-                    : "-"}
-                </p>
-              </div>
-              {payment.payment_method && (
+            <div className="mt-3 border-t pt-3 text-sm">
+              <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-muted-foreground">Method</p>
-                  <p className="font-medium">{payment.payment_method}</p>
-                </div>
-              )}
-              {payment.card_last_four && (
-                <div>
-                  <p className="text-muted-foreground">Card</p>
+                  <p className="text-muted-foreground">Subtotal</p>
                   <p className="font-medium">
-                    {payment.card_network ? `${payment.card_network} ` : ""}
-                    •••• {payment.card_last_four}
+                    {payment.settlement_amount && payment.tax_amount
+                      ? `$${(parseFloat(payment.settlement_amount) - parseFloat(payment.tax_amount)).toFixed(2)}`
+                      : payment.settlement_amount
+                        ? `$${parseFloat(payment.settlement_amount).toFixed(2)}`
+                        : "-"}
                   </p>
                 </div>
-              )}
+                <div>
+                  <p className="text-muted-foreground">Tax</p>
+                  <p className="font-medium">
+                    {payment.tax_amount
+                      ? `$${parseFloat(payment.tax_amount).toFixed(2)}`
+                      : "-"}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-muted-foreground font-medium">Total</p>
+                  <p className="font-semibold">
+                    {payment.settlement_amount
+                      ? `$${parseFloat(payment.settlement_amount).toFixed(2)}`
+                      : "-"}
+                  </p>
+                </div>
+              </div>
+              <div className="mt-3 grid grid-cols-2 gap-2 pt-3">
+                {payment.payment_method && (
+                  <div>
+                    <p className="text-muted-foreground">Method</p>
+                    <p className="font-medium">{payment.payment_method}</p>
+                  </div>
+                )}
+                {payment.card_last_four && (
+                  <div>
+                    <p className="text-muted-foreground">Card</p>
+                    <p className="font-medium">
+                      {payment.card_network ? `${payment.card_network} ` : ""}
+                      •••• {payment.card_last_four}
+                    </p>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         ))}
