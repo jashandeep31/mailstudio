@@ -1,7 +1,6 @@
 import type WebSocket from "ws";
 import { SocketEventSchemas, SocketEventKeySchema } from "@repo/shared";
 import { z } from "zod";
-import { ProcesingVersions } from "../state/processing-versions-state.js";
 import { env } from "../lib/env.js";
 import { newChatCase } from "./cases/new-chat.js";
 import { joinedChat } from "./cases/joined-chat.js";
@@ -32,12 +31,12 @@ export const SocketHandler = async (socket: WebSocket) => {
         }
 
         case "event:left-chat": {
-          leftChatCase({ rawData, socket });
+          await leftChatCase({ rawData, socket });
           break;
         }
 
         case "event:refine-template-message": {
-          refineTemplateCase({ rawData, socket });
+          await refineTemplateCase({ rawData, socket });
           break;
         }
       }
