@@ -8,17 +8,18 @@ import {
   db,
   eq,
 } from "@repo/db";
-import { getQuestionOverview } from "../../ai/mail/get-question-overview.js";
+
 import { ProcesingVersions } from "../../state/processing-versions-state.js";
 import WebSocket from "ws";
 import mjml2html from "mjml";
-import { createNewMailTemplate } from "../../ai/mail/new-template/index.js";
 import { streamOverview } from "./stream-overview.js";
-import { getTemplateName } from "../../ai/mail/get-template-name.js";
-import { createUserInstructions } from "../../ai/mail/user-instructions.js";
 import { updateUserCreditWallet } from "./common.js";
 import { addToThumbnailUpdateQueue } from "../../queues/thumbnail-update-queue.js";
 import { getCachedBrandKit } from "../../lib/redis/brand-kit-cache.ts.js";
+import { createUserInstructions } from "../../ai/mail/user-instructions/create-user-instructions.js";
+import { createNewMailTemplate } from "../../ai/mail/new-template/index.js";
+import { getQuestionOverview } from "../../ai/mail/new-template/get-question-overview.js";
+import { getTemplateName } from "../../ai/mail/new-template/get-template-name.js";
 import { getMailCategory } from "../../ai/mail/get-mail-category.js";
 
 interface StreamAndHandleQuestion {

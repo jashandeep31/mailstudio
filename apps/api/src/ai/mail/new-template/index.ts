@@ -1,21 +1,15 @@
-import fs from "fs";
-import { ContentListUnion } from "@google/genai";
-import { googleGenAi } from "../../config.js";
-import { prompts } from "../../../prompts/index.js";
+import { AiFunctionResponse } from "../../types.js";
 import {
   uploadMediaFiles,
   waitForFilesProcessing,
   getValidFiles,
-} from "../utils/file-upload.js";
-import { buildContent } from "../utils/content-builder.js";
-import { AiFunctionResponse } from "../../types.js";
-import {
+  buildContent,
   getBrankitInAIFormatedWay,
-  parseAiFunctionResponse,
 } from "../../utils.js";
-import { models } from "../../models.js";
 import { brandKitsTable } from "@repo/db";
 import { extractMJMLOnly } from "../../../lib/mjml-helpers.js";
+import { refinePrompt } from "./refine-prompt.js";
+import { generateTemplate } from "./generate-template.js";
 
 interface CreateNewMailTemplateParams {
   prompt: string;
@@ -59,42 +53,4 @@ export const createNewMailTemplate = async ({
     inputTokensCost:
       mjmlTemplateResponse.inputTokensCost + refinedPromptRes.inputTokensCost,
   };
-};
-
-const refinePrompt = async (
-  content: ContentListUnion,
-): Promise<AiFunctionResponse> => {
-  const MODEL = models["gemini-3-pro-preview"];
-  const response = await googleGenAi.models.generateContent({
-    model: MODEL.name,
-    contents: content,
-    config: {
-      systemInstruction: prompts["system.newTemplate.properPrompt"](),
-    },
-  });
-
-  return parseAiFunctionResponse(
-    response,
-    MODEL.getInputTokensPrice,
-    MODEL.getOutputTokensPrice,
-  );
-};
-
-const generateTemplate = async (
-  content: ContentListUnion,
-): Promise<AiFunctionResponse> => {
-  const MODEL = models["gemini-3-pro-preview"];
-  const response = await googleGenAi.models.generateContent({
-    model: MODEL.name,
-    contents: content,
-    config: {
-      systemInstruction: prompts["system.newTemplate.generation"](),
-    },
-  });
-
-  return parseAiFunctionResponse(
-    response,
-    MODEL.getInputTokensPrice,
-    MODEL.getOutputTokensPrice,
-  );
 };

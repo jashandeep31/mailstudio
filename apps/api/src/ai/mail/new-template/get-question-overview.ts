@@ -1,8 +1,8 @@
-import { googleGenAi } from "../config.js";
-import { prompts } from "../../prompts/index.js";
-import { StreamingAiFunctionResponse } from "../types.js";
-import { parseChunkStreamingChunkGemini } from "../utils.js";
-import { models } from "../models.js";
+import { googleGenAi } from "../../config.js";
+import { prompts } from "../../../prompts/index.js";
+import { StreamingAiFunctionResponse } from "../../types.js";
+import { parseChunkStreamingChunkGemini } from "../../utils.js";
+import { models } from "../../models.js";
 
 export async function* getQuestionOverview(
   prompt: string,

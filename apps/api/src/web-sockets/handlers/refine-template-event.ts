@@ -12,13 +12,11 @@ import { validateMediaIds } from "./handle-question-event.js";
 import { SocketEventSchemas } from "@repo/shared";
 import { z } from "zod";
 import { v4 as uuid } from "uuid";
-import { refineMailTemplate } from "../../ai/mail/refine-template/index.js";
+
 import mjml2html from "mjml";
 import { WebSocket } from "ws";
-import { getRefineTemplateOverview } from "../../ai/mail/refine-template/get-refine-template-overview.js";
 import { streamOverview } from "../functions/stream-overview.js";
 import { ProcesingVersions } from "../../state/processing-versions-state.js";
-import { updateUserInstructions } from "../../ai/mail/user-instructions.js";
 import { updateUserCreditWallet } from "../functions/common.js";
 import { addToThumbnailUpdateQueue } from "../../queues/thumbnail-update-queue.js";
 import { getCachedBrandKit } from "../../lib/redis/brand-kit-cache.ts.js";
@@ -26,6 +24,9 @@ import {
   removeOngoingNewChatVersion,
   saveOngoingNewChatVersion,
 } from "../../lib/redis/new-chat-version-cache.js";
+import { refineMailTemplate } from "../../ai/mail/refine-template/index.js";
+import { getRefineTemplateOverview } from "../../ai/mail/refine-template/get-refine-template-overview.js";
+import { updateUserInstructions } from "../../ai/mail/user-instructions/update-user-instructions.js";
 
 interface RefineTemplateHandler {
   data: z.infer<(typeof SocketEventSchemas)["event:refine-template-message"]>;
