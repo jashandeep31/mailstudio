@@ -24,9 +24,11 @@ new Worker(
       `${env.SCREENSHOT_SERVICE_URL}/screenshot`,
       {
         url: job.data.url,
+        secret: env.INTERNAL_API_KEY,
       },
       { responseType: "arraybuffer" },
     );
+    console.log(response.status);
     const buffer = Buffer.from(response.data);
     const mimeType = response.headers["content-type"] || "image/png";
     const fileKey = `chat-thumbnails/${uuid()}.png`;

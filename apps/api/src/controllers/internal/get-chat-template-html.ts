@@ -16,6 +16,13 @@ const getChatTemplateHtmlSchema = z.object({
 });
 export const getChatTemplateHtml = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
+    const secret = req.query.secret;
+    if (secret !== env.INTERNAL_API_KEY) {
+      res.status(400).json({
+        message: "Not allowed to access the route",
+      });
+      return;
+    }
     // const authHeader = req.header("Authorization");
     // console.log(req.headers);
     // console.log(authHeader);

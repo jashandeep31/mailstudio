@@ -4,4 +4,5 @@ import { getChatTemplateHtml } from "../controllers/internal/get-chat-template-h
 const routes: Router = Router();
 
 routes.route("/get-html-code/:chatId").get(getChatTemplateHtml);
+
 export default routes;

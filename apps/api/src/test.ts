@@ -1,9 +1,11 @@
 import { googleGenAi } from "./ai/config.js";
 import { models } from "./ai/models.js";
+import { addToThumbnailUpdateQueue } from "./queues/thumbnail-update-queue.js";
 
 export async function test() {
   console.log("Test is fired 🔥 up ");
 
+  // await addToThumbnailUpdateQueue("f19242d9-4ed2-45fd-a686-d9708e36252e");
   //testing hte ai
   // const res = await googleGenAi.models.generateContent({
   //   model: models["gemini-3-pro-preview"].name,
@@ -11,7 +13,7 @@ export async function test() {
   // });
   // console.log(res.text);
 
-  // getMailCategory(`Create the mail template for the user email verification`);
+  // getMailCategory(`Cbodyreate the mail template for the user email verification`);
   // const categoriesList = [
   //   "authentication",
   //   "account",

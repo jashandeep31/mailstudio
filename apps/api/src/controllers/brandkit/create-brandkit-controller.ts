@@ -29,7 +29,7 @@ export const createBrandKit = catchAsync(
     const { websiteUrl } = createBrandKitInputSchema.parse(req.body);
     const response = await axios.post(
       `${env.SCREENSHOT_SERVICE_URL}/brandkit`,
-      { url: websiteUrl },
+      { url: websiteUrl, secret: env.INTERNAL_API_KEY },
     );
     const data = JSON.parse(response.data.data);
     const parsedData = createBrandkitSchema.parse({
