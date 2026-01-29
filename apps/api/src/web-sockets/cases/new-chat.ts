@@ -1,4 +1,3 @@
-import { SocketEventKey } from "@repo/shared";
 import { getCachedUserCreditWallet } from "../../lib/redis/user-credit-wallet-cache.js";
 import { handleNewChatEvent } from "../handlers/handle-new-chat-event.js";
 import { handleQuestionEvent } from "../handlers/handle-question-event.js";
@@ -21,7 +20,7 @@ export const newChatCase = async ({
     return;
   }
   if (Number(wallet.balance) <= 0) {
-    socket.send(socketErrors["error:low-credits"]);
+    socket.send(socketErrors["low-credits"]);
     return;
   }
 

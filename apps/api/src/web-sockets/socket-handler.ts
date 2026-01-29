@@ -1,15 +1,13 @@
 import type WebSocket from "ws";
 import { SocketEventSchemas, SocketEventKeySchema } from "@repo/shared";
-import { handleNewChatEvent } from "./handlers/handle-new-chat-event.js";
-import { handleQuestionEvent } from "./handlers/handle-question-event.js";
 import { z } from "zod";
-import { handleChatJoinEvent } from "./handlers/handle-chat-join-event.js";
 import { ProcesingVersions } from "../state/processing-versions-state.js";
-import { refineTemplateHandler } from "./handlers/refine-template-event.js";
-import { checkChatAuth } from "../lib/redis/check-chat-auth.js";
-import { getCachedUserCreditWallet } from "../lib/redis/user-credit-wallet-cache.js";
 import { env } from "../lib/env.js";
 import { newChatCase } from "./cases/new-chat.js";
+import { joinedChat } from "./cases/joined-chat.js";
+import { refineTemplateCase } from "./cases/refine-template.js";
+import { socketErrors } from "./cases/utils.js";
+import { leftChatCase } from "./cases/left-chat.js";
 
 export const SocketHandler = async (socket: WebSocket) => {
   socket.on("message", async (e) => {
@@ -29,95 +27,23 @@ export const SocketHandler = async (socket: WebSocket) => {
         }
 
         case "event:joined-chat": {
-          const data = getParsedData(event, rawData);
-          const authStatus = await checkChatAuth({
-            userId: socket.userId,
-            chatId: data.chatId,
-          });
-          if (authStatus.status !== "ok") {
-            socket.send(
-              JSON.stringify({
-                key: "error:no-chat",
-                data: null,
-              }),
-            );
-            return;
-          }
-          await handleChatJoinEvent(data, socket);
-          const ProcesingVersion = ProcesingVersions.get(`${data.chatId}`);
-          if (!ProcesingVersion) return;
-          socket.send(
-            JSON.stringify({
-              key: "res:stream-answer",
-              data: {
-                versionId: ProcesingVersion.versionId,
-                chatId: ProcesingVersion.chatId,
-                questionId: ProcesingVersion.questionId,
-                response: ProcesingVersion.overviewOutput || "",
-              },
-            }),
-          );
-          ProcesingVersion.sockets.add(socket);
+          await joinedChat({ rawData, socket });
           break;
         }
 
         case "event:left-chat": {
-          const data = getParsedData(event, rawData);
-          const ProcesingVersion = ProcesingVersions.get(`${data.chatId}`);
-          if (!ProcesingVersion) return;
-          ProcesingVersion.sockets.delete(socket);
+          leftChatCase({ rawData, socket });
           break;
         }
 
         case "event:refine-template-message": {
-          const data = getParsedData(event, rawData);
-          const authStatus = await checkChatAuth({
-            userId: socket.userId,
-            chatId: data.chatId,
-          });
-          const wallet = await getCachedUserCreditWallet(socket.userId);
-          if (!wallet) {
-            socket.send(
-              JSON.stringify({
-                key: "error:wallet",
-                data: {
-                  message: "wallet is detected",
-                },
-              }),
-            );
-            return;
-          }
-          if (Number(wallet.balance) <= 0) {
-            socket.send(
-              JSON.stringify({
-                key: "error:wallet",
-                data: {
-                  message: "wallet doesn't have the enough balance",
-                },
-              }),
-            );
-            return;
-          }
-          if (authStatus.status !== "ok") {
-            socket.send(
-              JSON.stringify({
-                key: "error:no-chat",
-                data: null,
-              }),
-            );
-          }
-          await refineTemplateHandler({ data, socket });
+          refineTemplateCase({ rawData, socket });
           break;
         }
       }
     } catch (error) {
       console.error("WebSocket message handler error:", error);
-      socket.send(
-        JSON.stringify({
-          key: "error:server",
-          data: { message: "An error occurred processing your request" },
-        }),
-      );
+      socket.send(socketErrors["server-error"]);
     }
   });
 };
