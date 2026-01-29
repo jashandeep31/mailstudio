@@ -171,7 +171,7 @@ export const refineTemplateHandler = async ({
     }
   }
   // updating the thumbnail of the refine-template
-  addToThumbnailUpdateQueue(data.chatId);
+  await addToThumbnailUpdateQueue(data.chatId);
   ProcesingVersions.delete(`${chatVersion.chat_id}`);
   const totalCost =
     refinedMJMLResponse.outputTokensCost +

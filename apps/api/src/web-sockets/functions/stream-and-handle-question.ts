@@ -101,7 +101,7 @@ export const streamAndHandleQuestion = async ({
   }
   ProcesingVersions.delete(`${chatId}`);
   // updating the thumbnail of new-template
-  addToThumbnailUpdateQueue(chatId);
+  await addToThumbnailUpdateQueue(chatId);
   const totalCost =
     overviewRes.outputTokensCost +
     overviewRes.inputTokesnCost +
