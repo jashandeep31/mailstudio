@@ -58,10 +58,10 @@ export const creditTransactionsTable = pgTable("credit_transactions", {
 });
 
 export const creditTypeEnum = pgEnum("credit_type", [
-  "monthly", // Expires monthly
-  "referral", // Expires yearly
-  "purchased", // Expires yearly
-  "promotional", // Custom expiration
+  "monthly",
+  "referral",
+  "purchased",
+  "promotional",
 ]);
 export const creditsGrantsTable = pgTable("credits_grants", {
   id: uuid().defaultRandom().primaryKey(),
