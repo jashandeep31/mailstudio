@@ -1,5 +1,5 @@
-import WebSocket, { WebSocketServer } from "ws";
-import { getParsedData, SocketHandler } from "../socket-handler.js";
+import WebSocket from "ws";
+import { getParsedData } from "../socket-handler.js";
 import { checkChatAuth } from "../../lib/redis/check-chat-auth.js";
 import { getCachedUserCreditWallet } from "../../lib/redis/user-credit-wallet-cache.js";
 import { refineTemplateHandler } from "../handlers/refine-template-event.js";

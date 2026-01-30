@@ -78,7 +78,6 @@ export const streamAndHandleQuestion = async ({
       version_id: chatQuestion.version_id,
       overview: overviewRes.outputText,
       mjml_code: generatedTemplate.outputCode,
-      prompt: generatedTemplate.prompt,
       html_code: html_code.html,
       generation_instructions: instructions,
     })

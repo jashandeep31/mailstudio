@@ -12,6 +12,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@repo/ui/components/tooltip";
+import { useChatStore } from "@/zustand-store/chat-store";
 
 interface LeftPanel {
   versions: ChatVersionAggregate[];
@@ -22,11 +23,7 @@ export default function LeftPanel({ versions, streamingOverview }: LeftPanel) {
   const params = useParams();
   const { sendEvent } = useWebSocketContext();
   const [userPrompt, setUserPrompt] = useState("");
-
-  const isCurrentChatStreaming =
-    streamingOverview !== null &&
-    streamingOverview.chatId === params.id &&
-    streamingOverview.versionId === versions.at(-1)?.chat_versions.id;
+  const { activeStream } = useChatStore();
 
   const handleSubmit = (data: { mediaIds: string[]; brandKitId?: string }) => {
     sendEvent("event:refine-template-message", {
@@ -125,7 +122,7 @@ export default function LeftPanel({ versions, streamingOverview }: LeftPanel) {
           userPrompt={userPrompt}
           setUserPrompt={setUserPrompt}
           onSubmit={handleSubmit}
-          isDisabled={isCurrentChatStreaming}
+          isDisabled={activeStream ? true : false}
         />
       </div>
     </ResizablePanel>

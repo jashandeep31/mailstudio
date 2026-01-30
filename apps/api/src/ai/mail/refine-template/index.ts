@@ -9,7 +9,6 @@ import {
 import { brandKitsTable } from "@repo/db";
 import { extractMJMLOnly } from "../../../lib/mjml-helpers.js";
 import { generateRefinedMjmlCode } from "./generate-refined-mjml.js";
-import { rewritePromptForDownstreamModel } from "./rewrite-prompt.js";
 
 interface RefineMailTemplate {
   prompt: string;
@@ -21,50 +20,45 @@ interface RefineMailTemplate {
 
 export const refineMailTemplate = async ({
   prompt,
-  instructions,
   mediaUrls,
   prevMjmlCode,
   brandKit,
-}: RefineMailTemplate): Promise<AiGeneratedTemplate> => {
+}: RefineMailTemplate): Promise<AiFunctionResponse> => {
+  // uploading the files
   const uploadedFiles = await uploadMediaFiles(mediaUrls);
-  const brandKitData = brandKit ? getBrankitInAIFormatedWay(brandKit) : null;
   await waitForFilesProcessing(uploadedFiles);
-
   const validFiles = getValidFiles(uploadedFiles);
-  const contentWithPrompt = buildContent(
+
+  const brandKitData = brandKit ? getBrankitInAIFormatedWay(brandKit) : null;
+
+  const refinedContent = buildContent(
     `
-NEW USER INPUT:
+You are an expert MJML email template editor.
+USER WANTS THESE CHANGES:
 ${prompt}
-EXISTING USER INSTRUCTIONS:
-${instructions}
-${brandKitData ? `BRANDKIT: \n${brandKitData}` : ""}
-TASK:
-Update the existing instructions based strictly on the new user input.
-Preserve all preferences that are not explicitly changed.
-Return only the updated instructions as a single paragraph.
+${brandKitData ? `BRAND KIT (follow strictly):\n${brandKitData}` : ""}
+
+IMPORTANT RULES:
+• Edit the EXISTING MJML code I provide
+• Do NOT redesign from scratch
+• Keep layout and sections unless change requires it
+• Preserve responsiveness
+• Keep MJML valid
+• Do not remove working sections
+• Return ONLY the full updated MJML code
+
+HERE IS THE CURRENT MJML CODE TO EDIT:
+${prevMjmlCode}
 `,
     validFiles,
   );
 
-  console.log(`things are started`);
-  const refinedPromptRes =
-    await rewritePromptForDownstreamModel(contentWithPrompt);
-  console.log(`refined the prompt`);
-  await new Promise((resolve) => setTimeout(resolve, 1000));
-  const refinedContent = buildContent(
-    refinedPromptRes.outputText + "\n\n" + prevMjmlCode,
-    validFiles,
-  );
+  console.log(JSON.stringify(refinedContent));
 
   const refinedMJMLTemplateRes = await generateRefinedMjmlCode(refinedContent);
-  console.log(`refined the MJML`);
   return {
-    outputCode: extractMJMLOnly(refinedMJMLTemplateRes.outputText),
-    prompt: refinedPromptRes.outputText,
-    inputTokensCost:
-      refinedMJMLTemplateRes.inputTokensCost + refinedPromptRes.inputTokensCost,
-    outputTokensCost:
-      refinedMJMLTemplateRes.outputTokensCost +
-      refinedPromptRes.outputTokensCost,
+    outputText: extractMJMLOnly(refinedMJMLTemplateRes.outputText),
+    inputTokensCost: refinedMJMLTemplateRes.inputTokensCost,
+    outputTokensCost: refinedMJMLTemplateRes.outputTokensCost,
   };
 };

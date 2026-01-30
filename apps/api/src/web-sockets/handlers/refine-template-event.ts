@@ -98,7 +98,7 @@ export const refineTemplateHandler = async ({
         prompt: data.message,
         instructions: prevOutput?.generation_instructions || "",
         mediaUrls: mediaUrls,
-        brandKit: null,
+        brandKit: brandKit,
       }),
 
       //streaming the overview
@@ -123,7 +123,7 @@ export const refineTemplateHandler = async ({
         .where(eq(chatsTable.id, data.chatId)),
     ]);
 
-  const html_code = mjml2html(generatedTemplate.outputCode);
+  const html_code = mjml2html(generatedTemplate.outputText);
 
   await removeOngoingNewChatVersion(data.chatId);
   const { chatVersion, chatQuestion, chatOutput } = await db.transaction(
@@ -145,8 +145,7 @@ export const refineTemplateHandler = async ({
         .values({
           version_id: chatVersion.id,
           overview: overviewRes.outputText,
-          mjml_code: generatedTemplate.outputCode,
-          prompt: generatedTemplate.prompt,
+          mjml_code: generatedTemplate.outputText,
           html_code: html_code.html,
           generation_instructions: updatedInstructions,
         })

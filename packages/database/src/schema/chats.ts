@@ -90,7 +90,6 @@ export const chatVersionOutputsTable = pgTable("chat_version_outputs", {
   mjml_code: text().notNull(),
   html_code: text().notNull(),
   generation_instructions: text(),
-  prompt: text(),
   created_at: timestamp("created_at", { withTimezone: true })
     .notNull()
     .defaultNow(),

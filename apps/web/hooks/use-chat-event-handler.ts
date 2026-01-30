@@ -35,16 +35,17 @@ export const useChatEventHandler = () => {
           response: event.data.response,
         });
       } else if (event.key === "res:new-version") {
+        // New version just send by the refine template to just append something to the chat versions
+        // TODO: try to handle set streaming here if found the lag in the production version
         const eventData: ChatVersionAggregate = event.data;
         appendChatVersion(eventData);
-        // Clear active stream when a new version is received, regardless of ID match
-        // This ensures input is re-enabled after streaming completes
-        if (activeStream) {
-          setActiveStream(null);
-        }
         setSelectedVersionId(event.data.chat_versions.id);
       } else if (event.key === "res:version-update") {
         updateChatVersion(event.data);
+        if (activeStream) {
+          console.log(`okay we had removed the active stream sir`);
+          setActiveStream(null);
+        }
       }
       deleteEvent(event.id);
     }
