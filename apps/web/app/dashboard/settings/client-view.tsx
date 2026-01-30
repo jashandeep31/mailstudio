@@ -49,7 +49,7 @@ const ClientView = () => {
                 {userMetadata.data?.user.firstName}{" "}
                 {userMetadata.data?.user.lastName}
               </h2>
-              <p className="text-muted-foreground text-sm">
+              <p className="text-muted-foreground w-40 truncate text-sm">
                 {userMetadata.data?.user.email}
               </p>
             </div>

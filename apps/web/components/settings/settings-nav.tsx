@@ -17,7 +17,9 @@ export const SettingsNav = ({ className = "" }: SettingsNavProps) => {
   const pathname = usePathname();
 
   return (
-    <div className={`mt-4 flex gap-6 ${className}`}>
+    <div
+      className={`mt-4 flex gap-6 ${className} hidden-scrollbar overflow-x-auto`}
+    >
       {links.map((link) => (
         <Link
           href={link.href}
