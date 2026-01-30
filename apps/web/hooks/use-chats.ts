@@ -41,7 +41,8 @@ export const useUpdateChat = () =>
       queryClient.refetchQueries({ queryKey: ["chats"] });
       queryClient.invalidateQueries({ queryKey: ["chats", variables.chatId] });
     },
-    onError: () => {
-      toast.error("eror");
+    onError: (e) => {
+      console.log(e);
+      toast.error("Something went wrong");
     },
   });

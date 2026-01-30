@@ -7,10 +7,7 @@ import { Label } from "@repo/ui/components/label";
 import { Checkbox } from "@repo/ui/components/checkbox";
 import {
   ArrowLeft,
-  Eye,
   Save,
-  Globe,
-  Lock,
   Calendar,
   Clock,
   ImageIcon,
@@ -20,6 +17,7 @@ import {
 import Link from "next/link";
 import { useChat, useUpdateChat } from "@/hooks/use-chats";
 import Image from "next/image";
+import { toast } from "sonner";
 
 interface ChatFormData {
   name: string;
@@ -56,6 +54,11 @@ export default function ClientView({ id }: { id: string }) {
   };
 
   const handleSave = () => {
+    if (Number(formData.price) >= 20) {
+      toast.error("Price cannot be more than 20");
+      return;
+    }
+
     updateChatMutation(
       {
         chatId: id,
@@ -267,7 +270,7 @@ export default function ClientView({ id }: { id: string }) {
                         />
                       </div>
                       <p className="text-muted-foreground text-[0.8rem]">
-                        Set to 0 for free distribution. Platform fees may apply.
+                        Set to 0 for free distribution.
                       </p>
                     </div>
                     <div className="mt-12 flex items-center justify-end gap-2">

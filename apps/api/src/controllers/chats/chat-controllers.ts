@@ -106,6 +106,10 @@ export const updateChat = catchAsync(
       return;
     }
 
+    if (Number(updateData.price) >= 20) {
+      throw new AppError("Price cannot be more than 20", 400);
+    }
+
     await db
       .update(chatsTable)
       .set({
