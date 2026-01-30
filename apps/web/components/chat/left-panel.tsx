@@ -13,6 +13,7 @@ import {
   TooltipTrigger,
 } from "@repo/ui/components/tooltip";
 import { useChatStore } from "@/zustand-store/chat-store";
+import { ConfirmationDialog } from "../dialogs/confirmation-dialog";
 
 interface LeftPanel {
   versions: ChatVersionAggregate[];
@@ -49,7 +50,7 @@ export default function LeftPanel({ versions, streamingOverview }: LeftPanel) {
       {/* 🔹 SCROLLABLE MESSAGES */}
       <div className="hidden-scrollbar min-h-0 flex-1 overflow-y-auto pr-2">
         {versions.length ? (
-          versions.map((version) => (
+          versions.map((version, index) => (
             <div
               key={version.chat_versions.id}
               className="mb-8 border-b border-dashed pb-4"
@@ -77,21 +78,28 @@ export default function LeftPanel({ versions, streamingOverview }: LeftPanel) {
                   <MarkdownRenderer
                     content={version.chat_version_outputs.overview || ""}
                   />
-                  {version.chat_version_outputs.generation_instructions && (
+                  {versions.length > index + 1 && (
                     <div className="mt-4 flex justify-end gap-2">
                       <Tooltip>
                         <TooltipTrigger asChild>
-                          <Button
-                            variant={"destructive"}
-                            size="sm"
-                            className="flex items-center gap-2 text-xs"
-                            onClick={() =>
+                          <ConfirmationDialog
+                            title={`Rollback to version ${version.chat_versions.version_number}`}
+                            description={`Are you sure you wanna rollback to the version ${version.chat_versions.version_number}. This can't be undone  `}
+                            confirmText="Confirm"
+                            onConfirm={() =>
                               rollbackEvent(version.chat_versions.id)
                             }
+                            variant="destructive"
                           >
-                            <Trash2 className="" />
-                            Roll back
-                          </Button>
+                            <Button
+                              variant={"destructive"}
+                              size="sm"
+                              className="flex items-center gap-2 text-xs"
+                            >
+                              <Trash2 className="" />
+                              Roll back
+                            </Button>
+                          </ConfirmationDialog>
                         </TooltipTrigger>
                         <TooltipContent className="">
                           <p className="text-xs">
