@@ -10,8 +10,8 @@ import {
   creditWalletsTable,
   sql,
   creditTransactionsTable,
+  creditsGrantsTable,
   and,
-  gte,
   usersTable,
 } from "@repo/db";
 import { addToThumbnailUpdateQueue } from "../../queues/thumbnail-update-queue.js";
@@ -29,9 +29,6 @@ export const purchaseTemplate = catchAsync(
     const userId = req.user.id;
     const parsedData = purchaseTemplateSchema.parse(req.body);
 
-    if (1 === 1) {
-      throw new AppError("This temporiarly out of service. Fixing soon", 400);
-    }
     const [template] = await db
       .select()
       .from(chatsTable)
@@ -45,6 +42,8 @@ export const purchaseTemplate = catchAsync(
       .from(usersTable)
       .where(eq(usersTable.id, template.user_id));
     if (!sellerData) throw new AppError("Seller data not found ", 400);
+    if (sellerData.id === userId)
+      throw new AppError("You cannot purchase your own template", 400);
 
     const chat = await db.transaction(async (tx) => {
       const [prevChatVersion] = await tx
@@ -104,26 +103,77 @@ export const purchaseTemplate = catchAsync(
       });
       // updating the user wallet
       if (Number(template.price) > 0) {
-        const [updatedWallet] = await tx
-          .update(creditWalletsTable)
-          .set({
-            balance: sql`${creditWalletsTable.balance} - ${template.price}`,
-          })
-          .where(
-            and(
-              eq(creditWalletsTable.user_id, userId),
-              gte(creditWalletsTable.balance, template.price),
-            ),
-          )
-          .returning();
-        if (!updatedWallet) {
+        const price = Number(template.price);
+
+        // 1️⃣ Check if user has sufficient funds from grants
+        const totalBalanceResult = await tx.execute(sql`
+          SELECT COALESCE(SUM(remaining_amount), 0) AS total_balance
+          FROM ${creditsGrantsTable}
+          WHERE user_id = ${userId}
+            AND remaining_amount > 0 AND is_expired = false
+        `);
+
+        const totalBalance = Number(
+          totalBalanceResult.rows[0]?.total_balance ?? 0,
+        );
+        if (totalBalance < price) {
           throw new AppError("Wallet doesn't have sufficient funds", 400);
         }
 
+        // 2️⃣ Lock grants and deduct from oldest expiry first
+        const grants = await tx.execute(sql`
+          SELECT id, remaining_amount
+          FROM ${creditsGrantsTable}
+          WHERE user_id = ${userId}
+            AND remaining_amount > 0 AND is_expired = false
+          ORDER BY expires_at ASC
+          FOR UPDATE
+        `);
+
+        let costLeft = price;
+        let totalDeducted = 0;
+
+        for (const grant of grants.rows) {
+          if (costLeft <= 0) break;
+          const remaining = Number(grant.remaining_amount);
+          const deduction = Math.min(remaining, costLeft);
+          await tx.execute(sql`
+            UPDATE ${creditsGrantsTable}
+            SET remaining_amount = remaining_amount - ${deduction},
+                updated_at = NOW()
+            WHERE id = ${grant.id}
+          `);
+          costLeft -= deduction;
+          totalDeducted += deduction;
+        }
+
+        // 3️⃣ Calculate new balance and update wallet
+        const newBalanceResult = await tx.execute(sql`
+          SELECT COALESCE(SUM(remaining_amount), 0) AS balance
+          FROM ${creditsGrantsTable}
+          WHERE user_id = ${userId}
+        `);
+
+        const newBalance = Number(newBalanceResult.rows[0]?.balance ?? 0);
+
+        const [updatedWallet] = await tx
+          .update(creditWalletsTable)
+          .set({
+            balance: String(newBalance),
+            updated_at: new Date(),
+          })
+          .where(eq(creditWalletsTable.user_id, userId))
+          .returning();
+
+        if (!updatedWallet) {
+          throw new AppError("Failed to update wallet", 500);
+        }
+
+        // 4️⃣ Log the transaction
         await tx.insert(creditTransactionsTable).values({
           wallet_id: updatedWallet.id,
-          amount: template.price,
-          after_balance: updatedWallet.balance,
+          amount: String(totalDeducted.toFixed(2)),
+          after_balance: String(newBalance),
           type: "spent",
           user_id: userId,
           reason: `Purchased the template ${template.name}`,
@@ -131,6 +181,8 @@ export const purchaseTemplate = catchAsync(
         // Updating the seller wallet
         const afterFeePrice =
           Math.round(Number(template.price) * 0.75 * 100) / 100;
+
+        //TODO: update the wallet balance after confirming the grants
 
         const [sellerWallet] = await tx
           .update(creditWalletsTable)
@@ -142,6 +194,18 @@ export const purchaseTemplate = catchAsync(
         if (!sellerWallet) {
           throw new AppError("Wallet doesn't have sufficient funds", 400);
         }
+        const expiresAt = new Date();
+        expiresAt.setFullYear(expiresAt.getFullYear() + 1);
+        await tx.insert(creditsGrantsTable).values({
+          wallet_id: sellerWallet.id,
+          user_id: sellerData.id,
+          type: "purchased",
+          initial_amount: String(afterFeePrice),
+          remaining_amount: String(afterFeePrice),
+          expires_at: expiresAt,
+          is_expired: false,
+          reason: `Profit of the template ${template.name}`,
+        });
         await tx.insert(creditTransactionsTable).values({
           wallet_id: sellerWallet.id,
           amount: String(afterFeePrice),
@@ -155,7 +219,10 @@ export const purchaseTemplate = catchAsync(
       return newChat;
     });
     addToThumbnailUpdateQueue(chat.id);
+
+    // Reinvalidating the both the user as well teh seller wallet amount
     await revalidateUserCreditWalletCache(null, userId);
+    await revalidateUserCreditWalletCache(null, sellerData.id);
     res.status(200).json({
       status: "success",
       data: {
