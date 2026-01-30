@@ -43,10 +43,7 @@ export default function LeftPanel({ versions, streamingOverview }: LeftPanel) {
   };
 
   return (
-    <ResizablePanel
-      defaultSize={"25%"}
-      className="flex h-full min-h-0 w-full flex-col px-3 pb-3"
-    >
+    <div className="flex h-full min-h-0 w-full flex-col px-3 pb-3">
       {/* 🔹 SCROLLABLE MESSAGES */}
       <div className="hidden-scrollbar min-h-0 flex-1 overflow-y-auto pt-3 pr-2">
         {versions.length ? (
@@ -142,7 +139,7 @@ export default function LeftPanel({ versions, streamingOverview }: LeftPanel) {
           isDisabled={activeStream ? true : false}
         />
       </div>
-    </ResizablePanel>
+    </div>
   );
 }
 interface UserChatBubble {

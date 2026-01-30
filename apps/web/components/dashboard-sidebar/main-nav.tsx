@@ -6,6 +6,7 @@ import {
   SidebarMenuItem,
   SidebarMenuButton,
 } from "@repo/ui/components/sidebar";
+import Link from "next/link";
 
 interface MainNavProps {
   items: {
@@ -25,10 +26,10 @@ export function MainNav({ items }: MainNavProps) {
             asChild
             className="active:bg-background data-active:bg-background"
           >
-            <a href={item.url}>
+            <Link href={item.url}>
               <item.icon />
               <span>{item.title}</span>
-            </a>
+            </Link>
           </SidebarMenuButton>
         </SidebarMenuItem>
       ))}

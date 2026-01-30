@@ -32,7 +32,7 @@ export const ChatTopControlBar = ({
 
   return (
     <div className="flex w-full items-center justify-between border-b p-1">
-      <div className="flex-1">
+      <div className="hidden flex-1 md:block">
         <div className="bg-muted inline-flex rounded-md p-1">
           <Button
             variant={view === "preview" ? "default" : "ghost"}

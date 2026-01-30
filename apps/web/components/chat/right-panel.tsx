@@ -34,7 +34,7 @@ export const RightPanel = ({ view, setView }: RightPanel) => {
     !selectedVersion.chat_version_outputs?.html_code;
 
   return (
-    <ResizablePanel defaultSize={"75%"} className="grid">
+    <div className="grid">
       {selectedVersion ? (
         <div className="flex h-full flex-col justify-center">
           <ChatTopControlBar
@@ -71,6 +71,6 @@ export const RightPanel = ({ view, setView }: RightPanel) => {
           </div>
         </div>
       )}
-    </ResizablePanel>
+    </div>
   );
 };
