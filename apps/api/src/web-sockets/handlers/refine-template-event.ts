@@ -91,7 +91,7 @@ export const refineTemplateHandler = async ({
     }),
   );
 
-  const [refinedMJMLResponse, overviewRes, updatedInstructions] =
+  const [generatedTemplate, overviewRes, updatedInstructions] =
     await Promise.all([
       refineMailTemplate({
         prevMjmlCode: prevOutput?.mjml_code || "",
@@ -123,7 +123,7 @@ export const refineTemplateHandler = async ({
         .where(eq(chatsTable.id, data.chatId)),
     ]);
 
-  const html_code = mjml2html(refinedMJMLResponse.outputText);
+  const html_code = mjml2html(generatedTemplate.outputCode);
 
   await removeOngoingNewChatVersion(data.chatId);
   const { chatVersion, chatQuestion, chatOutput } = await db.transaction(
@@ -145,7 +145,8 @@ export const refineTemplateHandler = async ({
         .values({
           version_id: chatVersion.id,
           overview: overviewRes.outputText,
-          mjml_code: refinedMJMLResponse.outputText,
+          mjml_code: generatedTemplate.outputCode,
+          prompt: generatedTemplate.prompt,
           html_code: html_code.html,
           generation_instructions: updatedInstructions,
         })
@@ -174,8 +175,8 @@ export const refineTemplateHandler = async ({
   await addToThumbnailUpdateQueue(data.chatId);
   ProcesingVersions.delete(`${chatVersion.chat_id}`);
   const totalCost =
-    refinedMJMLResponse.outputTokensCost +
-    refinedMJMLResponse.inputTokensCost +
+    generatedTemplate.outputTokensCost +
+    generatedTemplate.inputTokensCost +
     overviewRes.outputTokensCost +
     overviewRes.inputTokesnCost;
   await updateUserCreditWallet({ socket, totalConsumedAmount: totalCost });

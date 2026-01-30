@@ -30,10 +30,7 @@ export const purchaseTemplate = catchAsync(
     const parsedData = purchaseTemplateSchema.parse(req.body);
 
     if (1 === 1) {
-      throw new AppError(
-        "Please complete me i wanna reduce  the credits from the granst too ",
-        400,
-      );
+      throw new AppError("This temporiarly out of service. Fixing soon", 400);
     }
     const [template] = await db
       .select()

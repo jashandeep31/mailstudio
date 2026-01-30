@@ -1,4 +1,4 @@
-import { AiFunctionResponse } from "../../types.js";
+import { AiFunctionResponse, AiGeneratedTemplate } from "../../types.js";
 import {
   uploadMediaFiles,
   waitForFilesProcessing,
@@ -25,7 +25,7 @@ export const refineMailTemplate = async ({
   mediaUrls,
   prevMjmlCode,
   brandKit,
-}: RefineMailTemplate): Promise<AiFunctionResponse> => {
+}: RefineMailTemplate): Promise<AiGeneratedTemplate> => {
   const uploadedFiles = await uploadMediaFiles(mediaUrls);
   const brandKitData = brandKit ? getBrankitInAIFormatedWay(brandKit) : null;
   await waitForFilesProcessing(uploadedFiles);
@@ -59,7 +59,8 @@ Return only the updated instructions as a single paragraph.
   const refinedMJMLTemplateRes = await generateRefinedMjmlCode(refinedContent);
   console.log(`refined the MJML`);
   return {
-    outputText: extractMJMLOnly(refinedMJMLTemplateRes.outputText),
+    outputCode: extractMJMLOnly(refinedMJMLTemplateRes.outputText),
+    prompt: refinedPromptRes.outputText,
     inputTokensCost:
       refinedMJMLTemplateRes.inputTokensCost + refinedPromptRes.inputTokensCost,
     outputTokensCost:

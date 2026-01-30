@@ -1,4 +1,4 @@
-import { AiFunctionResponse } from "../../types.js";
+import { AiFunctionResponse, AiGeneratedTemplate } from "../../types.js";
 import {
   uploadMediaFiles,
   waitForFilesProcessing,
@@ -10,6 +10,7 @@ import { brandKitsTable } from "@repo/db";
 import { extractMJMLOnly } from "../../../lib/mjml-helpers.js";
 import { refinePrompt } from "./refine-prompt.js";
 import { generateTemplate } from "./generate-template.js";
+import { env } from "../../../lib/env.js";
 
 interface CreateNewMailTemplateParams {
   prompt: string;
@@ -21,7 +22,16 @@ export const createNewMailTemplate = async ({
   prompt,
   brandKit,
   mediaUrls,
-}: CreateNewMailTemplateParams): Promise<AiFunctionResponse> => {
+}: CreateNewMailTemplateParams): Promise<AiGeneratedTemplate> => {
+  if (env.ENVOIRONMENT === "development" && 1 === 1) {
+    return {
+      outputCode: "code,",
+      prompt: "test",
+      outputTokensCost: 0.1,
+      inputTokensCost: 0.1,
+    };
+  }
+
   //uploading the files
   const uploadedFiles = await uploadMediaFiles(mediaUrls);
   await waitForFilesProcessing(uploadedFiles);
@@ -45,9 +55,9 @@ export const createNewMailTemplate = async ({
 
   // final ai response just the template code
   const mjmlTemplateResponse = await generateTemplate(contentWithRefinedPrompt);
-
   return {
-    outputText: extractMJMLOnly(mjmlTemplateResponse.outputText),
+    outputCode: extractMJMLOnly(mjmlTemplateResponse.outputText),
+    prompt: refinedPromptRes.outputText,
     outputTokensCost:
       mjmlTemplateResponse.outputTokensCost + refinedPromptRes.outputTokensCost,
     inputTokensCost:

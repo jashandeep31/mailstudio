@@ -8,7 +8,6 @@ import {
   db,
   eq,
 } from "@repo/db";
-
 import { ProcesingVersions } from "../../state/processing-versions-state.js";
 import WebSocket from "ws";
 import mjml2html from "mjml";
@@ -45,7 +44,7 @@ export const streamAndHandleQuestion = async ({
     );
   }
 
-  const [overviewRes, mjmlAiRes, _, instructions] = await Promise.all([
+  const [overviewRes, generatedTemplate, _, instructions] = await Promise.all([
     streamOverview({
       generator: getQuestionOverview,
       socket,
@@ -68,7 +67,7 @@ export const streamAndHandleQuestion = async ({
     createUserInstructions(chatQuestion.prompt),
   ]);
 
-  const html_code = mjml2html(mjmlAiRes.outputText, {
+  const html_code = mjml2html(generatedTemplate.outputCode, {
     keepComments: false,
   });
 
@@ -78,7 +77,8 @@ export const streamAndHandleQuestion = async ({
     .values({
       version_id: chatQuestion.version_id,
       overview: overviewRes.outputText,
-      mjml_code: mjmlAiRes.outputText,
+      mjml_code: generatedTemplate.outputCode,
+      prompt: generatedTemplate.prompt,
       html_code: html_code.html,
       generation_instructions: instructions,
     })
@@ -105,8 +105,8 @@ export const streamAndHandleQuestion = async ({
   const totalCost =
     overviewRes.outputTokensCost +
     overviewRes.inputTokesnCost +
-    mjmlAiRes.outputTokensCost +
-    mjmlAiRes.inputTokensCost;
+    generatedTemplate.outputTokensCost +
+    generatedTemplate.inputTokensCost;
   await updateUserCreditWallet({ socket, totalConsumedAmount: totalCost });
 };
 const getChatCategoryAndName = async (
@@ -123,7 +123,8 @@ const getChatCategoryAndName = async (
   if (categoryId) {
     updatingData["category_id"] = categoryId;
   }
-  db.update(chatsTable)
+  await db
+    .update(chatsTable)
     .set({ ...updatingData })
     .where(eq(chatsTable.id, chatDbId))
     .then(() => {})

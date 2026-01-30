@@ -9,3 +9,13 @@ export type AiFunctionResponse = {
   inputTokensCost: number;
   outputTokensCost: number;
 };
+
+/**
+ * Function is used to return the code along with the prompt
+ */
+export type AiGeneratedTemplate = {
+  outputCode: string;
+  prompt: string;
+  inputTokensCost: number;
+  outputTokensCost: number;
+};
