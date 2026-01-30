@@ -22,4 +22,8 @@ export const socketErrors = {
     "error:server-error",
     "An error had occurred to process your request",
   ),
+  "proccessing-error": errorStringfier(
+    "error:proccessing-error",
+    "Please wait till chat finishes prev streaming",
+  ),
 } as const;

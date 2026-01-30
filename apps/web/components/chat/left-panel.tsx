@@ -1,7 +1,7 @@
 import { ResizablePanel } from "@repo/ui/components/resizable";
 import React, { useState } from "react";
 import { Button } from "@repo/ui/components/button";
-import { Copy, Check, MemoryStick } from "lucide-react";
+import { Copy, Check, MemoryStick, Trash2 } from "lucide-react";
 import { ChatVersionAggregate, StreamingOverview } from "@/app/chat/[id]/types";
 import InputArea from "./input-area";
 import { useWebSocketContext } from "@/contexts/web-socket-context";
@@ -32,6 +32,12 @@ export default function LeftPanel({ versions, streamingOverview }: LeftPanel) {
       media: data.mediaIds,
       brandKitId: data.brandKitId,
       prevVersionId: versions.at(-1)?.chat_versions.id || "",
+    });
+  };
+  const rollbackEvent = (versionId: string) => {
+    sendEvent("event:chat-rollback", {
+      chatId: params.id as string,
+      versionId: versionId,
     });
   };
 
@@ -72,23 +78,26 @@ export default function LeftPanel({ versions, streamingOverview }: LeftPanel) {
                     content={version.chat_version_outputs.overview || ""}
                   />
                   {version.chat_version_outputs.generation_instructions && (
-                    <div className="flex justify-end">
+                    <div className="mt-4 flex justify-end gap-2">
                       <Tooltip>
                         <TooltipTrigger asChild>
                           <Button
-                            variant={"ghost"}
+                            variant={"destructive"}
                             size="sm"
                             className="flex items-center gap-2 text-xs"
+                            onClick={() =>
+                              rollbackEvent(version.chat_versions.id)
+                            }
                           >
-                            <MemoryStick /> Memory Updated
+                            <Trash2 className="" />
+                            Roll back
                           </Button>
                         </TooltipTrigger>
                         <TooltipContent className="">
                           <p className="text-xs">
-                            {
-                              version.chat_version_outputs
-                                .generation_instructions
-                            }
+                            All the below versions to this will get deleted and
+                            this will become the main version and you can
+                            continue modifying from this version again.
                           </p>
                         </TooltipContent>
                       </Tooltip>

@@ -7,6 +7,7 @@ import { joinedChat } from "./cases/joined-chat.js";
 import { refineTemplateCase } from "./cases/refine-template.js";
 import { socketErrors } from "./cases/utils.js";
 import { leftChatCase } from "./cases/left-chat.js";
+import { chatRollbackCase } from "./cases/chat-rollback.js";
 
 export const SocketHandler = async (socket: WebSocket) => {
   socket.on("message", async (e) => {
@@ -37,6 +38,11 @@ export const SocketHandler = async (socket: WebSocket) => {
 
         case "event:refine-template-message": {
           await refineTemplateCase({ rawData, socket });
+          break;
+        }
+
+        case "event:chat-rollback": {
+          await chatRollbackCase({ rawData, socket });
           break;
         }
       }

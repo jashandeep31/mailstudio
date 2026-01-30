@@ -46,7 +46,16 @@ export const useChatEventHandler = () => {
           console.log(`okay we had removed the active stream sir`);
           setActiveStream(null);
         }
+      } else if (event.key === "res:rollback") {
+        const versions: ChatVersionAggregate[] = event.data.versions;
+        setChatVersions(versions);
+        const lastVersion = versions.at(-1);
+        if (lastVersion) {
+          setSelectedVersionId(lastVersion.chat_versions.id);
+        }
       }
+
+      //TODO: this shit code remove it from here only delete if the event is consumed here
       deleteEvent(event.id);
     }
   }, [

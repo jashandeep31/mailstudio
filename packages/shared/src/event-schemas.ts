@@ -25,6 +25,10 @@ export const SocketEventSchemas = {
     brandKitId: z.string().optional(),
     prevVersionId: z.string(),
   }),
+  "event:chat-rollback": z.object({
+    versionId: z.string(),
+    chatId: z.string(),
+  }),
 } as const;
 
 export const SocketEventKeySchema = z.enum(

@@ -1,4 +1,4 @@
-import { AiFunctionResponse, AiGeneratedTemplate } from "../../types.js";
+import { AiFunctionResponse } from "../../types.js";
 import {
   uploadMediaFiles,
   waitForFilesProcessing,
@@ -52,8 +52,6 @@ ${prevMjmlCode}
 `,
     validFiles,
   );
-
-  console.log(JSON.stringify(refinedContent));
 
   const refinedMJMLTemplateRes = await generateRefinedMjmlCode(refinedContent);
   return {
