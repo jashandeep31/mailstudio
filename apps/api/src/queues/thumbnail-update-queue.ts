@@ -11,8 +11,10 @@ const templateUpdateQueue = new Queue("thumbnail-update", {
 
 export async function addToThumbnailUpdateQueue(chatId: string) {
   await templateUpdateQueue.add("thumbnail-update", {
-    // url: `${env.BACKEND_URL}/api/v1/internal/get-html-code/${chatId}`,
-    url: `https://l1.devsradar.com/api/v1/internal/get-html-code/${chatId}`,
+    url:
+      env.ENVIRONMENT === "development"
+        ? `${env.BACKEND_URL}/api/v1/internal/get-html-code/${chatId}`
+        : `https://l1.devsradar.com/api/v1/internal/get-html-code/${chatId}`,
     id: chatId,
   });
 }

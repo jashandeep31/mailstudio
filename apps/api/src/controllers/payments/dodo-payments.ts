@@ -43,7 +43,7 @@ export const getProSubscriptonUrl = catchAsync(
         email: (() => {
           // To make the unique session as easy to debug the things in the development env
           if (
-            env.ENVOIRONMENT == "development" &&
+            env.ENVIRONMENT == "development" &&
             env.DODO_PAYMENTS_ENVIRONMENT === "test_mode"
           ) {
             return (

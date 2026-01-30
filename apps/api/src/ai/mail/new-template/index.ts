@@ -23,7 +23,7 @@ export const createNewMailTemplate = async ({
   brandKit,
   mediaUrls,
 }: CreateNewMailTemplateParams): Promise<AiGeneratedTemplate> => {
-  //   if (env.ENVOIRONMENT === "development" && 1 === 1) {
+  //   if (env.ENVIRONMENT === "development" && 1 === 1) {
   //     await new Promise<void>((res) => setTimeout(res, 2000));
   //     return {
   //       outputCode: `<mjml>

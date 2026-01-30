@@ -55,7 +55,7 @@ export const googleAuthCallbackController = catchAsync(
       avatar: parsedPayload.picture,
       provider: "google",
     });
-    const isProd = env.ENVOIRONMENT !== "development";
+    const isProd = env.ENVIRONMENT !== "development";
 
     res.cookie(
       "session",

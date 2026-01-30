@@ -1,7 +1,7 @@
 import { ResizablePanel } from "@repo/ui/components/resizable";
 import React, { useState } from "react";
 import { Button } from "@repo/ui/components/button";
-import { Copy, Check, MemoryStick, Trash2 } from "lucide-react";
+import { Copy, Check, Trash2 } from "lucide-react";
 import { ChatVersionAggregate, StreamingOverview } from "@/app/chat/[id]/types";
 import InputArea from "./input-area";
 import { useWebSocketContext } from "@/contexts/web-socket-context";
@@ -45,10 +45,10 @@ export default function LeftPanel({ versions, streamingOverview }: LeftPanel) {
   return (
     <ResizablePanel
       defaultSize={"25%"}
-      className="flex h-full min-h-0 w-full flex-col p-3"
+      className="flex h-full min-h-0 w-full flex-col px-3 pb-3"
     >
       {/* 🔹 SCROLLABLE MESSAGES */}
-      <div className="hidden-scrollbar min-h-0 flex-1 overflow-y-auto pr-2">
+      <div className="hidden-scrollbar min-h-0 flex-1 overflow-y-auto pt-3 pr-2">
         {versions.length ? (
           versions.map((version, index) => (
             <div
@@ -94,6 +94,7 @@ export default function LeftPanel({ versions, streamingOverview }: LeftPanel) {
                             <Button
                               variant={"destructive"}
                               size="sm"
+                              disabled={activeStream ? true : false}
                               className="flex items-center gap-2 text-xs"
                             >
                               <Trash2 className="" />
@@ -133,8 +134,7 @@ export default function LeftPanel({ versions, streamingOverview }: LeftPanel) {
         )}
       </div>
 
-      {/* 🔹 FIXED INPUT */}
-      <div className="shrink-0 pt-3">
+      <div className="shrink-0">
         <InputArea
           userPrompt={userPrompt}
           setUserPrompt={setUserPrompt}

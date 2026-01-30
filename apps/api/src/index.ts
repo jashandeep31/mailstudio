@@ -108,7 +108,7 @@ ws.on("connection", async (socket, req) => {
 });
 
 // Dev things
-if (env.ENVOIRONMENT === "development") {
+if (env.ENVIRONMENT === "development") {
   test();
   checkAllPromptFiles();
   redis.flushdb();

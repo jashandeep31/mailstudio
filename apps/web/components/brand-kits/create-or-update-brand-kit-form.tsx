@@ -204,6 +204,9 @@ export default function CreateOrUpdateBrandKitForm({
                       if (file) handleLogoUpload(file);
                     }}
                   />
+                  <p className="text-muted-foreground mt-1 text-xs">
+                    Allowed formats: .png, .jpg, .jpeg
+                  </p>
                   {logoUploadState.state === "uploading" && (
                     <p className="mt-1 text-xs text-green-800">
                       Uploading {logoUploadState.percentage}%
@@ -256,6 +259,9 @@ export default function CreateOrUpdateBrandKitForm({
                       if (file) handleIconLogoUpload(file);
                     }}
                   />
+                  <p className="text-muted-foreground mt-1 text-xs">
+                    Allowed formats: .png, .jpg, .jpeg
+                  </p>
                   {iconLogoUploadState.state === "uploading" && (
                     <p className="mt-1 text-xs text-green-800">
                       Uploading {iconLogoUploadState.percentage}%

@@ -17,7 +17,7 @@ export const SocketHandler = async (socket: WebSocket) => {
       const parsedEvent = SocketEventSchemas[event].safeParse(rawData);
       if (!parsedEvent.success) return;
 
-      if (env.ENVOIRONMENT === "development")
+      if (env.ENVIRONMENT === "development")
         console.log(event, new Date().toLocaleDateString());
 
       switch (event) {
