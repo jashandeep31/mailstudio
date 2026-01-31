@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { catchAsync } from "../../lib/catch-async.js";
 import { z } from "zod";
-import { and, db, eq, userLikedChatsTable } from "@repo/db";
+import { and, chatsTable, db, eq, sql, userLikedChatsTable } from "@repo/db";
 import { AppError } from "../../lib/app-error.js";
 
 const likeChatSchema = z.object({
@@ -13,22 +13,42 @@ export const likeChat = catchAsync(async (req: Request, res: Response) => {
 
   const data = likeChatSchema.parse(req.body);
   if (data.action === "like") {
-    await db
+    const inserted = await db
       .insert(userLikedChatsTable)
       .values({
         chat_id: data.chatId,
         user_id: req.user.id,
       })
-      .onConflictDoNothing();
+      .onConflictDoNothing()
+      .returning({ id: userLikedChatsTable.chat_id });
+
+    if (inserted.length > 0) {
+      await db
+        .update(chatsTable)
+        .set({
+          like_count: sql`${chatsTable.like_count} + 1`,
+        })
+        .where(eq(chatsTable.id, data.chatId));
+    }
   } else {
-    await db
+    const deleted = await db
       .delete(userLikedChatsTable)
       .where(
         and(
           eq(userLikedChatsTable.chat_id, data.chatId),
           eq(userLikedChatsTable.user_id, req.user.id),
         ),
-      );
+      )
+      .returning({ id: userLikedChatsTable.chat_id });
+
+    if (deleted.length > 0) {
+      await db
+        .update(chatsTable)
+        .set({
+          like_count: sql`GREATEST(${chatsTable.like_count} - 1, 0)`,
+        })
+        .where(eq(chatsTable.id, data.chatId));
+    }
   }
   res.status(201).json({
     message: data.action === "like" ? "chat is liked" : "chat is unliked",

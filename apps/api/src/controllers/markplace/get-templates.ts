@@ -8,6 +8,8 @@ import {
   eq,
   usersTable,
   chatCategoriesTable,
+  userLikedChatsTable,
+  sql,
 } from "@repo/db";
 import { getMarketplaceTemplatesFilterSchema } from "@repo/shared";
 import { AppError } from "../../lib/app-error.js";
@@ -34,8 +36,9 @@ export const getMarketplaceTemplates = catchAsync(
 export const getMarketplaceTemplateById = catchAsync(
   async (req: Request, res: Response) => {
     const { id } = req.params;
+    const userId = req.user?.id;
     if (!id) throw new AppError("Template id is required", 400);
-    const [template] = await db
+    const baseQuery = db
       .select({
         chat: chatsTable,
         category: chatCategoriesTable,
@@ -44,15 +47,29 @@ export const getMarketplaceTemplateById = catchAsync(
           lastName: usersTable.lastName,
           avatar: usersTable.avatar,
         },
+        isLiked: sql<boolean>`${userLikedChatsTable.id} IS NOT NULL`.as(
+          "is_liked",
+        ),
       })
       .from(chatsTable)
       .innerJoin(usersTable, eq(chatsTable.user_id, usersTable.id))
       .leftJoin(
         chatCategoriesTable,
         eq(chatsTable.category_id, chatCategoriesTable.id),
-      )
-      .where(and(eq(chatsTable.id, id), eq(chatsTable.public, true)));
+      );
 
+    if (userId) {
+      baseQuery.leftJoin(
+        userLikedChatsTable,
+        and(
+          eq(userLikedChatsTable.chat_id, chatsTable.id),
+          eq(userLikedChatsTable.user_id, userId),
+        ),
+      );
+    } else {
+      baseQuery.leftJoin(userLikedChatsTable, sql`false`);
+    }
+    const [template] = await baseQuery.where(eq(chatsTable.id, id));
     console.log(template);
     res.status(200).json({ data: template });
   },

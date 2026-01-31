@@ -40,3 +40,18 @@ export const getChatById = async (
   });
   return res.data.data;
 };
+
+export const likeChat = async ({
+  action,
+  chatId,
+}: {
+  action: "like" | "unlike";
+  chatId: string;
+}) => {
+  const res = await axios.post(
+    `${BASE_URL}/api/v1/chats/like`,
+    { action, chatId },
+    { withCredentials: true },
+  );
+  return res.data;
+};

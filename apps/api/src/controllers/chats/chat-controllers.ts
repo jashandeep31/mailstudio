@@ -40,6 +40,7 @@ export const getChatById = catchAsync(
       )
       .limit(1);
 
+    console.log(chats);
     if (!chats.length) {
       throw new AppError("Chat not found", 404);
     }

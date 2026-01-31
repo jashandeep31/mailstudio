@@ -194,6 +194,7 @@ export const purchaseTemplate = catchAsync(
         if (!sellerWallet) {
           throw new AppError("Wallet doesn't have sufficient funds", 400);
         }
+        // Expring the user credits after the 1 year
         const expiresAt = new Date();
         expiresAt.setFullYear(expiresAt.getFullYear() + 1);
         await tx.insert(creditsGrantsTable).values({

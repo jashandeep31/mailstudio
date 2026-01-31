@@ -28,8 +28,12 @@ export const getMarketplaceTemplateById = async (
     lastName: string;
     avatar: string;
   };
+  isLiked: boolean;
 }> => {
-  const res = await axios.get(`${BASE_URL}/api/v1/marketplace/templates/${id}`);
+  const res = await axios.get(
+    `${BASE_URL}/api/v1/marketplace/templates/${id}`,
+    { withCredentials: true },
+  );
   return res.data.data;
 };
 

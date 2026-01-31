@@ -4,6 +4,7 @@ import {
   getChats,
   updateChat,
   getChatById,
+  likeChat,
 } from "@/services/chat-services";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
@@ -44,5 +45,61 @@ export const useUpdateChat = () =>
     onError: (e) => {
       console.log(e);
       toast.error("Something went wrong");
+    },
+  });
+
+export const useLikeChat = () =>
+  useMutation({
+    mutationFn: async ({
+      action,
+      chatId,
+    }: {
+      action: "like" | "unlike";
+      chatId: string;
+    }) => await likeChat({ action, chatId }),
+    onMutate: async ({
+      action,
+      chatId,
+    }: {
+      action: "like" | "unlike";
+      chatId: string;
+    }) => {
+      await queryClient.cancelQueries({
+        queryKey: ["marketplace-template", chatId],
+      });
+      const previousData = queryClient.getQueryData([
+        "marketplace-template",
+        chatId,
+      ]);
+      queryClient.setQueryData(["marketplace-template", chatId], (old: any) => {
+        if (!old) return old;
+
+        return {
+          ...old,
+          chat: {
+            ...old.chat,
+            like_count:
+              action === "like"
+                ? old.chat.like_count + 1
+                : Math.max(old.chat.like_count - 1, 0),
+          },
+          isLiked: action === "like",
+        };
+      });
+
+      return { previousData, chatId };
+    },
+    onError: (_err, _variables, context) => {
+      if (context?.previousData && context?.chatId) {
+        queryClient.setQueryData(
+          ["marketplace-template", context.chatId],
+          context.previousData,
+        );
+      }
+    },
+    onSettled: (_data, _error, variables) => {
+      queryClient.invalidateQueries({
+        queryKey: ["marketplace-template", variables.chatId],
+      });
     },
   });

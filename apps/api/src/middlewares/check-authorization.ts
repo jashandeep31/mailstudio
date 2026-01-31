@@ -2,8 +2,8 @@ import type { Request, Response, NextFunction } from "express";
 import { userRoleEnum, db, usersTable, eq } from "@repo/db";
 import { z } from "zod";
 import { redis } from "../lib/db.js";
-import { getCACertificates } from "node:tls";
-const sessionSchema = z.object({
+
+export const sessionSchema = z.object({
   id: z.string(),
   role: z.enum(userRoleEnum.enumValues),
 });
@@ -25,9 +25,10 @@ const CACHE_KEY_PREFIX = "user:auth:";
 const ROLES = [...userRoleEnum.enumValues, "all"] as const;
 type UserRole = (typeof ROLES)[number];
 
-
 // @returns the cached user from the redis or either returns nul
-const getUserFromCache = async (userId: string): Promise<UserData | null> => {
+export const getUserFromCache = async (
+  userId: string,
+): Promise<UserData | null> => {
   try {
     const cacheKey = `${CACHE_KEY_PREFIX}${userId}`;
     const cachedUser = await redis.get(cacheKey);
@@ -44,7 +45,7 @@ const getUserFromCache = async (userId: string): Promise<UserData | null> => {
 };
 
 // set the user in the cache of the redis
-const setUserInCache = async (
+export const setUserInCache = async (
   userId: string,
   userData: UserData,
 ): Promise<void> => {
@@ -55,8 +56,8 @@ const setUserInCache = async (
     console.error("Redis cache storage error:", error);
   }
 };
-// Getting the user from the database 
-const getUserFromDatabase = async (
+// Getting the user from the database
+export const getUserFromDatabase = async (
   userId: string,
 ): Promise<UserData | null> => {
   const [user] = await db
@@ -66,7 +67,7 @@ const getUserFromDatabase = async (
       lastName: usersTable.lastName,
       email: usersTable.email,
       role: usersTable.role,
-      avatar: usersTable.avatar
+      avatar: usersTable.avatar,
     })
     .from(usersTable)
     .where(eq(usersTable.id, userId))
@@ -78,66 +79,65 @@ const getUserFromDatabase = async (
 
   return user as UserData;
 };
-
 export const checkAuthorization =
   (roles: UserRole[]) =>
-    async (req: Request, res: Response, next: NextFunction) => {
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const session = req.cookies.session;
+
+      if (!session) {
+        res.status(401).json({
+          error: "Authentication required. Please login.",
+        });
+        return;
+      }
+
+      let parsedSession;
       try {
-        const session = req.cookies.session;
+        parsedSession = sessionSchema.parse(JSON.parse(session));
+      } catch (error) {
+        res.status(401).json({
+          error: "Invalid session format. Please login again.",
+        });
+        return;
+      }
 
-        if (!session) {
-          res.status(401).json({
-            error: "Authentication required. Please login.",
-          });
-          return;
-        }
+      let userData = await getUserFromCache(parsedSession.id);
 
-        let parsedSession;
-        try {
-          parsedSession = sessionSchema.parse(JSON.parse(session));
-        } catch (error) {
-          res.status(401).json({
-            error: "Invalid session format. Please login again.",
-          });
-          return;
-        }
-
-        let userData = await getUserFromCache(parsedSession.id);
+      if (!userData) {
+        userData = await getUserFromDatabase(parsedSession.id);
 
         if (!userData) {
-          userData = await getUserFromDatabase(parsedSession.id);
-
-          if (!userData) {
-            res.status(401).json({
-              error: "User not found. Please login again.",
-            });
-            return;
-          }
-
-          await setUserInCache(parsedSession.id, userData);
-        }
-
-        if (parsedSession.id !== userData.id) {
           res.status(401).json({
-            error: "Session mismatch. Please login again.",
+            error: "User not found. Please login again.",
           });
           return;
         }
 
-        req["user"] = userData;
-
-        if (roles.includes("all") || roles.includes(userData.role)) {
-          next();
-          return;
-        }
-
-        res.status(403).json({
-          error: "Insufficient permissions to access this resource.",
-        });
-      } catch (error) {
-        console.error("Authorization middleware error:", error);
-        res.status(500).json({
-          error: "Internal server error during authorization.",
-        });
+        await setUserInCache(parsedSession.id, userData);
       }
-    };
+
+      if (parsedSession.id !== userData.id) {
+        res.status(401).json({
+          error: "Session mismatch. Please login again.",
+        });
+        return;
+      }
+
+      req["user"] = userData;
+
+      if (roles.includes("all") || roles.includes(userData.role)) {
+        next();
+        return;
+      }
+
+      res.status(403).json({
+        error: "Insufficient permissions to access this resource.",
+      });
+    } catch (error) {
+      console.error("Authorization middleware error:", error);
+      res.status(500).json({
+        error: "Internal server error during authorization.",
+      });
+    }
+  };

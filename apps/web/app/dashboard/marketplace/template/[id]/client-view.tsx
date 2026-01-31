@@ -11,6 +11,7 @@ import { Button, buttonVariants } from "@repo/ui/components/button";
 import Link from "next/link";
 import { ConfirmationDialog } from "@/components/dialogs/confirmation-dialog";
 import { toast } from "sonner";
+import { useLikeChat } from "@/hooks/use-chats";
 
 export default function ClientView() {
   const router = useRouter();
@@ -21,9 +22,25 @@ export default function ClientView() {
     isError,
   } = useMarketplaceTemplateById(params.id as string);
   const { mutate } = usePurchaseTemplate();
+  const likeChat = useLikeChat();
 
-  const handleLikeClick = () => {
-    console.log("Like clicked for template:", params.id);
+  const handleLikeClick = (action: "like" | "unlike") => {
+    const toastId = toast.loading("Processing");
+    likeChat.mutate(
+      {
+        action,
+        chatId: params.id as string,
+      },
+      {
+        onSuccess: (res) => {
+          toast.success(res.message, { id: toastId });
+        },
+        onError: (e) => {
+          console.log(e);
+          toast.error("Something went wrong", { id: toastId });
+        },
+      },
+    );
   };
 
   const handlePurchaseClick = () => {
@@ -158,12 +175,18 @@ export default function ClientView() {
 
           <div className="mt-6 flex flex-col items-stretch gap-3 sm:flex-row sm:items-center sm:gap-6 md:mt-3">
             <Button
-              onClick={handleLikeClick}
+              onClick={() =>
+                handleLikeClick(template.isLiked ? "unlike" : "like")
+              }
               variant={"outline"}
               size={"lg"}
               className="w-full sm:w-auto"
             >
-              <Heart className="h-5 w-5" />
+              {template.isLiked ? (
+                <Heart className="h-5 w-5 text-red-500" fill="red" />
+              ) : (
+                <Heart className="h-5 w-5" />
+              )}
               <span>{template.chat.like_count || 0} likes</span>
             </Button>
 

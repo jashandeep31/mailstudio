@@ -23,5 +23,5 @@ routes
   .route("/delete/version/:versionId")
   .delete(checkAuthorization(["all"]), deleteChatVersion);
 
-routes.route("/like/:chatId").post(checkAuthorization(["all"]), likeChat);
+routes.route("/like/").post(checkAuthorization(["all"]), likeChat);
 export default routes;
