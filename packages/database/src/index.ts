@@ -2,6 +2,7 @@ import "dotenv/config";
 import { drizzle } from "drizzle-orm/node-postgres";
 import { testTable, usersTable } from "./schema/users.js";
 import { accountsTable } from "./schema/accounts.js";
+import { main } from "./seeding.js";
 export * from "drizzle-orm";
 
 export const db = drizzle(process.env.DATABASE_URL!, {
@@ -26,3 +27,5 @@ export * from "./schema/payments.js";
 export * from "./schema/billings.js";
 export * from "./schema/upload-media.js";
 export * from "./schema/user-liked-chats.js";
+
+main();
