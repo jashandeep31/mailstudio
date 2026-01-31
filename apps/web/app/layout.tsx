@@ -73,13 +73,6 @@ export default function RootLayout({
           <>
             <Toaster richColors />
             <Provider>{children}</Provider>
-            <Link
-              href={"https://mailstudio.featurebase.app"}
-              target="_blank"
-              className={`bg-foreground text-background fixed right-5 bottom-5 z-50 rounded-md px-3 py-1 text-xs`}
-            >
-              Request ?
-            </Link>
           </>
         </ThemeProvider>
       </body>

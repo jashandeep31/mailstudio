@@ -67,6 +67,12 @@ const ProfileDropdown = () => {
             <span>Billing</span>
           </Link>
         </DropdownMenuItem>
+        <DropdownMenuItem asChild>
+          <Link href="https://mailstudio.featurebase.app">
+            <CreditCard className="mr-2 h-4 w-4" />
+            <span>Request Feature</span>
+          </Link>
+        </DropdownMenuItem>
 
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={logoutUser}>

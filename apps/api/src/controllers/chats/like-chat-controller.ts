@@ -32,6 +32,6 @@ export const likeChat = catchAsync(async (req: Request, res: Response) => {
   }
   res.status(201).json({
     message: data.action === "like" ? "chat is liked" : "chat is unliked",
-    status: "okay",
+    status: "success",
   });
 });

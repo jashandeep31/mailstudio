@@ -2,7 +2,7 @@
 import React from "react";
 import { Moon, Sun, LogOut, Wallet, Monitor } from "lucide-react";
 import { useTheme } from "next-themes";
-import { Button } from "@repo/ui/components/button";
+import { Button, buttonVariants } from "@repo/ui/components/button";
 import {
   Card,
   CardContent,
@@ -20,6 +20,7 @@ import {
 } from "@repo/ui/components/select";
 import { useUserMetadata, useUserPlan } from "@/hooks/use-user";
 import { logoutUser } from "@/services/util-services";
+import Link from "next/link";
 
 const ClientView = () => {
   const { theme, setTheme } = useTheme();
@@ -139,6 +140,21 @@ const ClientView = () => {
             </div>
           </CardContent>
         </Card>
+      </div>
+      <div className="bg-background mt-8 flex items-center justify-between rounded-md border px-4 py-4">
+        <div>
+          <h5 className="text-sm font-semibold">Looking for feature?</h5>
+          <p className="text-muted-foreground text-xs">
+            Don&apos;t Worry you can request a feature we will provider you as
+            soon as possible
+          </p>
+        </div>
+        <Link
+          href={"https://mailstudio.featurebase.app"}
+          className={buttonVariants({ variant: "default" })}
+        >
+          Request Feature
+        </Link>
       </div>
     </div>
   );
