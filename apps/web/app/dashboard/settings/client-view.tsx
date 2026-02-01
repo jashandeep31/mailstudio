@@ -1,16 +1,13 @@
 "use client";
 import React from "react";
-import { Moon, Sun, LogOut, Wallet, Monitor } from "lucide-react";
+import { Moon, Sun, LogOut, Monitor } from "lucide-react";
 import { useTheme } from "next-themes";
 import { Button, buttonVariants } from "@repo/ui/components/button";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@repo/ui/components/card";
+
 import { SettingsNav } from "@/components/settings/settings-nav";
 import { PlanCard } from "@/components/settings/plan-card";
+import { CreditsCard } from "@/components/settings/credits-card";
+import { CreditsHistory } from "@/components/settings/credits-history";
 import {
   Select,
   SelectContent,
@@ -106,40 +103,10 @@ const ClientView = () => {
         <PlanCard planData={planRes.data} isLoading={planRes.isLoading} />
 
         {/* Credits Section - Card */}
-        <Card>
-          <CardHeader>
-            <div className="flex items-center space-x-3">
-              <div className="bg-primary/10 flex h-8 w-8 items-center justify-center rounded-lg">
-                <Wallet className="text-primary h-4 w-4" />
-              </div>
-              <div>
-                <CardTitle>Credits</CardTitle>
-                <p className="text-muted-foreground text-xs">
-                  Last updated:{" "}
-                  {userMetadata.data?.creditsWallet.updated_at
-                    ? new Date(
-                        userMetadata.data.creditsWallet.updated_at,
-                      ).toLocaleDateString()
-                    : "N/A"}
-                </p>
-              </div>
-            </div>
-          </CardHeader>
-          <CardContent className="h-full">
-            <div className="h-full space-y-4">
-              <div className="bg-muted/50 h-full rounded-lg border p-4">
-                <div className="mb-3 flex items-center justify-between">
-                  <span className="text-foreground font-medium">
-                    Current Balance
-                  </span>
-                  <span className="text-primary text-2xl font-bold">
-                    {userMetadata.data?.creditsWallet.balance || "0.00"}
-                  </span>
-                </div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+        <CreditsCard creditsWallet={userMetadata.data?.creditsWallet} />
+
+        {/* Credits History Section */}
+        <CreditsHistory />
       </div>
       <div className="bg-card mt-8 flex items-center justify-between rounded-md border px-4 py-4">
         <div>
