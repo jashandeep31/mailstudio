@@ -17,8 +17,43 @@ import {
 } from "@repo/ui/components/table";
 import { useUserCreditsHistory } from "@/hooks/use-user";
 
+import { Skeleton } from "@repo/ui/components/skeleton";
+
 export const CreditsHistory = () => {
-  const { data: creditsHistory } = useUserCreditsHistory();
+  const { data: creditsHistory, isLoading } = useUserCreditsHistory();
+
+  if (isLoading) {
+    return (
+      <Card className="col-span-full">
+        <CardHeader>
+          <Skeleton className="h-6 w-32" />
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-2">
+            <Skeleton className="h-10 w-full" />
+            <Skeleton className="h-10 w-full" />
+            <Skeleton className="h-10 w-full" />
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  if (!creditsHistory || creditsHistory.length === 0) {
+    return (
+      <Card className="col-span-full">
+        <CardHeader>
+          <CardTitle>Credits History</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p className="text-muted-foreground text-center text-sm">
+            No credit history available.
+          </p>
+        </CardContent>
+      </Card>
+    );
+  }
+
   return (
     <Card className="col-span-full">
       <CardHeader>
