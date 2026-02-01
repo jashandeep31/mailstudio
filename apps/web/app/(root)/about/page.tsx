@@ -1,38 +1,15 @@
 import React from "react";
-import { Button } from "@repo/ui/components/button";
 import {
   Card,
   CardContent,
   CardHeader,
   CardTitle,
 } from "@repo/ui/components/card";
-import { Separator } from "@repo/ui/components/separator";
 import { Mail, Zap, Smartphone, Users } from "lucide-react";
-import Link from "next/link";
 
 export default function AboutPage() {
   return (
     <div className="container mx-auto max-w-5xl px-4 py-16">
-      {/* Hero Section */}
-      <section className="mb-16 space-y-6 text-center">
-        <h1 className="from-primary to-primary/60 bg-gradient-to-r bg-clip-text text-4xl font-bold tracking-tight text-transparent md:text-6xl">
-          About MailStudio
-        </h1>
-        <p className="text-muted-foreground mx-auto max-w-2xl text-xl">
-          Reimagining email design for the modern era. We empower creators to
-          build beautiful, responsive emails with the speed of AI.
-        </p>
-        <div className="flex justify-center gap-4 pt-4">
-          <Link href="/">
-            <Button size="lg" className="rounded-full">
-              Get Started
-            </Button>
-          </Link>
-        </div>
-      </section>
-
-      <Separator className="my-12" />
-
       {/* Mission Section */}
       <section className="mb-20 grid items-center gap-12 md:grid-cols-2">
         <div className="space-y-6">

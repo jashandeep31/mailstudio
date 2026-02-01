@@ -72,7 +72,6 @@ export const getMarketplaceTemplateById = catchAsync(
       baseQuery.leftJoin(userLikedChatsTable, sql`false`);
     }
     const [template] = await baseQuery.where(eq(chatsTable.id, id));
-    console.log(template);
     res.status(200).json({ data: template });
   },
 );

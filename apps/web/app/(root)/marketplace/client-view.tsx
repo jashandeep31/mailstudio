@@ -1,5 +1,4 @@
 "use client";
-
 import React, { useState } from "react";
 import { Button } from "@repo/ui/components/button";
 import { MailTemplateCard } from "@/components/mail-template-card";
@@ -25,8 +24,7 @@ export default function ClientView() {
   ];
 
   return (
-    <div className="container mt-6 md:mt-12">
-      {/* Header with Search */}
+    <div className="container mt-6">
       <div className="mb-3 flex flex-col gap-4 md:mb-8 lg:flex-row lg:items-center lg:justify-between">
         <div>
           <h2 className="text-muted-foreground text-lg font-semibold tracking-tight md:text-xl lg:text-3xl">
@@ -35,7 +33,6 @@ export default function ClientView() {
         </div>
       </div>
 
-      {/* Filter Buttons */}
       <div className="mb-6 space-y-4 md:mb-8">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
           <div>
