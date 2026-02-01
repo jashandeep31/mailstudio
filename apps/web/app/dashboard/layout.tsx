@@ -2,8 +2,12 @@ import React from "react";
 import DashboardNavbar from "@/components/dashboard-navbar";
 import { SidebarProvider } from "@repo/ui/components/sidebar";
 import { DashboardSidebar } from "@/components/dashboard-sidebar";
+import { redirect } from "next/navigation";
+import { getSession } from "@/lib/get-session";
 
 const layout = ({ children }: { children: React.ReactNode }) => {
+  const user = getSession();
+  if (!user) redirect("/login");
   return (
     <SidebarProvider className="h-screen">
       <header className="bg-background fixed top-0 z-50 h-14 w-full">
