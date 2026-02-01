@@ -90,7 +90,7 @@ export const createUser = async ({
       cancel_at_next_billing_date: false,
     });
     // creating user plan
-    await db.insert(brandKitsTable).values({
+    await tx.insert(brandKitsTable).values({
       user_id: user.id,
       ...defaultBrandKitData,
     });
