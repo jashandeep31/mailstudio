@@ -10,6 +10,7 @@ import {
   chatCategoriesTable,
   userLikedChatsTable,
   sql,
+  desc,
 } from "@repo/db";
 import { getMarketplaceTemplatesFilterSchema } from "@repo/shared";
 import { AppError } from "../../lib/app-error.js";
@@ -27,7 +28,8 @@ export const getMarketplaceTemplates = catchAsync(
     const templates = await db
       .select()
       .from(chatsTable)
-      .where(and(...dbQuery));
+      .where(and(...dbQuery))
+      .orderBy(desc(chatsTable.updated_at));
 
     res.status(200).json({ data: templates });
   },

@@ -141,7 +141,7 @@ const ClientView = () => {
           </CardContent>
         </Card>
       </div>
-      <div className="bg-background mt-8 flex items-center justify-between rounded-md border px-4 py-4">
+      <div className="bg-card mt-8 flex items-center justify-between rounded-md border px-4 py-4">
         <div>
           <h5 className="text-sm font-semibold">Looking for feature?</h5>
           <p className="text-muted-foreground text-xs">

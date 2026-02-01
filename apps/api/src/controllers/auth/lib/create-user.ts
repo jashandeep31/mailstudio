@@ -89,6 +89,7 @@ export const createUser = async ({
       cancel_at_next_billing_date: false,
     });
     // creating user plan
+    // TODO: add the sample brankit to user
     return user;
   });
   return user;
