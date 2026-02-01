@@ -16,6 +16,7 @@ export default function Navbar() {
       label: "Home",
       link: "/",
     },
+    { label: "Marketplace", link: "/marketplace" },
     { label: "About", link: "/about" },
     { label: "Contact", link: "/contact-us" },
   ];
@@ -41,7 +42,7 @@ export default function Navbar() {
                 <nav key={navLink.link} className="text-sm">
                   <Link
                     href={navLink.link}
-                    className="hover:text-primary transition-colors"
+                    className="hover:text-primary text-muted-foreground transition-colors"
                   >
                     {navLink.label}
                   </Link>

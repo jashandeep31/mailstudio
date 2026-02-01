@@ -57,7 +57,7 @@ const page = async () => {
               <Sparkles className="h-4 w-4" /> Start Generating
             </Link>
             <Link
-              href="/dashboard/marketplace"
+              href="/marketplace"
               className={cn(
                 buttonVariants({ variant: "outline", size: "lg" }),
                 "gap-2",
@@ -107,54 +107,6 @@ const page = async () => {
                   Send emails programmatically. Integrate your templates
                   directly into your application workflow.
                 </p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Value Proposition / Code Section */}
-      <section className="container mx-auto py-12 md:py-24 lg:py-32">
-        <div className="mx-auto flex max-w-[58rem] flex-col items-center justify-center gap-4 text-center">
-          <h2 className="text-3xl leading-[1.1] font-bold sm:text-3xl md:text-6xl">
-            Built for Developers
-          </h2>
-          <p className="text-muted-foreground max-w-[85%] leading-normal sm:text-lg sm:leading-7">
-            Stop wrestling with table layouts. Mail Studio handles the client
-            compatibility while you focus on the content.
-          </p>
-        </div>
-
-        <div className="bg-card text-card-foreground mx-auto mt-12 max-w-5xl rounded-xl border shadow">
-          <div className="flex flex-col md:flex-row">
-            <div className="border-border flex-1 border-b p-6 md:border-r md:border-b-0 md:p-10">
-              <div className="text-muted-foreground mb-4 flex items-center gap-2">
-                <Terminal className="h-5 w-5" />
-                <span className="font-mono text-sm">Input</span>
-              </div>
-              <div className="bg-muted/50 rounded-lg p-4 font-mono text-sm">
-                <p className="text-blue-500">Prompt:</p>
-                <p className="text-foreground/80 mt-2">
-                  &quot;Create a welcome email for a SaaS product called
-                  &apos;Acme&apos;. Include a hero image, a feature list, and a
-                  call to action button saying &apos;Get Started&apos;.&quot;
-                </p>
-              </div>
-            </div>
-            <div className="flex items-center justify-center p-4">
-              <ArrowRight className="text-muted-foreground h-6 w-6 rotate-90 md:rotate-0" />
-            </div>
-            <div className="flex-1 p-6 md:p-10">
-              <div className="text-muted-foreground mb-4 flex items-center gap-2">
-                <LayoutTemplate className="h-5 w-5" />
-                <span className="font-mono text-sm">Output</span>
-              </div>
-              <div className="space-y-2">
-                <div className="bg-muted h-4 w-3/4 animate-pulse rounded"></div>
-                <div className="bg-muted/50 text-muted-foreground flex h-32 w-full items-center justify-center rounded border border-dashed text-xs">
-                  Email Preview
-                </div>
-                <div className="bg-muted h-4 w-1/2 animate-pulse rounded"></div>
               </div>
             </div>
           </div>
@@ -286,7 +238,7 @@ const page = async () => {
       </section>
 
       {/* Simple CTA */}
-      <section className="border-t">
+      <section className="">
         <div className="container mx-auto flex flex-col items-center gap-4 py-24 text-center md:py-32">
           <h2 className="text-3xl leading-[1.1] font-bold sm:text-3xl md:text-5xl">
             Ready to get started?

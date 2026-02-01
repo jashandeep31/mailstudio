@@ -3,8 +3,8 @@ import ClientView from "./client-view";
 import { redirect } from "next/navigation";
 import { getSession } from "@/lib/get-session";
 
-export default function TemplatesPage() {
-  const user = getSession();
+export default async function TemplatesPage() {
+  const user = await getSession();
   if (!user) redirect("/login");
   return <ClientView />;
 }

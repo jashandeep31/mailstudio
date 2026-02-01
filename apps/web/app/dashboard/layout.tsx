@@ -5,8 +5,8 @@ import { DashboardSidebar } from "@/components/dashboard-sidebar";
 import { redirect } from "next/navigation";
 import { getSession } from "@/lib/get-session";
 
-const layout = ({ children }: { children: React.ReactNode }) => {
-  const user = getSession();
+const layout = async ({ children }: { children: React.ReactNode }) => {
+  const user = await getSession();
   if (!user) redirect("/login");
   return (
     <SidebarProvider className="h-screen">
