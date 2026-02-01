@@ -16,6 +16,7 @@
     "@repo/shared": "workspace:*",
     "@repo/ui": "workspace:*",
     "@tanstack/react-query": "^5.90.16",
+    "@vercel/analytics": "^1.6.1",
     "axios": "^1.13.2",
     "lucide-react": "^0.556.0",
     "mjml-browser": "^4.18.0",

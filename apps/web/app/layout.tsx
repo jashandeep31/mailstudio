@@ -5,6 +5,7 @@ import "@repo/ui/globals.css";
 import Provider from "./provider";
 import { Toaster } from "sonner";
 import { ThemeProvider } from "./provider";
+import { Analytics } from "@vercel/analytics/next";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -72,6 +73,7 @@ export default function RootLayout({
           <>
             <Toaster richColors />
             <Provider>{children}</Provider>
+            <Analytics />
           </>
         </ThemeProvider>
       </body>
