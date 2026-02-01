@@ -57,9 +57,20 @@ export const deleteBrandKit = catchAsync(
       )
       .returning();
 
-    // Freeing up the space`
-    if (brandkit && brandkit.logo_url) await r2RemoveObject(brandkit.logo_url);
-    if (brandkit && brandkit.icon_logo_url)
+    // Freeing up the space
+    if (
+      brandkit &&
+      brandkit.logo_url &&
+      brandkit.icon_logo_url !== "https://public.mailstudio.dev/mailstudio.png"
+    )
+      await r2RemoveObject(brandkit.logo_url);
+
+    // we are preventing the delete of the default brandkit
+    if (
+      brandkit &&
+      brandkit.icon_logo_url &&
+      brandkit.icon_logo_url !== "https://public.mailstudio.dev/mailstudio.png"
+    )
       await r2RemoveObject(brandkit.icon_logo_url);
 
     res.status(200).json({

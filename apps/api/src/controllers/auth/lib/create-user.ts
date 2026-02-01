@@ -1,6 +1,7 @@
 import {
   accountProviderEnum,
   accountsTable,
+  brandKitsTable,
   creditWalletsTable,
   db,
   eq,
@@ -89,8 +90,23 @@ export const createUser = async ({
       cancel_at_next_billing_date: false,
     });
     // creating user plan
-    // TODO: add the sample brankit to user
+    await db.insert(brandKitsTable).values({
+      user_id: user.id,
+      ...defaultBrandKitData,
+    });
     return user;
   });
   return user;
 };
+
+const defaultBrandKitData = {
+  name: "Mail Studio",
+  brand_summary:
+    "Mail Studio is an API-first platform designed for building, managing, and shipping professional email templates quickly using AI-assisted generation and MJML integration.",
+  brand_design_style: null,
+  website_url: "https://mailstudio.dev",
+  copyright: "2026 mailstudio.dev",
+  logo_url: "https://public.mailstudio.dev/mailstudio.png",
+  primary_color: "#0055FF",
+  secondary_color: "#1A1A1A",
+} as const;
