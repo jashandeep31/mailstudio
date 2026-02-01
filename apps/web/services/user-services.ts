@@ -1,5 +1,5 @@
 import { BASE_URL } from "@/lib/contants";
-import { creditWalletsTable, plansTable } from "@repo/db";
+import { creditsGrantsTable, creditWalletsTable, plansTable } from "@repo/db";
 import axios from "axios";
 
 export const getUserMetadata = async (): Promise<{
@@ -10,13 +10,13 @@ export const getUserMetadata = async (): Promise<{
     firstName: string;
     lastName: string;
     role: string;
-    avatar: string
+    avatar: string;
   };
 }> => {
   const res = await axios.get(`${BASE_URL}/api/v1/user/metadata`, {
     withCredentials: true,
   });
-  console.log(res.data.data)
+  console.log(res.data.data);
   return res.data.data;
 };
 
@@ -64,6 +64,15 @@ export type PaymentTransaction = {
 
 export const getUserPayments = async (): Promise<PaymentTransaction[]> => {
   const res = await axios.get(`${BASE_URL}/api/v1/user/payments`, {
+    withCredentials: true,
+  });
+  return res.data.data;
+};
+
+export const getUserCreditsHistory = async (): Promise<
+  (typeof creditsGrantsTable.$inferSelect)[]
+> => {
+  const res = await axios.get(`${BASE_URL}/api/v1/user/credits-history`, {
     withCredentials: true,
   });
   return res.data.data;

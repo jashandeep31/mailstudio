@@ -1,5 +1,6 @@
 import {
   getUserBillings,
+  getUserCreditsHistory,
   getUserMetadata,
   getUserPayments,
   getUserPlan,
@@ -28,4 +29,11 @@ export const useUserPayments = () =>
   useQuery({
     queryKey: ["user-payments"],
     queryFn: getUserPayments,
+  });
+
+export const useUserCreditsHistory = () =>
+  useQuery({
+    queryKey: ["user-credits-history"],
+
+    queryFn: getUserCreditsHistory,
   });

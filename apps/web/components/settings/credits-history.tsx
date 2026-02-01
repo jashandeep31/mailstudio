@@ -15,58 +15,10 @@ import {
   TableHeader,
   TableRow,
 } from "@repo/ui/components/table";
-
-interface CreditGrant {
-  id: string;
-  type: "monthly" | "referral" | "purchased" | "promotional";
-  initial_amount: string;
-  remaining_amount: string;
-  expires_at: string;
-  created_at: string;
-  reason: string | null;
-}
-
-const mockGrants: CreditGrant[] = [
-  {
-    id: "1",
-    type: "monthly",
-    initial_amount: "10.00",
-    remaining_amount: "5.00",
-    expires_at: new Date(
-      new Date().setMonth(new Date().getMonth() + 1),
-    ).toISOString(),
-    created_at: new Date().toISOString(),
-    reason: "Monthly allowance",
-  },
-  {
-    id: "2",
-    type: "referral",
-    initial_amount: "5.00",
-    remaining_amount: "5.00",
-    expires_at: new Date(
-      new Date().setMonth(new Date().getMonth() + 2),
-    ).toISOString(),
-    created_at: new Date(
-      new Date().setDate(new Date().getDate() - 5),
-    ).toISOString(),
-    reason: "Referral bonus",
-  },
-  {
-    id: "3",
-    type: "purchased",
-    initial_amount: "50.00",
-    remaining_amount: "0.00",
-    expires_at: new Date(
-      new Date().setMonth(new Date().getMonth() - 1),
-    ).toISOString(),
-    created_at: new Date(
-      new Date().setDate(new Date().getDate() - 40),
-    ).toISOString(),
-    reason: "Credit pack purchase",
-  },
-];
+import { useUserCreditsHistory } from "@/hooks/use-user";
 
 export const CreditsHistory = () => {
+  const { data: creditsHistory } = useUserCreditsHistory();
   return (
     <Card className="col-span-full">
       <CardHeader>
@@ -84,7 +36,7 @@ export const CreditsHistory = () => {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {mockGrants.map((grant) => (
+            {creditsHistory?.map((grant) => (
               <TableRow key={grant.id}>
                 <TableCell className="capitalize">{grant.type}</TableCell>
                 <TableCell>
