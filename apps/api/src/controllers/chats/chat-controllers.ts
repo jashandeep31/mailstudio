@@ -29,7 +29,7 @@ export const getChatById = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     if (!req.user) throw new AppError("Authentication failed", 400);
     const parsedData = getChatSchema.parse(req.params);
-    const chats = await db
+    const [chat] = await db
       .select()
       .from(chatsTable)
       .where(
@@ -37,16 +37,12 @@ export const getChatById = catchAsync(
           eq(chatsTable.id, parsedData.chatId),
           eq(chatsTable.user_id, req.user.id),
         ),
-      )
-      .limit(1);
+      );
 
-    console.log(chats);
-    if (!chats.length) {
-      throw new AppError("Chat not found", 404);
-    }
+    if (!chat) throw new AppError("Chat doesn't exist", 404);
 
     res.status(200).json({
-      data: chats[0],
+      data: chat,
     });
     return;
   },
