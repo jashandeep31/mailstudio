@@ -10,7 +10,7 @@ declare global {
         id: string;
         role: (typeof userRoleEnum)[number];
         firstName: string;
-        lastName: string?;
+        lastName?: string | null;
         avatar: string;
       };
     }

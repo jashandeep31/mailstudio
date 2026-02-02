@@ -11,7 +11,7 @@ export const sessionSchema = z.object({
 const userCacheSchema = z.object({
   id: z.string(),
   firstName: z.string(),
-  lastName: z.string(),
+  lastName: z.string().nullable(),
   email: z.string(),
   avatar: z.string(),
   role: z.enum(userRoleEnum.enumValues),
