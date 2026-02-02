@@ -68,8 +68,22 @@ app.use("/api/v1/marketplace", marketplaceRoutes);
 
 // Testing route of the application
 const RANDOM_NUMBER = Math.floor(Math.random() * 1000);
-app.get("/", (req, res, next) => {
-  res.status(200).json({ message: "hello world", code: RANDOM_NUMBER });
+const START_TIME = new Date();
+function timeSinceStart() {
+  const seconds = Math.floor((Date.now() - START_TIME.getTime()) / 1000);
+  const mins = Math.floor(seconds / 60);
+  const hrs = Math.floor(mins / 60);
+  const days = Math.floor(hrs / 24);
+
+  return `${days}d ${hrs % 24}h ${mins % 60}m`;
+}
+app.get("/", (req, res) => {
+  res.status(200).json({
+    message: "hello world",
+    code: RANDOM_NUMBER,
+    serverStartedAt: START_TIME.toISOString(),
+    runningSince: timeSinceStart(),
+  });
 });
 
 // GLOBAL ERROR HANDLING
