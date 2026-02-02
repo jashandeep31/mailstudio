@@ -26,7 +26,7 @@ export default function Navbar() {
   };
 
   return (
-    <div className="py-3">
+    <header className="py-3">
       <div className="container">
         {/* Desktop and Mobile Header */}
         <div className="flex items-center justify-between">
@@ -37,18 +37,17 @@ export default function Navbar() {
             </Link>
 
             {/* Desktop Navigation Links */}
-            <div className="hidden items-center gap-6 md:flex">
+            <nav className="hidden items-center gap-6 md:flex">
               {navbarLinks.map((navLink) => (
-                <nav key={navLink.link} className="text-sm">
-                  <Link
-                    href={navLink.link}
-                    className="hover:text-primary text-muted-foreground transition-colors"
-                  >
-                    {navLink.label}
-                  </Link>
-                </nav>
+                <Link
+                  key={navLink.link}
+                  href={navLink.link}
+                  className="hover:text-primary text-muted-foreground text-sm transition-colors"
+                >
+                  {navLink.label}
+                </Link>
               ))}
-            </div>
+            </nav>
           </div>
 
           {/* Desktop Auth Buttons */}
@@ -84,7 +83,7 @@ export default function Navbar() {
         {/* Mobile Navigation Menu */}
         {isMenuOpen && (
           <div className="mt-4 border-t pb-4 md:hidden">
-            <div className="flex flex-col space-y-4 pt-4">
+            <nav className="flex flex-col space-y-4 pt-4">
               {/* Mobile Navigation Links */}
               {navbarLinks.map((navLink) => (
                 <Link
@@ -117,10 +116,10 @@ export default function Navbar() {
                   Signup
                 </Link>
               </div>
-            </div>
+            </nav>
           </div>
         )}
       </div>
-    </div>
+    </header>
   );
 }

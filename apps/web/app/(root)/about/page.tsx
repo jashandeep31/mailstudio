@@ -1,3 +1,4 @@
+import { Metadata } from "next";
 import React from "react";
 import {
   Card,
@@ -6,6 +7,12 @@ import {
   CardTitle,
 } from "@repo/ui/components/card";
 import { Mail, Zap, Smartphone, Users } from "lucide-react";
+
+export const metadata: Metadata = {
+  title: "About Us",
+  description:
+    "Learn more about Mail Studio and our mission to improve email design.",
+};
 
 export default function AboutPage() {
   return (

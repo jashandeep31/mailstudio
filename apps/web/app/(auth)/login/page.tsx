@@ -1,7 +1,13 @@
+import { Metadata } from "next";
 import GoogleLoginButton from "@/components/google-login-button";
 import { Mail } from "lucide-react";
 import Link from "next/link";
 import React from "react";
+
+export const metadata: Metadata = {
+  title: "Login",
+  description: "Login to your Mail Studio account.",
+};
 
 export default function LoginPage() {
   return (

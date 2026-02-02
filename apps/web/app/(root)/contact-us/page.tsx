@@ -1,3 +1,4 @@
+import { Metadata } from "next";
 import React from "react";
 import { Button } from "@repo/ui/components/button";
 import {
@@ -9,6 +10,11 @@ import {
 } from "@repo/ui/components/card";
 import { Mail, Twitter } from "lucide-react";
 import Link from "next/link";
+
+export const metadata: Metadata = {
+  title: "Contact Us",
+  description: "Contact Mail Studio support or sales teams.",
+};
 
 export default function ContactPage() {
   return (
