@@ -1,5 +1,13 @@
 import type { Request, Response, NextFunction } from "express";
-import { userRoleEnum, db, usersTable, eq } from "@repo/db";
+import {
+  userRoleEnum,
+  db,
+  usersTable,
+  eq,
+  plansTable,
+  sql,
+  planTypeEnum,
+} from "@repo/db";
 import { z } from "zod";
 import { redis } from "../lib/db.js";
 
@@ -15,6 +23,7 @@ const userCacheSchema = z.object({
   email: z.string(),
   avatar: z.string(),
   role: z.enum(userRoleEnum.enumValues),
+  planType: z.enum(planTypeEnum.enumValues),
 });
 
 type UserData = z.infer<typeof userCacheSchema>;
@@ -68,10 +77,11 @@ export const getUserFromDatabase = async (
       email: usersTable.email,
       role: usersTable.role,
       avatar: usersTable.avatar,
+      planType: plansTable.plan_type,
     })
     .from(usersTable)
-    .where(eq(usersTable.id, userId))
-    .limit(1);
+    .innerJoin(plansTable, eq(plansTable.user_id, userId))
+    .where(eq(usersTable.id, userId));
 
   if (!user || !user.role) {
     return null;

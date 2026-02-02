@@ -1,4 +1,4 @@
-import type { userRoleEnum } from "@repo/db";
+import type { planTypeEnum, userRoleEnum } from "@repo/db";
 import "express";
 import { string } from "zod";
 
@@ -12,6 +12,7 @@ declare global {
         firstName: string;
         lastName?: string | null;
         avatar: string;
+        planType: (typeof planTypeEnum.enumValues)[number];
       };
     }
   }

@@ -17,6 +17,7 @@ export const getUserMetadata = catchAsync(
           id: req.user.id,
           role: req.user.role,
           avatar: req.user.avatar,
+          planType: req.user.planType,
         },
       },
     });
