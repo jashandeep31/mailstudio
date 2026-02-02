@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Twitter } from "lucide-react";
+import { Mail, Twitter } from "lucide-react";
 
 export default function Footer() {
   return (
@@ -7,7 +7,10 @@ export default function Footer() {
       <div className="container">
         <div className="grid grid-cols-1 gap-8 md:grid-cols-4">
           <div className="space-y-4 md:col-span-2">
-            <h3 className="text-lg font-bold">MailStudio</h3>
+            <div className="inline-flex items-center gap-2">
+              <Mail className="size-4" />
+              <h3 className="text-lg font-bold">MailStudio</h3>
+            </div>
             <p className="text-muted-foreground max-w-xs text-sm">
               Empowering creators to build beautiful, responsive emails with the
               speed of AI.
@@ -72,8 +75,9 @@ export default function Footer() {
         </div>
 
         <div className="mt-12 flex flex-col items-center justify-between gap-4 pt-8 md:flex-row">
-          <p className="text-muted-foreground text-sm">
-            © {new Date().getFullYear()} MailStudio. All rights reserved.
+          <p className="text-muted-foreground flex items-center gap-2 text-sm">
+            © {new Date().getFullYear()}
+            MailStudio. All rights reserved.
           </p>
           <div className="flex items-center gap-4">
             <Link

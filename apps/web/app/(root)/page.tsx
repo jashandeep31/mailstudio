@@ -234,6 +234,10 @@ const page = async () => {
               <li className="flex items-center gap-2">
                 <CheckCircle2 className="text-primary h-4 w-4" />
                 <span className="text-sm">$10 worth of credits</span>
+              </li>{" "}
+              <li className="flex items-center gap-2">
+                <CheckCircle2 className="text-primary h-4 w-4" />
+                <span className="text-sm">AI mail templates generation</span>
               </li>
               <li className="flex items-center gap-2">
                 <CheckCircle2 className="text-primary h-4 w-4" />
@@ -241,7 +245,9 @@ const page = async () => {
               </li>
               <li className="flex items-center gap-2">
                 <CheckCircle2 className="text-primary h-4 w-4" />
-                <span className="text-sm">WYSIWYG editor access</span>
+                <span className="text-sm">
+                  WYSIWYG editor access (Coming soon)
+                </span>
               </li>
             </ul>
             <Link
@@ -269,11 +275,17 @@ const page = async () => {
               </li>
               <li className="flex items-center gap-2">
                 <CheckCircle2 className="text-primary h-4 w-4" />
+                <span className="text-sm">AI mail templates generation</span>
+              </li>
+              <li className="flex items-center gap-2">
+                <CheckCircle2 className="text-primary h-4 w-4" />
                 <span className="text-sm">10 Brandkits</span>
               </li>
               <li className="flex items-center gap-2">
                 <CheckCircle2 className="text-primary h-4 w-4" />
-                <span className="text-sm">WYSIWYG editor access</span>
+                <span className="text-sm">
+                  WYSIWYG editor access (Coming soon)
+                </span>
               </li>
               <li className="flex items-center gap-2">
                 <CheckCircle2 className="text-primary h-4 w-4" />

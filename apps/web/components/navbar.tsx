@@ -3,7 +3,7 @@ import { buttonVariants } from "@repo/ui/components/button";
 import { cn } from "@repo/ui/lib/utils";
 import Link from "next/link";
 import React, { useState } from "react";
-import { Menu, X } from "lucide-react";
+import { Mail, Menu, X } from "lucide-react";
 
 export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -32,7 +32,8 @@ export default function Navbar() {
         <div className="flex items-center justify-between">
           {/* Logo and Desktop Navigation */}
           <div className="flex items-center gap-12">
-            <Link href={"/"}>
+            <Link href={"/"} className="flex items-center gap-2">
+              <Mail className="size-4" />
               <h2 className="text-lg font-bold">Mail Studio</h2>
             </Link>
 
