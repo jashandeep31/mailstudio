@@ -68,6 +68,22 @@ const page = async () => {
         </div>
       </section>
 
+      {/* Demo Video Section */}
+      <section className="container mx-auto py-12 md:py-24 lg:py-32">
+        <div className="mx-auto max-w-5xl overflow-hidden rounded-xl border bg-black shadow-2xl">
+          <div className="relative aspect-video">
+            <iframe
+              className="absolute inset-0 h-full w-full"
+              src="https://www.youtube.com/embed/o7F_CCkTKlk?si=IQMylCmL2Vuq9ltR"
+              title="MailStudio Demo"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+              referrerPolicy="strict-origin-when-cross-origin"
+              allowFullScreen
+            />
+          </div>
+        </div>
+      </section>
+
       {/* Feature Grid */}
       <section className="container mx-auto space-y-12 py-12 md:py-24 lg:py-32">
         <div className="mx-auto grid justify-center gap-4 sm:grid-cols-2 md:max-w-[64rem] md:grid-cols-3">
