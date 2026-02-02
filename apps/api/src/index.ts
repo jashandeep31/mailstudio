@@ -2,7 +2,6 @@ import express from "express";
 import cors from "cors";
 import { env } from "./lib/env.js";
 import cookiesParser from "cookie-parser";
-import { checkAuthorization } from "./middlewares/check-authorization.js";
 import { createServer } from "node:http";
 import { WebSocketServer } from "ws";
 import { SocketHandler } from "./web-sockets/socket-handler.js";
@@ -70,7 +69,7 @@ app.use("/api/v1/marketplace", marketplaceRoutes);
 // Testing route of the application
 const RANDOM_NUMBER = Math.floor(Math.random() * 1000);
 app.get("/", (req, res, next) => {
-  res.status(200).json({ message: "hello", code: RANDOM_NUMBER });
+  res.status(200).json({ message: "hello world", code: RANDOM_NUMBER });
 });
 
 // GLOBAL ERROR HANDLING
