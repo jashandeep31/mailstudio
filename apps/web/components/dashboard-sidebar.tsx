@@ -1,5 +1,4 @@
 "use client";
-import { useDeleteChat } from "@/hooks/use-chats";
 import {
   Sidebar,
   SidebarContent,
@@ -44,15 +43,13 @@ const mainNav = [
 ];
 
 export function DashboardSidebar() {
-  const { mutate: deleteChat } = useDeleteChat();
-
   return (
     <Sidebar className="bg-background border-0 group-data-[side=left]:border-0 md:mt-14">
       <SidebarHeader className="bg-background">
         <MainNav items={mainNav} />
       </SidebarHeader>
       <SidebarContent className="bg-background">
-        <ChatList onDeleteChat={deleteChat} />
+        <ChatList />
       </SidebarContent>
     </Sidebar>
   );
