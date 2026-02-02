@@ -68,8 +68,9 @@ app.use("/api/v1/brandkits", brandKitRoutes);
 app.use("/api/v1/marketplace", marketplaceRoutes);
 
 // Testing route of the application
-app.get("/", checkAuthorization(["all"]), (req, res, next) => {
-  res.status(200).json({ message: "hello" });
+const RANDOM_NUMBER = Math.floor(Math.random() * 1000);
+app.get("/", (req, res, next) => {
+  res.status(200).json({ message: "hello", code: RANDOM_NUMBER });
 });
 
 // GLOBAL ERROR HANDLING

@@ -4,6 +4,8 @@ import React from "react";
 import AddButtonDropdown from "./add-button-dropdown";
 import { useUploadMedia } from "@/hooks/use-media-upload";
 import { toast } from "sonner";
+import { useUserMetadata } from "@/hooks/use-user";
+import Link from "next/link";
 
 interface InputAreaProps {
   userPrompt: string;
@@ -28,6 +30,7 @@ export default function InputArea({
   onSubmit,
   isDisabled = false,
 }: InputAreaProps) {
+  const { data: userMetadata } = useUserMetadata();
   const [isFocused, setIsFocused] = React.useState(false);
   const [selectedBrand, setSelectedBrand] = React.useState<{
     name: string;
@@ -312,15 +315,19 @@ export default function InputArea({
             setSelectedBrand={setSelectedBrand}
           />
           <div className="flex items-end gap-2">
-            <div className="flex flex-col text-right">
-              <div className="text-muted-foreground mt-1 inline-flex items-center gap-1 px-3 py-1 text-[11px] font-medium">
-                <Command className="h-3 w-3" />
-                <span>+</span>
-                <CornerDownLeft className="h-3 w-3" />
+            {userMetadata?.user.planType !== "free" && (
+              <div className="flex flex-col text-right">
+                <div className="text-muted-foreground mt-1 inline-flex items-center gap-1 px-3 py-1 text-[11px] font-medium">
+                  <Command className="h-3 w-3" />
+                  <span>+</span>
+                  <CornerDownLeft className="h-3 w-3" />
+                </div>
               </div>
-            </div>
+            )}
             <Button
-              disabled={isButtonDisabled}
+              disabled={
+                isButtonDisabled || userMetadata?.user.planType === "free"
+              }
               onClick={submitHandler}
               className="gap-1"
             >
@@ -328,6 +335,17 @@ export default function InputArea({
             </Button>
           </div>
         </div>
+        {userMetadata?.user.planType === "free" && (
+          <div className="flex items-center justify-center gap-2 text-xs font-medium text-amber-600">
+            <span>Pro version is required to use AI.</span>
+            <Link
+              href="/dashboard/settings"
+              className="underline hover:text-amber-700"
+            >
+              Upgrade to Pro
+            </Link>
+          </div>
+        )}
       </div>
       <input
         type="file"

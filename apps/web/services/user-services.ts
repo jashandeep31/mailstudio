@@ -1,5 +1,11 @@
 import { BASE_URL } from "@/lib/contants";
-import { creditsGrantsTable, creditWalletsTable, plansTable } from "@repo/db";
+import {
+  creditsGrantsTable,
+  creditWalletsTable,
+  plansTable,
+  planTypeEnum,
+  userRoleEnum,
+} from "@repo/db";
 import axios from "axios";
 
 export const getUserMetadata = async (): Promise<{
@@ -9,8 +15,9 @@ export const getUserMetadata = async (): Promise<{
     email: string;
     firstName: string;
     lastName: string;
-    role: string;
+    role: (typeof userRoleEnum.enumValues)[number];
     avatar: string;
+    planType: (typeof planTypeEnum.enumValues)[number];
   };
 }> => {
   const res = await axios.get(`${BASE_URL}/api/v1/user/metadata`, {
