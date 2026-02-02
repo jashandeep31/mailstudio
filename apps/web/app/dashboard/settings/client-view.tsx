@@ -40,7 +40,8 @@ const ClientView = () => {
           <div className="flex items-center space-x-4">
             <div className="bg-primary text-primary-foreground flex h-12 w-12 items-center justify-center rounded-lg text-lg font-semibold">
               {userMetadata.data?.user.firstName[0]}
-              {userMetadata.data?.user.lastName[0]}
+              {userMetadata.data?.user.lastName &&
+                userMetadata.data?.user.lastName[0]}
             </div>
             <div>
               <h2 className="text-base font-medium">

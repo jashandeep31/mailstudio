@@ -33,7 +33,7 @@ const LandingTemplateCard = ({
       <div className="p-4">
         <h3 className="font-semibold tracking-tight">{template.name}</h3>
         <p className="text-muted-foreground mt-1 text-sm capitalize">
-          {template.price === "0" ? "Free" : `$${template.price}`}
+          {template.price === "0.00" ? "Free" : `$${template.price}`}
         </p>
       </div>
     </div>
