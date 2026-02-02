@@ -5,16 +5,17 @@ import {
   Zap,
   Code2,
   LayoutTemplate,
-  ArrowRight,
-  Terminal,
-  Cpu,
   CheckCircle2,
+  FileCode,
+  Globe,
 } from "lucide-react";
 import { getSession } from "@/lib/get-session";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { cn } from "@repo/ui/lib/utils";
 import { buttonVariants } from "@repo/ui/components/button";
+
+import { LandingPageTemplates } from "@/components/landing-page-templates";
 
 const page = async () => {
   const session = await getSession();
@@ -24,9 +25,7 @@ const page = async () => {
 
   return (
     <div className="flex min-h-[calc(100vh-4rem)] flex-col">
-      {/* Hero Section */}
       <section className="relative flex flex-1 flex-col items-center justify-center space-y-10 overflow-hidden px-4 py-24 text-center md:py-32 lg:py-40">
-        {/* Background gradient/decoration */}
         <div className="bg-background absolute inset-0 -z-10 h-full w-full bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [mask-image:radial-gradient(ellipse_50%_50%_at_50%_50%,#000_70%,transparent_100%)] [background-size:16px_16px] dark:bg-[radial-gradient(#1f2937_1px,transparent_1px)]"></div>
 
         <div className="z-10 mx-auto max-w-4xl space-y-4">
@@ -44,9 +43,9 @@ const page = async () => {
           </h1>
 
           <p className="text-muted-foreground mx-auto max-w-[42rem] leading-normal sm:text-xl sm:leading-8">
-            Mail Studio is the API-first platform for building beautiful emails.
-            Generate with AI, customize with MJML, and deploy via our global
-            edge network.
+            Stop rewriting email HTML from scratch. MailStudio helps you design
+            faster, store reusable templates, and ship polished emails without
+            the usual headaches.
           </p>
 
           <div className="flex flex-wrap items-center justify-center gap-4 pt-4">
@@ -76,7 +75,7 @@ const page = async () => {
             <div className="flex h-[180px] flex-col justify-between rounded-md p-6">
               <Zap className="h-10 w-10 text-blue-500" />
               <div className="space-y-2">
-                <h3 className="font-bold">Instant Generation</h3>
+                <h3 className="font-bold">Instant Generation with AI</h3>
                 <p className="text-muted-foreground text-sm">
                   Describe your email in plain text and let our AI engine
                   generate responsive MJML code in seconds.
@@ -89,7 +88,7 @@ const page = async () => {
             <div className="flex h-[180px] flex-col justify-between rounded-md p-6">
               <Code2 className="h-10 w-10 text-green-500" />
               <div className="space-y-2">
-                <h3 className="font-bold">MJML & HTML Support</h3>
+                <h3 className="font-bold">HTML and MJML Support</h3>
                 <p className="text-muted-foreground text-sm">
                   Full control over the code. Edit generated templates or start
                   from scratch with real-time preview.
@@ -100,13 +99,58 @@ const page = async () => {
 
           <div className="bg-background relative overflow-hidden rounded-lg border p-2">
             <div className="flex h-[180px] flex-col justify-between rounded-md p-6">
-              <Cpu className="h-10 w-10 text-purple-500" />
+              <LayoutTemplate className="h-10 w-10 text-purple-500" />
               <div className="space-y-2">
-                <h3 className="font-bold">API First</h3>
+                <h3 className="font-bold">WYSIWYG Editor</h3>
                 <p className="text-muted-foreground text-sm">
-                  Send emails programmatically. Integrate your templates
-                  directly into your application workflow.
+                  Real-time visual editor. What you see is exactly what you get
+                  when designing your email templates.
                 </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <LandingPageTemplates />
+
+      {/* No Lock-in Section */}
+      <section className="container mx-auto space-y-12 py-12 md:py-24 lg:py-32">
+        <div className="mx-auto grid max-w-6xl gap-8 lg:grid-cols-2 lg:items-center">
+          <div className="space-y-4">
+            <h2 className="text-3xl leading-[1.1] font-bold sm:text-3xl md:text-5xl">
+              You own your code
+            </h2>
+            <p className="text-muted-foreground text-lg leading-relaxed">
+              Don&apos;t get stuck in a walled garden. MailStudio is built on
+              open standards, ensuring your templates work everywhere.
+            </p>
+            <ul className="space-y-4 pt-4">
+              <li className="text-muted-foreground flex items-center gap-2">
+                <FileCode className="text-primary h-5 w-5" />
+                <span>Export to standard MJML or HTML</span>
+              </li>
+              <li className="text-muted-foreground flex items-center gap-2">
+                <CheckCircle2 className="text-primary h-5 w-5" />
+                <span>Responsive on Gmail, Outlook, and Apple Mail</span>
+              </li>
+              <li className="text-muted-foreground flex items-center gap-2">
+                <Globe className="text-primary h-5 w-5" />
+                <span>
+                  Host images on our Global Edge Network or your CDN (soon)
+                </span>
+              </li>
+            </ul>
+          </div>
+          <div className="bg-muted flex min-h-[300px] items-center justify-center rounded-xl border p-8 lg:min-h-[400px]">
+            <div className="grid grid-cols-2 gap-4">
+              <div className="bg-background flex flex-col items-center justify-center gap-2 rounded-lg border p-6 shadow-sm">
+                <FileCode className="h-8 w-8 text-orange-500" />
+                <span className="font-semibold">MJML</span>
+              </div>
+              <div className="bg-background flex flex-col items-center justify-center gap-2 rounded-lg border p-6 shadow-sm">
+                <FileCode className="h-8 w-8 text-blue-500" />
+                <span className="font-semibold">HTML</span>
               </div>
             </div>
           </div>
@@ -138,15 +182,13 @@ const page = async () => {
             <ul className="my-6 flex-1 space-y-3">
               <li className="flex items-center gap-2">
                 <CheckCircle2 className="text-primary h-4 w-4" />
-                <span className="text-sm">50 AI generations/mo</span>
+                <span className="text-sm">0 Credits</span>
               </li>
               <li className="flex items-center gap-2">
                 <CheckCircle2 className="text-primary h-4 w-4" />
-                <span className="text-sm">Community support</span>
-              </li>
-              <li className="flex items-center gap-2">
-                <CheckCircle2 className="text-primary h-4 w-4" />
-                <span className="text-sm">Basic templates</span>
+                <span className="text-sm">
+                  Marketplace access to free templates
+                </span>
               </li>
             </ul>
             <Link
@@ -175,19 +217,15 @@ const page = async () => {
             <ul className="my-6 flex-1 space-y-3">
               <li className="flex items-center gap-2">
                 <CheckCircle2 className="text-primary h-4 w-4" />
-                <span className="text-sm">Unlimited AI generations</span>
+                <span className="text-sm">$10 worth of credits</span>
               </li>
               <li className="flex items-center gap-2">
                 <CheckCircle2 className="text-primary h-4 w-4" />
-                <span className="text-sm">Priority support</span>
+                <span className="text-sm">5 Brandkits</span>
               </li>
               <li className="flex items-center gap-2">
                 <CheckCircle2 className="text-primary h-4 w-4" />
-                <span className="text-sm">Advanced analytics</span>
-              </li>
-              <li className="flex items-center gap-2">
-                <CheckCircle2 className="text-primary h-4 w-4" />
-                <span className="text-sm">Custom domains</span>
+                <span className="text-sm">WYSIWYG editor access</span>
               </li>
             </ul>
             <Link
@@ -198,40 +236,43 @@ const page = async () => {
             </Link>
           </div>
 
-          {/* Enterprise Plan */}
+          {/* Pro Plus Plan */}
           <div className="bg-background flex flex-col rounded-lg border p-6 shadow-sm">
             <div className="space-y-4">
-              <h3 className="text-2xl font-bold">Enterprise</h3>
-              <p className="text-muted-foreground">For large teams</p>
+              <h3 className="text-2xl font-bold">Pro Plus</h3>
+              <p className="text-muted-foreground">For power users</p>
               <div className="flex items-baseline gap-1">
-                <span className="text-2xl font-bold">Custom</span>
+                <span className="text-4xl font-bold">$30</span>
+                <span className="text-muted-foreground">/mo</span>
               </div>
             </div>
             <ul className="my-6 flex-1 space-y-3">
               <li className="flex items-center gap-2">
                 <CheckCircle2 className="text-primary h-4 w-4" />
-                <span className="text-sm">Dedicated infrastructure</span>
+                <span className="text-sm">$30 worth of credits</span>
               </li>
               <li className="flex items-center gap-2">
                 <CheckCircle2 className="text-primary h-4 w-4" />
-                <span className="text-sm">SLA guarantee</span>
+                <span className="text-sm">10 Brandkits</span>
               </li>
               <li className="flex items-center gap-2">
                 <CheckCircle2 className="text-primary h-4 w-4" />
-                <span className="text-sm">SSO integration</span>
+                <span className="text-sm">WYSIWYG editor access</span>
               </li>
               <li className="flex items-center gap-2">
                 <CheckCircle2 className="text-primary h-4 w-4" />
-                <span className="text-sm">24/7 dedicated support</span>
+                <span className="text-sm">
+                  Sending newsletter (Coming Soon)
+                </span>
               </li>
             </ul>
             <Link
-              href="mailto:sales@mailstudio.com"
+              href="/login"
               className={cn(
                 buttonVariants({ variant: "outline", className: "w-full" }),
               )}
             >
-              Contact Sales
+              Subscribe
             </Link>
           </div>
         </div>
