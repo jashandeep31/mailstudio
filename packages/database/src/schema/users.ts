@@ -4,8 +4,8 @@ import { planTypeEnum } from "./plans.js";
 export const userRoleEnum = pgEnum("user_role", ["user", "admin"]);
 export const usersTable = pgTable("users", {
   id: uuid("id").defaultRandom().primaryKey(),
-  firstName: varchar({ length: 255 }).notNull(),
-  lastName: varchar({ length: 255 }),
+  first_name: varchar({ length: 255 }).notNull(),
+  last_name: varchar({ length: 255 }),
   avatar: varchar({ length: 255 }).notNull(),
   email: varchar({ length: 255 }).notNull().unique(),
   password: varchar({ length: 255 }),

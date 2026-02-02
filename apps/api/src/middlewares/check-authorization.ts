@@ -63,8 +63,8 @@ export const getUserFromDatabase = async (
   const [user] = await db
     .select({
       id: usersTable.id,
-      firstName: usersTable.firstName,
-      lastName: usersTable.lastName,
+      firstName: usersTable.first_name,
+      lastName: usersTable.last_name,
       email: usersTable.email,
       role: usersTable.role,
       avatar: usersTable.avatar,

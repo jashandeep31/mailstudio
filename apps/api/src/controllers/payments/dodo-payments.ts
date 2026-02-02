@@ -56,7 +56,7 @@ export const getProSubscriptonUrl = catchAsync(
           return req.user.email;
         })(),
 
-        name: (user.firstName + " " + user.lastName).trim(),
+        name: (user.first_name + " " + user.last_name).trim(),
       },
       metadata: {
         user_id: user.id,

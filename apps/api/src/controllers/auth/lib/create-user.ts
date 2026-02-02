@@ -56,8 +56,8 @@ export const createUser = async ({
       .insert(usersTable)
       .values({
         email,
-        firstName,
-        lastName,
+        first_name: firstName,
+        last_name: lastName,
         avatar: avatarUrl,
         role: "user",
         ...(password ? { password } : {}),
