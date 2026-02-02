@@ -25,7 +25,7 @@ export const plansTable = pgTable("plans", {
   user_id: uuid("user_id")
     .notNull()
     .unique()
-    .references(() => usersTable.id),
+    .references(() => usersTable.id, { onDelete: "cascade" }),
 
   subscription_id: varchar("subscription_id"),
   customer_id: varchar("customer_id", { length: 255 }), // sub_*
