@@ -5,6 +5,7 @@ export const env = {
   PORT: process.env.PORT!,
   ENVIRONMENT: process.env.ENVIRONMENT! as "development" | "production",
   ALLOWED_DOMAINS: process.env.ALLOWED_DOMAINS!,
+  DSN: process.env.DSN!,
   GOOGLE_AUTH_CLIENT_ID: process.env.GOOGLE_AUTH_CLIENT_ID!,
   REDIS_URL: process.env.REDIS_URL!,
   GOOGLE_AUTH_SECRET_KEY: process.env.GOOGLE_AUTH_SECRET_KEY!,

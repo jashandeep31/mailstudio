@@ -1,3 +1,5 @@
+import "./instrument.js";
+import * as Sentry from "@sentry/node";
 import express from "express";
 import cors from "cors";
 import { env } from "./lib/env.js";
@@ -85,6 +87,10 @@ app.get("/", (req, res) => {
     runningSince: timeSinceStart(),
   });
 });
+app.get("/debug-sentry", function mainHandler(req, res) {
+  throw new Error("My first Sentry error!");
+});
+Sentry.setupExpressErrorHandler(app);
 
 // GLOBAL ERROR HANDLING
 app.use(errorHandler);
