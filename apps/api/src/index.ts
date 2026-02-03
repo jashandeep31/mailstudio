@@ -19,19 +19,21 @@ import paymentRoutes from "./routes/payment-routes.js";
 import utilRoutes from "./routes/util-routes.js";
 import brandKitRoutes from "./routes/brandkit-routes.js";
 import marketplaceRoutes from "./routes/marketplace-routes.js";
+import client from "prom-client";
+
+// 1️⃣ Collect default Node.js metrics (CPU, memory, event loop)
+client.collectDefaultMetrics();
+
+// 2️⃣ Create HTTP request timer
+const httpDuration = new client.Histogram({
+  name: "http_request_duration_seconds",
+  help: "Time taken by API requests",
+  labelNames: ["method", "route", "status"],
+  buckets: [0.1, 0.3, 0.5, 1, 2, 5],
+});
 
 const app = express();
-
-// dodo-webhook needed to passed the raw body
-app.post(
-  "/api/v1/payments/dodo-webhook",
-  express.raw({ type: "application/json" }),
-  handleDodoPaymentWebhook,
-);
-
-app.use(express.json());
-
-// cors of application
+const server = createServer(app);
 const ALLOWED_DOMAINS: string[] = env.ALLOWED_DOMAINS.split(",").map((domain) =>
   domain.trim(),
 );
@@ -41,22 +43,29 @@ app.use(
     credentials: true,
   }),
 );
-app.use(cookiesParser());
-const server = createServer(app);
 
-// global middleware to log the request and response
-app.use(
-  (req: express.Request, res: express.Response, next: express.NextFunction) => {
-    const startTime = Date.now();
-    res.on("finish", () => {
-      const duration = Date.now() - startTime;
-      console.log(
-        `[${new Date().toISOString()}] ${req.method} ${req.originalUrl} ${res.statusCode} - ${duration}ms`,
-      );
-    });
-    next();
-  },
+// dodo-webhook needed to passed the raw body
+app.post(
+  "/api/v1/payments/dodo-webhook",
+  express.raw({ type: "application/json" }),
+  handleDodoPaymentWebhook,
 );
+
+app.use(express.json());
+app.use(cookiesParser());
+
+app.use((req, res, next) => {
+  const end = httpDuration.startTimer({
+    method: req.method,
+    route: req.route?.path || req.path,
+  });
+
+  res.on("finish", () => {
+    end({ status: res.statusCode });
+  });
+
+  next();
+});
 
 // routes of all application
 app.use("/api/v1", authRoutes);
@@ -67,7 +76,10 @@ app.use("/api/v1/payments", paymentRoutes);
 app.use("/api/v1/utils", utilRoutes);
 app.use("/api/v1/brandkits", brandKitRoutes);
 app.use("/api/v1/marketplace", marketplaceRoutes);
-
+app.get("/metrics", async (req, res) => {
+  res.set("Content-Type", client.register.contentType);
+  res.end(await client.register.metrics());
+});
 // Testing route of the application
 const RANDOM_NUMBER = Math.floor(Math.random() * 1000);
 const START_TIME = new Date();
@@ -76,9 +88,9 @@ function timeSinceStart() {
   const mins = Math.floor(seconds / 60);
   const hrs = Math.floor(mins / 60);
   const days = Math.floor(hrs / 24);
-
   return `${days}d ${hrs % 24}h ${mins % 60}m`;
 }
+
 app.get("/", (req, res) => {
   res.status(200).json({
     message: "hello world",
