@@ -1,5 +1,3 @@
-// import "./instrument.js";
-import * as Sentry from "@sentry/node";
 import express from "express";
 import cors from "cors";
 import { env } from "./lib/env.js";
@@ -34,7 +32,9 @@ app.post(
 app.use(express.json());
 
 // cors of application
-const ALLOWED_DOMAINS: string[] = env.ALLOWED_DOMAINS.split(",");
+const ALLOWED_DOMAINS: string[] = env.ALLOWED_DOMAINS.split(",").map((domain) =>
+  domain.trim(),
+);
 app.use(
   cors({
     origin: ALLOWED_DOMAINS,
