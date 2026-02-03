@@ -7,13 +7,22 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  useSidebar,
 } from "@repo/ui/components/sidebar";
-import Link from "next/link";
 import { ChatItem } from "./chat-item";
+import { useRouter } from "next/navigation";
 
 export function ChatList() {
   const chatsRes = useChats();
   const { mutate: onDeleteChat } = useDeleteChat();
+  const router = useRouter();
+  const { setOpenMobile } = useSidebar();
+
+  const handleNavigation = (url: string) => {
+    router.push(url);
+    setOpenMobile(false);
+  };
+
   return (
     <SidebarGroup>
       <SidebarGroupLabel>Chats</SidebarGroupLabel>
@@ -26,10 +35,10 @@ export function ChatList() {
           chatsRes.data?.map((chat) => (
             <SidebarMenuItem key={chat.id}>
               <SidebarMenuButton
-                asChild
                 className="active:bg-background data-active:bg-background"
+                onClick={() => handleNavigation(`/chat/${chat.id}`)}
               >
-                <Link href={`/chat/${chat.id}`}>{chat.name}</Link>
+                <span>{chat.name}</span>
               </SidebarMenuButton>
               <ChatItem chat={chat} onDelete={onDeleteChat} />
             </SidebarMenuItem>

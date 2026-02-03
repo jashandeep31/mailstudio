@@ -5,8 +5,9 @@ import {
   SidebarMenu,
   SidebarMenuItem,
   SidebarMenuButton,
+  useSidebar,
 } from "@repo/ui/components/sidebar";
-import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 interface MainNavProps {
   items: {
@@ -18,18 +19,25 @@ interface MainNavProps {
 }
 
 export function MainNav({ items }: MainNavProps) {
+  const router = useRouter();
+  const { setOpenMobile } = useSidebar();
+
+  const handleNavigation = (url: string) => {
+    router.push(url);
+    setOpenMobile(false);
+  };
   return (
     <SidebarMenu>
       {items.map((item) => (
         <SidebarMenuItem key={item.title}>
           <SidebarMenuButton
-            asChild
             className="active:bg-background data-active:bg-background"
+            onClick={() => {
+              handleNavigation(item.url);
+            }}
           >
-            <Link href={item.url}>
-              <item.icon />
-              <span>{item.title}</span>
-            </Link>
+            <item.icon />
+            <span>{item.title}</span>
           </SidebarMenuButton>
         </SidebarMenuItem>
       ))}

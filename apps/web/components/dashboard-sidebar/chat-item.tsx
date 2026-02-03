@@ -8,7 +8,7 @@ import {
   DropdownMenuContent,
   DropdownMenuSeparator,
 } from "@repo/ui/components/dropdown-menu";
-import { SidebarMenuAction } from "@repo/ui/components/sidebar";
+import { SidebarMenuAction, useSidebar } from "@repo/ui/components/sidebar";
 import { MoreHorizontal } from "lucide-react";
 import { ConfirmationDialog } from "@/components/dialogs/confirmation-dialog";
 import { RenameDialog } from "@/components/dialogs/rename-dialog";
@@ -25,6 +25,7 @@ interface ChatItemProps {
 
 export function ChatItem({ chat, onDelete }: ChatItemProps) {
   const router = useRouter();
+  const { setOpenMobile } = useSidebar();
   const { mutate: updateChat, isPending: isUpdating } = useUpdateChat();
 
   const handleRename = (newName: string) => {
@@ -57,6 +58,7 @@ export function ChatItem({ chat, onDelete }: ChatItemProps) {
         <DropdownMenuItem
           onClick={() => {
             router.push(`/dashboard/templates/manage/${chat.id}`);
+            setOpenMobile(false);
           }}
         >
           <PencilLine className="text-muted-foreground" />
