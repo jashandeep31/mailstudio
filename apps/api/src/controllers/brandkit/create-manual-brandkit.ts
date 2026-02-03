@@ -9,6 +9,9 @@ export const createManualBrandkit = catchAsync(
     if (!req.user) throw new AppError("Authenctication is required", 400);
     const userId = req.user.id;
 
+    if (req.user.planType === "free")
+      throw new AppError("Pro or Pro plus version is required", 400);
+
     const parsedData = createBrandkitSchema.parse(req.body);
 
     const urlsData: Record<string, string> = {};

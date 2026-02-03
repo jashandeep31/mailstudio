@@ -26,6 +26,11 @@ const createBrandKitInputSchema = z.object({
 export const createBrandKit = catchAsync(
   async (req: Request, res: Response) => {
     if (!req.user) throw new AppError("Authorization is required", 400);
+
+    if (req.user.planType === "free")
+      throw new AppError("Pro or Pro plus version is required", 400);
+
+    //TODO: check if user have more then allowed limit
     const { websiteUrl } = createBrandKitInputSchema.parse(req.body);
     const response = await axios.post(
       `${env.SCREENSHOT_SERVICE_URL}/brandkit`,

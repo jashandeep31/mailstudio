@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { BrandKitSelection } from "../brand-kits/brand-kit-selection";
 import { BrandKitUrlImport } from "../brand-kits/brand-kit-url-import";
+import { BrandKitUpgrade } from "../brand-kits/brand-kit-upgrade";
+import { useUserMetadata } from "@/hooks/use-user";
 
 type BrandKitDialogProps = {
   open: boolean;
@@ -9,6 +11,7 @@ type BrandKitDialogProps = {
 };
 
 export function BrandKitDialog({ open, onOpenChange }: BrandKitDialogProps) {
+  const { data: userMetadata } = useUserMetadata();
   const [mode, setMode] = useState<"select" | "url">("select");
   const router = useRouter();
 
@@ -16,6 +19,10 @@ export function BrandKitDialog({ open, onOpenChange }: BrandKitDialogProps) {
     onOpenChange(false);
     router.push("/dashboard/brand-kits/create");
   };
+
+  if (userMetadata?.user?.planType === "free") {
+    return <BrandKitUpgrade open={open} onOpenChange={onOpenChange} />;
+  }
 
   return (
     <>

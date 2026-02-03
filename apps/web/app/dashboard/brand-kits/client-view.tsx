@@ -1,7 +1,7 @@
 "use client";
 import { useDeleteBrandKit, useUserBrandKits } from "@/hooks/use-brandkits";
 import React, { useState } from "react";
-import { MoreVertical, Trash2, Loader2 } from "lucide-react";
+import { MoreVertical, Trash2 } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,

@@ -1,17 +1,10 @@
 import { useCreateBrandKit } from "@/hooks/use-brandkits";
 import { Button } from "@repo/ui/components/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@repo/ui/components/dialog";
 import { Input } from "@repo/ui/components/input";
 import { Loader } from "lucide-react";
 import React, { useState, useEffect } from "react";
 import { toast } from "sonner";
+import { BrandKitDialogShell } from "./brand-kit-dialog-shell";
 
 type BrandKitUrlImportProps = {
   open: boolean;
@@ -71,45 +64,14 @@ export function BrandKitUrlImport({
   };
 
   return (
-    <Dialog open={open} onOpenChange={isPending ? undefined : onOpenChange}>
-      <DialogContent onInteractOutside={(e) => isPending && e.preventDefault()}>
-        <DialogHeader>
-          <DialogTitle>Import Brand Kit from URL</DialogTitle>
-          <DialogDescription>
-            Enter the website URL to automatically import brand colors and
-            assets.
-          </DialogDescription>
-        </DialogHeader>
-        <div className="py-4">
-          <Input
-            placeholder="https://example.com"
-            value={url}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-              setUrl(e.target.value)
-            }
-            onKeyDown={handleKeyDown}
-            disabled={isPending}
-            autoFocus
-          />
-          {isPending && (
-            <div className="bg-muted/50 mt-4 flex flex-col items-center gap-3 rounded-lg border p-4">
-              <Loader className="text-primary h-6 w-6 animate-spin" />
-              <p className="text-sm font-medium">{getLoadingMessage()}</p>
-              <p className="text-muted-foreground text-xs">
-                This may take up to 1 minute
-              </p>
-              <div className="bg-muted h-1.5 w-full overflow-hidden rounded-full">
-                <div
-                  className="bg-primary h-full transition-all duration-1000"
-                  style={{
-                    width: `${Math.min((elapsedTime / 60) * 100, 95)}%`,
-                  }}
-                />
-              </div>
-            </div>
-          )}
-        </div>
-        <DialogFooter>
+    <BrandKitDialogShell
+      open={open}
+      onOpenChange={isPending ? undefined : onOpenChange}
+      title="Import Brand Kit from URL"
+      description="Enter the website URL to automatically import brand colors and assets."
+      onInteractOutside={(e) => isPending && e.preventDefault()}
+      footer={
+        <>
           <Button variant="outline" onClick={onBack} disabled={isPending}>
             Back
           </Button>
@@ -122,8 +84,38 @@ export function BrandKitUrlImport({
               "Import"
             )}
           </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+        </>
+      }
+    >
+      <div className="py-4">
+        <Input
+          placeholder="https://example.com"
+          value={url}
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+            setUrl(e.target.value)
+          }
+          onKeyDown={handleKeyDown}
+          disabled={isPending}
+          autoFocus
+        />
+        {isPending && (
+          <div className="bg-muted/50 mt-4 flex flex-col items-center gap-3 rounded-lg border p-4">
+            <Loader className="text-primary h-6 w-6 animate-spin" />
+            <p className="text-sm font-medium">{getLoadingMessage()}</p>
+            <p className="text-muted-foreground text-xs">
+              This may take up to 1 minute
+            </p>
+            <div className="bg-muted h-1.5 w-full overflow-hidden rounded-full">
+              <div
+                className="bg-primary h-full transition-all duration-1000"
+                style={{
+                  width: `${Math.min((elapsedTime / 60) * 100, 95)}%`,
+                }}
+              />
+            </div>
+          </div>
+        )}
+      </div>
+    </BrandKitDialogShell>
   );
 }

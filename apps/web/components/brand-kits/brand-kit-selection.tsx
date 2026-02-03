@@ -1,11 +1,5 @@
 import { Button } from "@repo/ui/components/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "@repo/ui/components/dialog";
+import { BrandKitDialogShell } from "./brand-kit-dialog-shell";
 
 type BrandKitSelectionProps = {
   open: boolean;
@@ -21,31 +15,28 @@ export function BrandKitSelection({
   onManualCreate,
 }: BrandKitSelectionProps) {
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>Create Brand Kit</DialogTitle>
-          <DialogDescription>
-            Choose how you would like to create your brand kit.
-          </DialogDescription>
-        </DialogHeader>
-        <div className="flex flex-col gap-4 py-4">
-          <Button
-            variant="outline"
-            className="justify-start"
-            onClick={onUrlImport}
-          >
-            Auto Import from URL
-          </Button>
-          <Button
-            variant="outline"
-            className="justify-start"
-            onClick={onManualCreate}
-          >
-            Manual Creation
-          </Button>
-        </div>
-      </DialogContent>
-    </Dialog>
+    <BrandKitDialogShell
+      open={open}
+      onOpenChange={onOpenChange}
+      title="Create Brand Kit"
+      description="Choose how you would like to create your brand kit."
+    >
+      <div className="flex flex-col gap-4 py-4">
+        <Button
+          variant="outline"
+          className="justify-start"
+          onClick={onUrlImport}
+        >
+          Auto Import from URL
+        </Button>
+        <Button
+          variant="outline"
+          className="justify-start"
+          onClick={onManualCreate}
+        >
+          Manual Creation
+        </Button>
+      </div>
+    </BrandKitDialogShell>
   );
 }
