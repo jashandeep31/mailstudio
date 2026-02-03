@@ -13,8 +13,8 @@ export const CodeView = ({ html }: { html: string | undefined }) => {
 ${html}
 \`\`\``;
   return (
-    <div className="grid overflow-hidden">
-      <div className="grid h-[100vh] overflow-auto bg-black pb-48">
+    <div className="grid h-full min-h-0 overflow-hidden">
+      <div className="grid min-h-0 flex-1 overflow-auto bg-black pb-12">
         <Markdown rehypePlugins={[rehypeHighlight]}>{markdown}</Markdown>
       </div>
     </div>

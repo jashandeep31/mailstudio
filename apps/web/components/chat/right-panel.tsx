@@ -33,9 +33,9 @@ export const RightPanel = ({ view, setView }: RightPanel) => {
     !selectedVersion.chat_version_outputs?.html_code;
 
   return (
-    <div className="grid">
+    <div className="grid h-full min-h-0">
       {selectedVersion ? (
-        <div className="flex h-full flex-col justify-center">
+        <div className="flex h-full min-h-0 flex-col">
           <ChatTopControlBar
             chatVersions={chatVersions}
             view={view}
@@ -43,7 +43,7 @@ export const RightPanel = ({ view, setView }: RightPanel) => {
             iframeWidth={iframeWidth}
             setIframeWidth={setIframeWidth}
           />
-          <div className="grid flex-1">
+          <div className="grid min-h-0 flex-1 overflow-hidden">
             {view === "preview" ? (
               <MailTemplatePreviewer
                 html={selectedVersion.chat_version_outputs?.html_code}

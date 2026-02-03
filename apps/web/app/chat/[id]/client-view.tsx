@@ -14,7 +14,7 @@ const ClientView = () => {
   useChatEventHandler();
   const [mobileView, setMobileView] = useState<"chat" | "preview">("chat");
   const params = useParams();
-  const [view, setView] = useState<"code" | "preview" | "edit">("code");
+  const [view, setView] = useState<"code" | "preview" | "edit">("preview");
   const { sendEvent } = useWebSocketContext();
   const chatVersionsMap = useChatStore((s) => s.chatVersions);
   const activeStream = useChatStore((s) => s.activeStream);
@@ -43,7 +43,7 @@ const ClientView = () => {
         <div className="col-span-1 grid min-h-0 border-r">
           <LeftPanel versions={chatVersions} streamingOverview={activeStream} />
         </div>
-        <div className="col-span-3 grid min-h-0 overflow-auto">
+        <div className="col-span-3 grid min-h-0">
           <RightPanel view={view} setView={setView} />
         </div>
       </div>
