@@ -112,7 +112,6 @@ export const ChatTopControlBar = ({
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              <DropdownMenuLabel>Copy code</DropdownMenuLabel>
               <DropdownMenuItem
                 onSelect={() => handleCopy("html")}
                 disabled={!selectedVersion?.chat_version_outputs?.html_code}
