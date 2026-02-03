@@ -17,6 +17,7 @@ export default function Navbar() {
       link: "/",
     },
     { label: "Marketplace", link: "/marketplace" },
+    { label: "Prices", link: "/prices" },
     { label: "About", link: "/about" },
     { label: "Contact", link: "/contact-us" },
   ];
