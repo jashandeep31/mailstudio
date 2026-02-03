@@ -2,6 +2,7 @@
 import {
   useMarketplaceTemplateById,
   usePurchaseTemplate,
+  useMarketplaceTemplates,
 } from "@/hooks/use-marketplace";
 import { useParams, useRouter } from "next/navigation";
 import React from "react";
@@ -12,6 +13,7 @@ import Link from "next/link";
 import { ConfirmationDialog } from "@/components/dialogs/confirmation-dialog";
 import { toast } from "sonner";
 import { useLikeChat } from "@/hooks/use-chats";
+import { MailTemplateCard } from "@/components/mail-template-card";
 
 export default function ClientView() {
   const router = useRouter();
@@ -23,6 +25,15 @@ export default function ClientView() {
   } = useMarketplaceTemplateById(params.id as string);
   const { mutate } = usePurchaseTemplate();
   const likeChat = useLikeChat();
+
+  const { data: relatedTemplates } = useMarketplaceTemplates(
+    {
+      categoryId: template?.category?.id,
+    },
+    {
+      enabled: !!template?.category?.id,
+    },
+  );
 
   const handleLikeClick = (action: "like" | "unlike") => {
     const toastId = toast.loading("Processing");
@@ -201,6 +212,22 @@ export default function ClientView() {
           </div>
         </div>
       </div>
+
+      {/* the length is set to greated then for now as it many include the same element too */}
+      {relatedTemplates && relatedTemplates.length > 1 && (
+        <div className="mt-12">
+          <h2 className="text-muted-foreground mb-4 text-xl font-bold">
+            More from this category
+          </h2>
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-3 md:gap-6 lg:grid-cols-4">
+            {relatedTemplates
+              .filter((t) => t.id !== (params.id as string))
+              .map((t) => (
+                <MailTemplateCard key={t.id} template={t} />
+              ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

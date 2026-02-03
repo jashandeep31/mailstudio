@@ -105,8 +105,8 @@ export default function ClientView({ id }: { id: string }) {
   }
 
   return (
-    <div className="bg-muted flex min-h-screen flex-col">
-      <main className="container mx-auto flex-1 px-4 py-8">
+    <div className="flex min-h-screen flex-col">
+      <main className="container mx-auto flex-1 px-4 pt-8">
         <div className="grid grid-cols-1 gap-12 lg:grid-cols-3">
           {/* Left Column: Preview / Thumbnail */}
           <div className="space-y-8 lg:col-span-2">
@@ -122,7 +122,6 @@ export default function ClientView({ id }: { id: string }) {
 
               <div className="bg-card group relative aspect-[16/10] overflow-hidden rounded-xl border shadow-sm">
                 {chat.thumbnail ? (
-                  // eslint-disable-next-line @next/next/no-img-element
                   <Image
                     src={chat.thumbnail}
                     alt={chat.name}

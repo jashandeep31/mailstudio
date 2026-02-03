@@ -20,7 +20,7 @@ const ClientView = () => {
   };
 
   return (
-    <div className="mb-12">
+    <div>
       <div className="mt-12 flex items-center justify-center lg:mt-36">
         <div className="w-full min-w-[50%] px-3 md:w-auto">
           <div className="mb-6">

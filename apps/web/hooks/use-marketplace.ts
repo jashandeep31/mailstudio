@@ -8,10 +8,12 @@ import { z } from "zod";
 import { getMarketplaceTemplatesFilterSchema } from "@repo/shared";
 export const useMarketplaceTemplates = (
   filters: z.infer<typeof getMarketplaceTemplatesFilterSchema>,
+  options?: { enabled?: boolean },
 ) =>
   useQuery({
     queryKey: ["marketplace-templates", filters],
     queryFn: () => getMarketplaceTemplates(filters),
+    enabled: options?.enabled,
   });
 
 export const useMarketplaceTemplateById = (id: string) =>
