@@ -55,9 +55,7 @@ app.use("/api/v1/payments", paymentRoutes);
 app.use("/api/v1/utils", utilRoutes);
 app.use("/api/v1/brandkits", brandKitRoutes);
 app.use("/api/v1/marketplace", marketplaceRoutes);
-app.get("/debug-sentry", function mainHandler(req, res) {
-  throw new Error("My first Sentry error!");
-});
+
 // Testing route of the application
 const RANDOM_NUMBER = Math.floor(Math.random() * 1000);
 const START_TIME = new Date();
@@ -77,13 +75,10 @@ app.get("/", (req, res) => {
     runningSince: timeSinceStart(),
   });
 });
-// app.get("/debug-sentry", function mainHandler(req, res) {
-//   throw new Error("My first Sentry error!");
-// });
-// Sentry.setupExpressErrorHandler(app);
 
-// GLOBAL ERROR HANDLING
+// sentry errorHandler hander
 Sentry.setupExpressErrorHandler(app);
+//global errorhandler
 app.use(errorHandler);
 const ws = new WebSocketServer({
   server,
