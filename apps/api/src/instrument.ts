@@ -1,7 +1,7 @@
 import * as Sentry from "@sentry/node";
 import { env } from "./lib/env.js";
 Sentry.init({
-  dsn: env.DSN,
+  dsn: env.ENVIRONMENT === "production" ? env.DSN : " ",
   // Add Tracing by setting tracesSampleRate
   // We recommend adjusting this value in production
   tracesSampleRate: 1.0,
