@@ -1,8 +1,12 @@
 pre {
   background: transparent !important;
   padding: 0 !important;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 pre code {
   background: transparent !important;
+  white-space: inherit;
 }

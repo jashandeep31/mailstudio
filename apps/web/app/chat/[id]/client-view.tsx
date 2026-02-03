@@ -40,10 +40,10 @@ const ClientView = () => {
       <Navbar />
 
       <div className="hidden min-h-0 flex-1 grid-cols-4 md:grid">
-        <div className="col-span-1 grid min-h-0 border-r">
+        <div className="grid min-h-0 border-r md:col-span-2 lg:col-span-1">
           <LeftPanel versions={chatVersions} streamingOverview={activeStream} />
         </div>
-        <div className="col-span-3 grid min-h-0">
+        <div className="grid min-h-0 md:col-span-2 lg:col-span-3">
           <RightPanel view={view} setView={setView} />
         </div>
       </div>

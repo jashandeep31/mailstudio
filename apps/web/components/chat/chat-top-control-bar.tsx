@@ -2,6 +2,13 @@ import { ChatVersionAggregate } from "@/app/chat/[id]/types";
 import { useChatStore } from "@/zustand-store/chat-store";
 import { Button } from "@repo/ui/components/button";
 import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuTrigger,
+} from "@repo/ui/components/dropdown-menu";
+import {
   Select,
   SelectContent,
   SelectGroup,
@@ -30,7 +37,7 @@ export const ChatTopControlBar = ({
   const setSelectedVersionId = useChatStore((s) => s.setSelectedVersionId);
   const chatVersionsMap = useChatStore((s) => s.chatVersions);
 
-  const [copied, setCopied] = useState(false);
+  const [copied, setCopied] = useState<"html" | "mjml" | null>(null);
 
   const selectedVersion = useMemo(() => {
     if (selectedVersionId) {
@@ -40,13 +47,16 @@ export const ChatTopControlBar = ({
     }
   }, [chatVersionsMap, selectedVersionId]);
 
-  const handleCopy = async () => {
-    const code = selectedVersion?.chat_version_outputs?.html_code;
+  const handleCopy = async (type: "html" | "mjml") => {
+    const code =
+      type === "html"
+        ? selectedVersion?.chat_version_outputs?.html_code
+        : selectedVersion?.chat_version_outputs?.mjml_code;
     if (!code) return;
     try {
       await navigator.clipboard.writeText(code);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 1000);
+      setCopied(type);
+      setTimeout(() => setCopied(null), 1000);
     } catch (err) {
       console.error("Failed to copy text: ", err);
     }
@@ -95,12 +105,28 @@ export const ChatTopControlBar = ({
       </div>
       <div className="flex flex-1 items-center justify-end gap-2">
         {view === "code" && (
-          <>
-            <Button variant="ghost" onClick={handleCopy}>
-              {" "}
-              {copied ? <Check /> : <Clipboard />}{" "}
-            </Button>
-          </>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost">
+                {copied ? <Check /> : <Clipboard />}
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuLabel>Copy code</DropdownMenuLabel>
+              <DropdownMenuItem
+                onSelect={() => handleCopy("html")}
+                disabled={!selectedVersion?.chat_version_outputs?.html_code}
+              >
+                Copy HTML
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onSelect={() => handleCopy("mjml")}
+                disabled={!selectedVersion?.chat_version_outputs?.mjml_code}
+              >
+                Copy MJML
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         )}
         {view === "preview" && (
           <>

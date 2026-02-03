@@ -42,9 +42,9 @@ export default function LeftPanel({ versions, streamingOverview }: LeftPanel) {
   };
 
   return (
-    <div className="flex h-full min-h-0 w-full flex-col px-3 pb-3">
+    <div className="flex h-full min-h-0 w-full min-w-0 flex-col px-3 pb-3">
       {/* 🔹 SCROLLABLE MESSAGES */}
-      <div className="hidden-scrollbar min-h-0 flex-1 overflow-y-auto pt-3 pr-2">
+      <div className="hidden-scrollbar min-h-0 flex-1 overflow-x-hidden overflow-y-auto pt-3 pr-2">
         {versions.length ? (
           versions.map((version, index) => (
             <div
@@ -159,7 +159,7 @@ const UserChatBubble = ({ message }: UserChatBubble) => {
 
   return (
     <div className="flex flex-col items-end gap-1">
-      <div className="hidden-scrollbar bg-muted max-w-[85%] overflow-auto rounded-xl rounded-tr-sm border px-4 py-2 text-sm">
+      <div className="hidden-scrollbar bg-muted max-w-[85%] overflow-hidden rounded-xl rounded-tr-sm border px-4 py-2 text-sm break-all whitespace-pre-wrap">
         {message}
       </div>
       <div className="flex justify-end gap-1 px-1">
