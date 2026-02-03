@@ -1,11 +1,6 @@
 "use client";
 import Navbar from "@/components/chat/navbar";
 import React, { useEffect, useMemo, useState } from "react";
-import {
-  ResizableHandle,
-  ResizablePanel,
-  ResizablePanelGroup,
-} from "@repo/ui/components/resizable";
 import LeftPanel from "@/components/chat/left-panel";
 import { useParams } from "next/navigation";
 import { useWebSocketContext } from "@/contexts/web-socket-context";
@@ -19,7 +14,7 @@ const ClientView = () => {
   useChatEventHandler();
   const [mobileView, setMobileView] = useState<"chat" | "preview">("chat");
   const params = useParams();
-  const [view, setView] = useState<"code" | "preview" | "edit">("preview");
+  const [view, setView] = useState<"code" | "preview" | "edit">("code");
   const { sendEvent } = useWebSocketContext();
   const chatVersionsMap = useChatStore((s) => s.chatVersions);
   const activeStream = useChatStore((s) => s.activeStream);
@@ -43,25 +38,16 @@ const ClientView = () => {
   return (
     <div className="flex h-screen flex-col p-2">
       <Navbar />
-      <div className="hidden min-h-0 flex-1 md:block">
-        {/* <LeftPanel versions={chatVersions} streamingOverview={activeStream} /> */}
 
-        {view !== "edit" && (
-          <ResizablePanelGroup>
-            <ResizablePanel defaultSize={"25%"} className="h-full">
-              <LeftPanel
-                versions={chatVersions}
-                streamingOverview={activeStream}
-              />
-            </ResizablePanel>
-            <ResizableHandle />
-            <ResizablePanel defaultSize={"75%"} className="grid h-full">
-              <RightPanel view={view} setView={setView} />
-            </ResizablePanel>
-          </ResizablePanelGroup>
-        )}
-        {/* {view === "edit" && <Editor />} */}
+      <div className="hidden min-h-0 flex-1 grid-cols-4 md:grid">
+        <div className="col-span-1 grid min-h-0 border-r">
+          <LeftPanel versions={chatVersions} streamingOverview={activeStream} />
+        </div>
+        <div className="col-span-3 grid min-h-0 overflow-auto">
+          <RightPanel view={view} setView={setView} />
+        </div>
       </div>
+
       <div className="flex min-h-0 flex-1 flex-col md:hidden">
         <div className="bg-muted flex rounded-md p-1">
           <Button

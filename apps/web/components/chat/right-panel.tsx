@@ -1,5 +1,4 @@
 import { useChatStore } from "@/zustand-store/chat-store";
-import { ResizablePanel } from "@repo/ui/components/resizable";
 import { useMemo, useState } from "react";
 import { ChatTopControlBar } from "./chat-top-control-bar";
 import { CodeView } from "./code-view";

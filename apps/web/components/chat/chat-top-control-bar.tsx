@@ -10,8 +10,8 @@ import {
   SelectValue,
 } from "@repo/ui/components/select";
 import { SendTestMailDropdown } from "./send-test-mail-dropdown";
-import { Monitor, Smartphone } from "lucide-react";
-import React from "react";
+import { Clipboard, Monitor, Smartphone, Check } from "lucide-react";
+import React, { useMemo, useState } from "react";
 
 interface ChatTopControlBar {
   view: "preview" | "code" | "edit";
@@ -24,11 +24,33 @@ export const ChatTopControlBar = ({
   chatVersions,
   view,
   setView,
-  iframeWidth,
   setIframeWidth,
 }: ChatTopControlBar) => {
   const selectedVersionId = useChatStore((s) => s.selectedVersionId);
   const setSelectedVersionId = useChatStore((s) => s.setSelectedVersionId);
+  const chatVersionsMap = useChatStore((s) => s.chatVersions);
+
+  const [copied, setCopied] = useState(false);
+
+  const selectedVersion = useMemo(() => {
+    if (selectedVersionId) {
+      const selected = chatVersionsMap.get(selectedVersionId);
+      if (selected) return selected;
+      return null;
+    }
+  }, [chatVersionsMap, selectedVersionId]);
+
+  const handleCopy = async () => {
+    const code = selectedVersion?.chat_version_outputs?.html_code;
+    if (!code) return;
+    try {
+      await navigator.clipboard.writeText(code);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1000);
+    } catch (err) {
+      console.error("Failed to copy text: ", err);
+    }
+  };
 
   return (
     <div className="flex w-full items-center justify-between border-b p-1">
@@ -48,13 +70,6 @@ export const ChatTopControlBar = ({
           >
             Code
           </Button>
-          {/* <Button
-            variant={view === "edit" ? "default" : "ghost"}
-            size={"sm"}
-            onClick={() => setView("edit")}
-          >
-            Edit
-          </Button> */}
         </div>
       </div>
 
@@ -79,6 +94,14 @@ export const ChatTopControlBar = ({
         )}
       </div>
       <div className="flex flex-1 items-center justify-end gap-2">
+        {view === "code" && (
+          <>
+            <Button variant="ghost" onClick={handleCopy}>
+              {" "}
+              {copied ? <Check /> : <Clipboard />}{" "}
+            </Button>
+          </>
+        )}
         {view === "preview" && (
           <>
             <Select

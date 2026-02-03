@@ -1,4 +1,3 @@
-import { ResizablePanel } from "@repo/ui/components/resizable";
 import React, { useState } from "react";
 import { Button } from "@repo/ui/components/button";
 import { Copy, Check, Trash2 } from "lucide-react";
