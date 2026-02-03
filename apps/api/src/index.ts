@@ -1,3 +1,4 @@
+import "./instrument.js";
 import express from "express";
 import cors from "cors";
 import { env } from "./lib/env.js";
@@ -19,21 +20,12 @@ import paymentRoutes from "./routes/payment-routes.js";
 import utilRoutes from "./routes/util-routes.js";
 import brandKitRoutes from "./routes/brandkit-routes.js";
 import marketplaceRoutes from "./routes/marketplace-routes.js";
-import client from "prom-client";
-
-// 1️⃣ Collect default Node.js metrics (CPU, memory, event loop)
-client.collectDefaultMetrics();
-
-// 2️⃣ Create HTTP request timer
-const httpDuration = new client.Histogram({
-  name: "http_request_duration_seconds",
-  help: "Time taken by API requests",
-  labelNames: ["method", "route", "status"],
-  buckets: [0.1, 0.3, 0.5, 1, 2, 5],
-});
+import * as Sentry from "@sentry/node";
 
 const app = express();
 const server = createServer(app);
+
+// cors of application
 const ALLOWED_DOMAINS: string[] = env.ALLOWED_DOMAINS.split(",").map((domain) =>
   domain.trim(),
 );
@@ -54,19 +46,6 @@ app.post(
 app.use(express.json());
 app.use(cookiesParser());
 
-app.use((req, res, next) => {
-  const end = httpDuration.startTimer({
-    method: req.method,
-    route: req.route?.path || req.path,
-  });
-
-  res.on("finish", () => {
-    end({ status: res.statusCode });
-  });
-
-  next();
-});
-
 // routes of all application
 app.use("/api/v1", authRoutes);
 app.use("/api/v1/user", userRoutes);
@@ -76,9 +55,8 @@ app.use("/api/v1/payments", paymentRoutes);
 app.use("/api/v1/utils", utilRoutes);
 app.use("/api/v1/brandkits", brandKitRoutes);
 app.use("/api/v1/marketplace", marketplaceRoutes);
-app.get("/metrics", async (req, res) => {
-  res.set("Content-Type", client.register.contentType);
-  res.end(await client.register.metrics());
+app.get("/debug-sentry", function mainHandler(req, res) {
+  throw new Error("My first Sentry error!");
 });
 // Testing route of the application
 const RANDOM_NUMBER = Math.floor(Math.random() * 1000);
@@ -105,6 +83,7 @@ app.get("/", (req, res) => {
 // Sentry.setupExpressErrorHandler(app);
 
 // GLOBAL ERROR HANDLING
+Sentry.setupExpressErrorHandler(app);
 app.use(errorHandler);
 const ws = new WebSocketServer({
   server,
