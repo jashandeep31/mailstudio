@@ -1,13 +1,23 @@
 import "dotenv/config";
 import { drizzle } from "drizzle-orm/node-postgres";
+import pg from "pg";
 import { testTable, usersTable } from "./schema/users.js";
 import { accountsTable } from "./schema/accounts.js";
-import { main } from "./seeding.js";
 export * from "drizzle-orm";
 
-export const db = drizzle(process.env.DATABASE_URL!, {
+const { Pool } = pg;
+
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL!,
+  max: 5,
+  idleTimeoutMillis: 30000,
+  connectionTimeoutMillis: 2000,
+});
+
+export const db = drizzle(pool, {
   schema: { usersTable, accountsTable, testTable },
 });
+
 // Just for the testing purposes
 // await db.insert(testTable).values({
 //   name: "test",
@@ -27,5 +37,3 @@ export * from "./schema/payments.js";
 export * from "./schema/billings.js";
 export * from "./schema/upload-media.js";
 export * from "./schema/user-liked-chats.js";
-
-main();
