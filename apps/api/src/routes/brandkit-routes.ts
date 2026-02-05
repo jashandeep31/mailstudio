@@ -15,12 +15,16 @@ routes
   .route("/")
   .get(checkAuthorization(["all"]), getUserBrandKits)
   .post(checkAuthorization(["all"]), createBrandKit);
+
 routes
   .route("/create-manual")
   .post(checkAuthorization(["all"]), createManualBrandkit);
+
 routes
   .route("/:id")
   .get(checkAuthorization(["all"]), getUserBrandKitById)
   .delete(checkAuthorization(["all"]), deleteBrandKit);
+
 routes.route("/update").put(checkAuthorization(["all"]), updateBrandKit);
+
 export default routes;

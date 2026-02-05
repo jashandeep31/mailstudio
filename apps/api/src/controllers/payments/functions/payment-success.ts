@@ -8,7 +8,7 @@ import {
 import DodoPayments from "dodopayments";
 import { Response } from "express";
 import { AppError } from "../../../lib/app-error.js";
-import { getPlanInfo } from "../../../lib/get-user-info.js";
+import { getPlanInfo } from "../../../lib/get-plan-info.js";
 import { dodoPaymentClient } from "../dodo-payments.js";
 
 /**

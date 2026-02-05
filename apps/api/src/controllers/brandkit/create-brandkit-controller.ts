@@ -4,13 +4,15 @@ import { catchAsync } from "../../lib/catch-async.js";
 import { z } from "zod";
 import axios from "axios";
 import { env } from "../../lib/env.js";
-import { brandKitsTable, db } from "@repo/db";
+import { brandKitsTable, db, eq } from "@repo/db";
+import { getPlanInfoByType } from "../../lib/get-plan-info.js";
 
 const createBrandkitColorsSchema = z.object({
   primaryColor: z.string().optional(),
   secondaryColor: z.string().optional(),
   accentColor: z.string().optional(),
 });
+
 const createBrandkitSchema = z.object({
   colors: createBrandkitColorsSchema,
   brandSummary: z.string().optional(),
@@ -30,17 +32,29 @@ export const createBrandKit = catchAsync(
     if (req.user.planType === "free")
       throw new AppError("Pro or Pro plus version is required", 400);
 
-    //TODO: check if user have more then allowed limit
+    const planInfo = getPlanInfoByType(req.user.planType);
     const { websiteUrl } = createBrandKitInputSchema.parse(req.body);
+
+    // Checking the the total user brandkits
+    const userBrandKits = await db
+      .select()
+      .from(brandKitsTable)
+      .where(eq(brandKitsTable.user_id, req.user.id));
+    if (userBrandKits.length >= planInfo.brandkitsAllowed - 5)
+      throw new AppError("You have reached the brandkits limit", 400);
+
+    // getting the user brandkit
     const response = await axios.post(
       `${env.SCREENSHOT_SERVICE_URL}/brandkit`,
       { url: websiteUrl, secret: env.INTERNAL_API_KEY },
     );
-    const data = JSON.parse(response.data.data);
+
     const parsedData = createBrandkitSchema.parse({
-      ...data,
+      ...JSON.parse(response.data.data),
       websiteUrl: websiteUrl,
     });
+
+    //creating the brandkit
     const [brandKit] = await db
       .insert(brandKitsTable)
       .values({

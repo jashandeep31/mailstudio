@@ -9,7 +9,7 @@ import {
   and,
 } from "@repo/db";
 import { revalidateUserCreditWalletCache } from "../../../lib/redis/user-credit-wallet-cache.js";
-import { getPlanInfo } from "../../../lib/get-user-info.js";
+import { getPlanInfo } from "../../../lib/get-plan-info.js";
 
 /**
   Objectives of this function 
