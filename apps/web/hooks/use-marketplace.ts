@@ -1,4 +1,4 @@
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useInfiniteQuery, useMutation, useQuery } from "@tanstack/react-query";
 import {
   getMarketplaceTemplateById,
   getMarketplaceTemplates,
@@ -14,6 +14,21 @@ export const useMarketplaceTemplates = (
     queryKey: ["marketplace-templates", filters],
     queryFn: () => getMarketplaceTemplates(filters),
     enabled: options?.enabled,
+  });
+
+export const useInfiniteMarkeplaceTemplates = (
+  filters: z.infer<typeof getMarketplaceTemplatesFilterSchema>,
+) =>
+  useInfiniteQuery({
+    queryKey: ["infinite-marketplace-templates", filters],
+    initialPageParam: null as string | null,
+    queryFn: ({ pageParam }) =>
+      getMarketplaceTemplates({
+        ...filters,
+        lastId: pageParam ? pageParam : undefined,
+      }),
+    getNextPageParam: (lastPage) =>
+      lastPage.length === 6 ? lastPage.at(-1)?.id : null,
   });
 
 export const useMarketplaceTemplateById = (id: string) =>

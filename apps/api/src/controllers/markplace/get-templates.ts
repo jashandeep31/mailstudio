@@ -11,25 +11,39 @@ import {
   userLikedChatsTable,
   sql,
   desc,
+  lt,
 } from "@repo/db";
 import { getMarketplaceTemplatesFilterSchema } from "@repo/shared";
 import { AppError } from "../../lib/app-error.js";
 
 export const getMarketplaceTemplates = catchAsync(
   async (req: Request, res: Response) => {
-    const { categoryId, type, query } =
+    const { categoryId, type, lastId } =
       getMarketplaceTemplatesFilterSchema.parse(req.query);
 
     const dbQuery = [eq(chatsTable.public, true)];
+
+    // basic filter like: category, free or premium
     if (categoryId) dbQuery.push(eq(chatsTable.category_id, categoryId));
     if (type == "free") dbQuery.push(eq(chatsTable.price, String(0)));
     if (type == "premium") dbQuery.push(gt(chatsTable.price, String(0)));
+
+    // Getting the prev to the selected lastId
+    if (lastId) {
+      dbQuery.push(
+        lt(
+          chatsTable.updated_at,
+          sql`(select updated_at from ${chatsTable} where id = ${lastId})`,
+        ),
+      );
+    }
 
     const templates = await db
       .select()
       .from(chatsTable)
       .where(and(...dbQuery))
-      .orderBy(desc(chatsTable.updated_at));
+      .orderBy(desc(chatsTable.updated_at))
+      .limit(6);
 
     res.status(200).json({ data: templates });
   },

@@ -10,6 +10,7 @@ import { z } from "zod";
 export const getMarketplaceTemplates = async (
   data: z.infer<typeof getMarketplaceTemplatesFilterSchema>,
 ): Promise<(typeof chatsTable.$inferSelect)[]> => {
+  console.log(data);
   const parsedData = getMarketplaceTemplatesFilterSchema.parse(data);
 
   const res = await axios.get(`${BASE_URL}/api/v1/marketplace/templates`, {
