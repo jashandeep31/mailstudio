@@ -1,16 +1,17 @@
 "use client";
 
 import React from "react";
-import { Plus } from "lucide-react";
-import { buttonVariants } from "@repo/ui/components/button";
+import { Plus, Loader2 } from "lucide-react";
+import { Button, buttonVariants } from "@repo/ui/components/button";
 import { DashboardTemplateCard } from "@/components/dashboard-template-card";
 import { toast } from "sonner";
-import { useChats, useDeleteChat } from "@/hooks/use-chats";
+import { useInfiniteChats, useDeleteChat } from "@/hooks/use-chats";
 import Link from "next/link";
 import CommonLoader from "@/components/common-loader";
 
 export default function ClientView() {
-  const { data: templates, isLoading } = useChats();
+  const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } =
+    useInfiniteChats();
   const { mutate: deleteTemplate } = useDeleteChat();
 
   const handleDuplicate = (id: string) => {
@@ -44,27 +45,51 @@ export default function ClientView() {
       </div>
       {/* Grid */}
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-3 md:gap-6 lg:grid-cols-4">
-        {templates?.map((template) => (
-          <DashboardTemplateCard
-            key={template.id}
-            id={template.id}
-            name={template.name}
-            thumbnail={template.thumbnail || undefined}
-            lastModified={new Date(template.updated_at).toLocaleDateString()}
-            onDuplicate={handleDuplicate}
-            onDelete={handleDelete}
-          />
-        ))}
-
-        {/* Empty State */}
-        {templates?.length === 0 && (
-          <div className="col-span-full py-12 text-center">
-            <p className="text-muted-foreground">
-              No templates found. Create one to get started!
-            </p>
-          </div>
+        {data?.pages.map((page) =>
+          page?.map((template) => (
+            <DashboardTemplateCard
+              key={template.id}
+              id={template.id}
+              name={template.name}
+              thumbnail={template.thumbnail || undefined}
+              lastModified={new Date(template.updated_at).toLocaleDateString()}
+              onDuplicate={handleDuplicate}
+              onDelete={handleDelete}
+            />
+          )),
         )}
       </div>
+
+      {/* Empty State */}
+      {!isLoading && data?.pages.flat().length === 0 && (
+        <div className="py-12 text-center">
+          <p className="text-muted-foreground">
+            No templates found. Create one to get started!
+          </p>
+        </div>
+      )}
+
+      {/* Load More */}
+      {!isLoading && data?.pages.flat().length !== 0 && (
+        <div className="mt-12 flex items-center justify-center">
+          <Button
+            disabled={!hasNextPage || isFetchingNextPage}
+            onClick={() => fetchNextPage()}
+            className="min-w-40"
+          >
+            {isFetchingNextPage ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Loading...
+              </>
+            ) : !hasNextPage ? (
+              "You've reached the end"
+            ) : (
+              "Load More"
+            )}
+          </Button>
+        </div>
+      )}
     </div>
   );
 }

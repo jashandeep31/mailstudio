@@ -8,8 +8,9 @@ import { getChatsFilterSchema } from "@repo/shared";
 
 export const getAllUserChats = catchAsync(
   async (req: Request, res: Response) => {
-    const { lastId } = getChatsFilterSchema.parse(req.params);
+    const { lastId } = getChatsFilterSchema.parse(req.query);
 
+    console.log(lastId);
     // Checking the userId
     if (!req.user) throw new AppError("Authentication failed", 400);
 

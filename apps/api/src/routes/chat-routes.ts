@@ -15,10 +15,12 @@ routes
   .route("/")
   .get(checkAuthorization(["all"]), getAllUserChats)
   .post(checkAuthorization(["all"]), updateChat);
+
 routes
   .route("/:chatId")
   .get(checkAuthorization(["all"]), getChatById)
   .delete(checkAuthorization(["all"]), deleteUserChat);
+
 routes
   .route("/delete/version/:versionId")
   .delete(checkAuthorization(["all"]), deleteChatVersion);
