@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { useMarketplaceTemplates } from "@/hooks/use-marketplace";
+import { useInfiniteMarkeplaceTemplates } from "@/hooks/use-marketplace";
 import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@repo/ui/components/button";
@@ -51,13 +51,10 @@ const TemplateSkeleton = () => (
 );
 
 export function LandingPageTemplates() {
-  const { data: templates, isLoading } = useMarketplaceTemplates({
-    categoryId: undefined,
-    type: undefined,
-  });
+  const { data, isLoading } = useInfiniteMarkeplaceTemplates({});
 
-  // Get first 3 templates
-  const displayedTemplates = templates?.slice(0, 3) || [];
+  // Get first 3 templates from the first page
+  const displayedTemplates = data?.pages.flat().slice(0, 3) || [];
 
   if (!isLoading && !displayedTemplates.length) return null;
 

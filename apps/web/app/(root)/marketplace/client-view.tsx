@@ -14,7 +14,10 @@ export default function ClientView() {
 
   // Getting the filtered data from the backend api
   const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } =
-    useInfiniteMarkeplaceTemplates({});
+    useInfiniteMarkeplaceTemplates({
+      categoryId: selectedCategoryId === "all" ? undefined : selectedCategoryId,
+      type: selectedType === "all" ? undefined : selectedType,
+    });
 
   const types = [
     { id: "all", label: "All" },
@@ -82,6 +85,11 @@ export default function ClientView() {
         </div>
       </div>
       {isLoading && <CommonLoader />}
+      {!isLoading && data?.pages.flat().length === 0 && (
+        <div className="flex min-h-40 items-center justify-center">
+          <p className="text-muted-foreground">Nothing to show</p>
+        </div>
+      )}
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-3 md:gap-6 lg:grid-cols-4">
         {data?.pages.map((page) =>
           page?.map((template) => (
@@ -89,7 +97,7 @@ export default function ClientView() {
           )),
         )}
       </div>
-      {!isLoading && (
+      {!isLoading && data?.pages.flat().length !== 0 && (
         <div className="mt-12 flex items-center justify-center">
           <Button
             disabled={!hasNextPage || isFetchingNextPage}

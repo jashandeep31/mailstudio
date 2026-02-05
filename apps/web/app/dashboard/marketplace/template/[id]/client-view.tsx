@@ -2,7 +2,7 @@
 import {
   useMarketplaceTemplateById,
   usePurchaseTemplate,
-  useMarketplaceTemplates,
+  useInfiniteMarkeplaceTemplates,
 } from "@/hooks/use-marketplace";
 import { useParams, useRouter } from "next/navigation";
 import React from "react";
@@ -26,14 +26,10 @@ export default function ClientView() {
   const { mutate } = usePurchaseTemplate();
   const likeChat = useLikeChat();
 
-  const { data: relatedTemplates } = useMarketplaceTemplates(
-    {
-      categoryId: template?.category?.id,
-    },
-    {
-      enabled: !!template?.category?.id,
-    },
-  );
+  const { data: relatedTemplatesData } = useInfiniteMarkeplaceTemplates({
+    categoryId: template?.category?.id,
+  });
+  const relatedTemplates = relatedTemplatesData?.pages[0];
 
   const handleLikeClick = (action: "like" | "unlike") => {
     const toastId = toast.loading("Processing");
@@ -213,7 +209,7 @@ export default function ClientView() {
         </div>
       </div>
 
-      {/* the length is set to greated then for now as it many include the same element too */}
+      {/* the length is set to greater than 1 for now as it may include the same element too */}
       {relatedTemplates && relatedTemplates.length > 1 && (
         <div className="mt-12">
           <h2 className="text-muted-foreground mb-4 text-xl font-bold">
