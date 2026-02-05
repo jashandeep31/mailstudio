@@ -6,16 +6,8 @@ import {
 } from "../services/marketplace-services";
 import { z } from "zod";
 import { getMarketplaceTemplatesFilterSchema } from "@repo/shared";
-export const useMarketplaceTemplates = (
-  filters: z.infer<typeof getMarketplaceTemplatesFilterSchema>,
-  options?: { enabled?: boolean },
-) =>
-  useQuery({
-    queryKey: ["marketplace-templates", filters],
-    queryFn: () => getMarketplaceTemplates(filters),
-    enabled: options?.enabled,
-  });
 
+// infinite query for the marketplace
 export const useInfiniteMarkeplaceTemplates = (
   filters: z.infer<typeof getMarketplaceTemplatesFilterSchema>,
 ) =>

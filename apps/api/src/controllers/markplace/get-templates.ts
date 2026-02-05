@@ -18,10 +18,18 @@ import { AppError } from "../../lib/app-error.js";
 
 export const getMarketplaceTemplates = catchAsync(
   async (req: Request, res: Response) => {
-    const { categoryId, type, lastId } =
-      getMarketplaceTemplatesFilterSchema.parse(req.query);
+    const {
+      categoryId,
+      type,
+      lastId,
+      limit: parsedLimit,
+    } = getMarketplaceTemplatesFilterSchema.parse(req.query);
 
     const dbQuery = [eq(chatsTable.public, true)];
+
+    // updating the limit max is caped to the 10 but can be lowered down if needed
+    let limit = 10;
+    if (parsedLimit && limit < 10) limit = parsedLimit;
 
     // basic filter like: category, free or premium
     if (categoryId) dbQuery.push(eq(chatsTable.category_id, categoryId));
@@ -43,7 +51,7 @@ export const getMarketplaceTemplates = catchAsync(
       .from(chatsTable)
       .where(and(...dbQuery))
       .orderBy(desc(chatsTable.updated_at))
-      .limit(6);
+      .limit(limit);
 
     res.status(200).json({ data: templates });
   },
