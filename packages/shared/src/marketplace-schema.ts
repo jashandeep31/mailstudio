@@ -5,5 +5,5 @@ export const getMarketplaceTemplatesFilterSchema = z.object({
   type: z.string().optional(),
   query: z.string().optional(),
   lastId: z.uuid().optional(),
-  limit: z.number().optional(),
+  limit: z.coerce.number().optional(),
 });

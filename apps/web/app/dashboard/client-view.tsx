@@ -4,6 +4,9 @@ import InputArea from "@/components/chat/input-area";
 import { useWebSocketContext } from "@/contexts/web-socket-context";
 import { MailTemplateCard } from "@/components/mail-template-card";
 import { useInfiniteMarkeplaceTemplates } from "@/hooks/use-marketplace";
+import Link from "next/link";
+import { buttonVariants } from "@repo/ui/components/button";
+import { cn } from "@repo/ui/lib/utils";
 
 const ClientView = () => {
   const { sendEvent } = useWebSocketContext();
@@ -43,6 +46,14 @@ const ClientView = () => {
           {data?.pages[0]?.map((template) => (
             <MailTemplateCard key={template.id} template={template} />
           ))}
+        </div>
+        <div className="mt-8 flex items-center justify-center">
+          <Link
+            className={cn(buttonVariants(), "min-w-40")}
+            href={"/dashboard/marketplace"}
+          >
+            See All
+          </Link>
         </div>
       </div>
     </div>

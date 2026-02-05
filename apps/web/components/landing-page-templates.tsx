@@ -42,7 +42,7 @@ const LandingTemplateCard = ({
 
 const TemplateSkeleton = () => (
   <div className="space-y-3">
-    <Skeleton className="aspect-[3/2] w-full rounded-xl" />
+    <Skeleton className="aspect-3/2] w-full rounded-xl" />
     <div className="space-y-1">
       <Skeleton className="h-4 w-3/4" />
       <Skeleton className="h-3 w-1/4" />
@@ -51,7 +51,7 @@ const TemplateSkeleton = () => (
 );
 
 export function LandingPageTemplates() {
-  const { data, isLoading } = useInfiniteMarkeplaceTemplates({});
+  const { data, isLoading } = useInfiniteMarkeplaceTemplates({ limit: 3 });
 
   // Get first 3 templates from the first page
   const displayedTemplates = data?.pages.flat().slice(0, 3) || [];
@@ -60,7 +60,7 @@ export function LandingPageTemplates() {
 
   return (
     <section className="container mx-auto space-y-12 py-12 md:py-24 lg:py-32">
-      <div className="mx-auto flex max-w-[58rem] flex-col items-center justify-center gap-4 text-center">
+      <div className="mx-auto flex max-w-232 flex-col items-center justify-center gap-4 text-center">
         <h2 className="text-3xl leading-[1.1] font-bold sm:text-3xl md:text-6xl">
           Start with a template
         </h2>

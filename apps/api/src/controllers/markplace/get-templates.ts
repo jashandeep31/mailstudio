@@ -29,7 +29,7 @@ export const getMarketplaceTemplates = catchAsync(
 
     // updating the limit max is caped to the 10 but can be lowered down if needed
     let limit = 10;
-    if (parsedLimit && limit < 10) limit = parsedLimit;
+    if (parsedLimit && parsedLimit < 10) limit = parsedLimit;
 
     // basic filter like: category, free or premium
     if (categoryId) dbQuery.push(eq(chatsTable.category_id, categoryId));
