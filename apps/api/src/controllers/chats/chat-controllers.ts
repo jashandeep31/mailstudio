@@ -1,19 +1,37 @@
 import { NextFunction, Request, Response } from "express";
 import { catchAsync } from "../../lib/catch-async.js";
 import { AppError } from "../../lib/app-error.js";
-import { and, chatsTable, db, desc, eq } from "@repo/db";
+import { and, chatsTable, db, desc, eq, lt, sql } from "@repo/db";
 import { z } from "zod";
 import { r2RemoveObject } from "../../lib/configs/r2-config.js";
+import { getChatsFilterSchema } from "@repo/shared";
 
 export const getAllUserChats = catchAsync(
-  async (req: Request, res: Response, next: NextFunction) => {
+  async (req: Request, res: Response) => {
+    const { lastId } = getChatsFilterSchema.parse(req.params);
+
+    // Checking the userId
     if (!req.user) throw new AppError("Authentication failed", 400);
+
+    const rawWhereQuery = [eq(chatsTable.user_id, req.user.id)];
+
+    // getting the created from the lastId
+    if (lastId) {
+      rawWhereQuery.push(
+        lt(
+          chatsTable.created_at,
+          sql`(select updated_at from ${chatsTable} where id = ${lastId})`,
+        ),
+      );
+    }
+
     const chats = await db
       .select()
       .from(chatsTable)
-      .where(eq(chatsTable.user_id, req.user.id))
+      .where(and(...rawWhereQuery))
       .orderBy(desc(chatsTable.updated_at))
-      .limit(10);
+      .limit(11);
+
     res.status(200).json({
       data: chats,
     });

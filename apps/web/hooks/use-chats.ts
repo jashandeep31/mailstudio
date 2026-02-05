@@ -6,13 +6,23 @@ import {
   getChatById,
   likeChat,
 } from "@/services/chat-services";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useInfiniteQuery, useMutation, useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
 
 export const useChats = () =>
   useQuery({
     queryKey: ["chats"],
-    queryFn: getChats,
+    queryFn: () => getChats({}),
+  });
+
+export const useInfiniteChats = () =>
+  useInfiniteQuery({
+    queryKey: ["infinite-chats"],
+    queryFn: ({ pageParam }) =>
+      getChats({ lastId: pageParam ? pageParam : undefined }),
+    initialPageParam: null as string | null,
+    getNextPageParam: (lastPage) =>
+      lastPage.length === 11 ? lastPage.at(-1)?.id : null,
   });
 
 export const useChat = (id: string) =>

@@ -20,7 +20,7 @@ export const useInfiniteMarkeplaceTemplates = (
         lastId: pageParam ? pageParam : undefined,
       }),
     getNextPageParam: (lastPage) =>
-      lastPage.length === 6 ? lastPage.at(-1)?.id : null,
+      lastPage.length === 11 ? lastPage.at(-1)?.id : null,
   });
 
 export const useMarketplaceTemplateById = (id: string) =>

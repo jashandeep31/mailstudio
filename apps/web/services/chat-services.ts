@@ -1,12 +1,15 @@
 import { BASE_URL } from "@/lib/contants";
 import { chatsTable } from "@repo/db";
+import { getChatsFilterSchema } from "@repo/shared";
 import axios from "axios";
+import z from "zod";
 
-export const getChats = async (): Promise<
-  (typeof chatsTable.$inferSelect)[]
-> => {
+export const getChats = async (
+  data: z.infer<typeof getChatsFilterSchema>,
+): Promise<(typeof chatsTable.$inferSelect)[]> => {
   const res = await axios.get(`${BASE_URL}/api/v1/chats`, {
     withCredentials: true,
+    params: data,
   });
   return res.data.data;
 };
