@@ -19,7 +19,7 @@ const removeUserOngoingChat = async (userId: string, chatId: string) => {
   await redis.srem(key, chatId);
 };
 
-export const addUserOngoingChatAndEvent = async ({
+export const appendUserOngoingChatAndEvent = async ({
   userId,
   chatId,
   socket,

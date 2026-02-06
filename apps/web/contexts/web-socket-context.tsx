@@ -99,8 +99,13 @@ export default function WebSocketProvider({
           router.push(`${data.redirectUrl}`);
           break;
         case "res:ongoing-chats":
-          console.log(data.chats);
           setOngoingChatIds(data.chats);
+          break;
+        case "res:append-going-chat":
+          appendOngoingChatId(data.chatId);
+          break;
+        case "res:remove-going-chat":
+          removeOngoingChatId(data.chatId);
           break;
         case "error:no-chat":
           router.push(`/dashboard`);

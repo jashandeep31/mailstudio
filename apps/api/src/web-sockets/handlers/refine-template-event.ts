@@ -27,6 +27,10 @@ import {
 import { refineMailTemplate } from "../../ai/mail/refine-template/index.js";
 import { getRefineTemplateOverview } from "../../ai/mail/refine-template/get-refine-template-overview.js";
 import { updateUserInstructions } from "../../ai/mail/user-instructions/update-user-instructions.js";
+import {
+  appendUserOngoingChatAndEvent,
+  removeUserOngoingChatAndEvent,
+} from "../../lib/redis/user-ongoing-chats.js";
 
 interface RefineTemplateHandler {
   data: z.infer<(typeof SocketEventSchemas)["event:refine-template-message"]>;
@@ -75,11 +79,19 @@ export const refineTemplateHandler = async ({
     brand_kit_id: null,
     created_at: new Date(),
   };
-  // Saving the data to the redis so that on the refresh web can send it back to the user
-  await saveOngoingNewChatVersion({
-    chat_versions: DummyVersion,
-    chat_version_prompts: DummyQuestion,
-  });
+  await Promise.all([
+    // Saving the data to the redis so that on the refresh web can send it back to the user
+    await saveOngoingNewChatVersion({
+      chat_versions: DummyVersion,
+      chat_version_prompts: DummyQuestion,
+    }),
+    // add the chat id that its ongoing chat
+    await appendUserOngoingChatAndEvent({
+      userId: socket.userId,
+      chatId: data.chatId,
+      socket,
+    }),
+  ]);
   socket.send(
     JSON.stringify({
       key: "res:new-version",
@@ -170,6 +182,14 @@ export const refineTemplateHandler = async ({
       );
     }
   }
+
+  // after finish of response removing it from the ongoing
+  await removeUserOngoingChatAndEvent({
+    userId: socket.userId,
+    socket,
+    chatId: data.chatId,
+  });
+
   // updating the thumbnail of the refine-template
   await addToThumbnailUpdateQueue(data.chatId);
   ProcesingVersions.delete(`${chatVersion.chat_id}`);
