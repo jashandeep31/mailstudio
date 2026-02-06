@@ -13,7 +13,7 @@ import {
 import { z } from "zod";
 import { AppError } from "../../lib/app-error.js";
 import { sendTemplateToTestMailSchema } from "@repo/shared";
-import { sendMailWithResend } from "../../services/send-mail.js";
+import { sendHTMLEmail } from "../../services/send-mail.js";
 import { v4 as uuidv4 } from "uuid";
 import {
   generateOTP,
@@ -232,9 +232,10 @@ export const sendTemplateToTestMail = catchAsync(
 
     if (!mail || !template) throw new AppError("Internal server error", 404);
 
-    await sendMailWithResend({
+    await sendHTMLEmail({
       html: template.chat_version_outputs.html_code,
       to: [mail.mail],
+      subject: `Preview of template`,
     });
     res.status(200).json({
       message: "Test mail sent successfully",

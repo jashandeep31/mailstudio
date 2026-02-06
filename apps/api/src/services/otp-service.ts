@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from "uuid";
 import { db, userOtpsTable } from "@repo/db";
-import { sendMailWithResend } from "./send-mail.js";
+import { sendHTMLEmail } from "./send-mail.js";
 import crypto from "crypto";
 import { env } from "../lib/env.js";
 
@@ -61,7 +61,6 @@ export const createOTPEmailHTML = (otp: string) => {
       .moz-text-html .mj-column-per-100 { width:100% !important; max-width: 100%; }
 .moz-text-html .mj-column-per-85 { width:85% !important; max-width: 85%; }
     </style>
-    
     
   
     
@@ -301,10 +300,12 @@ export const createOTPRecord = async (
 export const sendVerificationEmail = async (email: string, otp: string) => {
   const html = createOTPEmailHTML(otp);
 
-  await sendMailWithResend({
+  const res = await sendHTMLEmail({
     html,
     to: [email],
+    subject: "OTP to verify your test mail",
   });
+  console.log(res);
 };
 
 export const hashOTP = (otp: string) => {

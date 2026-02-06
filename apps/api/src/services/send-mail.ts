@@ -1,24 +1,50 @@
-import axios from "axios";
-import { env } from "../lib/env.js";
+import { sendMail } from "../lib/configs/ses-config.js";
+import { SendEmailCommandInput } from "@aws-sdk/client-ses";
+import { convert } from "html-to-text";
 
-interface sendMailWithResend {
+interface SendHTMLEmailParams {
   html: string;
   to: string[];
+  subject: string;
+  source?: string;
 }
-export const sendMailWithResend = async ({ html, to }: sendMailWithResend) => {
-  const res = await axios.post(
-    "https://api.resend.com/emails",
-    {
-      from: "Acme <onboarding@resend.dev>",
-      to: to,
-      subject: "hello world",
-      html: html,
+export const sendHTMLEmail = async ({
+  html,
+  to,
+  subject,
+  source = "no-reply@preview.mailstudio.dev",
+}: SendHTMLEmailParams) => {
+  let text = null;
+  try {
+    text = convert(html);
+  } catch {
+    text = null;
+  }
+  const params: SendEmailCommandInput = {
+    Destination: {
+      ToAddresses: [...to],
     },
-    {
-      headers: {
-        Authorization: `Bearer ${env.RESEND_BEARER_TOKEN}`,
-        "Content-Type": "application/json",
+    ConfigurationSetName: "my-first-configuration-set",
+    Message: {
+      Body: {
+        Html: {
+          Charset: "UTF-8",
+          Data: html,
+        },
+        // only if the conversion goes succces then we sending the text
+        ...(text && {
+          Text: {
+            Charset: "UTF-8",
+            Data: text,
+          },
+        }),
+      },
+      Subject: {
+        Charset: "UTF-8",
+        Data: subject,
       },
     },
-  );
+    Source: source,
+  };
+  return await sendMail(params);
 };

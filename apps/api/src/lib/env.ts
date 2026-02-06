@@ -31,6 +31,8 @@ export const env = {
   SCREENSHOT_SERVICE_URL: process.env.SCREENSHOT_SERVICE_URL!,
   DODO_PRODUCT_PRO: process.env.DODO_PRODUCT_PRO!,
   DODO_PRODUCT_PRO_PLUS: process.env.DODO_PRODUCT_PRO_PLUS!,
+  AWS_SES_ACCESS_KEY_ID: process.env.AWS_SES_ACCESS_KEY_ID!,
+  AWS_SES_SECRET_KEY: process.env.AWS_SES_SECRET_KEY!,
 } as const;
 
 // Validate env variables

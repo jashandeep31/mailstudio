@@ -10,7 +10,6 @@ import cookie from "cookie";
 import { test } from "./test.js";
 import { errorHandler } from "./middlewares/error-hanlder.js";
 import { checkAllPromptFiles } from "./prompts/index.js";
-import { redis } from "./lib/db.js";
 import { handleDodoPaymentWebhook } from "./controllers/payments/dodo-webhook.js";
 import authRoutes from "./routes/auth-routes.js";
 import userRoutes from "./routes/user-routes.js";
