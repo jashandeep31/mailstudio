@@ -26,4 +26,8 @@ export const socketErrors = {
     "error:proccessing-error",
     "Please wait till chat finishes prev streaming",
   ),
+  "error:too-many-ongoing-chats": errorStringfier(
+    "error:too-many-ongoing-chats",
+    "Too many chats are going on. Please let them finish first",
+  ),
 } as const;

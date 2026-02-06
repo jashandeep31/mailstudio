@@ -115,9 +115,9 @@ ws.on("connection", async (socket, req) => {
 
 // Dev things
 if (env.ENVIRONMENT === "development") {
+  await redis.flushdb();
   test();
   checkAllPromptFiles();
-  redis.flushdb();
 }
 
 server.listen(env.PORT, () => {

@@ -5,6 +5,7 @@ import { getCachedUserCreditWallet } from "../../lib/redis/user-credit-wallet-ca
 import { refineTemplateHandler } from "../handlers/refine-template-event.js";
 import { socketErrors } from "./utils.js";
 import { ProcesingVersions } from "../../state/processing-versions-state.js";
+import { getUserOngoingChats } from "../../lib/redis/user-ongoing-chats.js";
 
 export const refineTemplateCase = async ({
   rawData,
@@ -24,6 +25,12 @@ export const refineTemplateCase = async ({
     return;
   }
 
+  // checking the user have already too many running chats
+  const ongoingChats = await getUserOngoingChats(socket.userId);
+  if (ongoingChats.length > 3) {
+    socket.send(socketErrors["error:too-many-ongoing-chats"]);
+    return;
+  }
   // If chat is already processing then no new version can be refined
   const isChatProcessing = ProcesingVersions.get(data.chatId);
   if (isChatProcessing) {
