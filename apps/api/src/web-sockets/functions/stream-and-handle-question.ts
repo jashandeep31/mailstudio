@@ -20,7 +20,7 @@ import { createNewMailTemplate } from "../../ai/mail/new-template/index.js";
 import { getQuestionOverview } from "../../ai/mail/new-template/get-question-overview.js";
 import { getTemplateName } from "../../ai/mail/new-template/get-template-name.js";
 import { getMailCategory } from "../../ai/mail/get-mail-category.js";
-import { addUserOngoingChat } from "../../lib/redis/user-ongoing-chats.js";
+import { addUserOngoingChatAndEvent } from "../../lib/redis/user-ongoing-chats.js";
 
 interface StreamAndHandleQuestion {
   chatQuestion: typeof chatVersionPromptsTable.$inferSelect;
@@ -116,7 +116,7 @@ const getChatCategoryAndName = async (
   chatDbId: string,
 ) => {
   // Adding the chat to the ongoing chats
-  await addUserOngoingChat(socket.userId, chatId);
+  await addUserOngoingChatAndEvent({ userId: socket.userId, chatId, socket });
 
   let name = await getTemplateName(prompt);
   let categoryId = await getMailCategory(prompt);

@@ -8,6 +8,7 @@ import { refineTemplateCase } from "./cases/refine-template.js";
 import { socketErrors } from "./cases/utils.js";
 import { leftChatCase } from "./cases/left-chat.js";
 import { chatRollbackCase } from "./cases/chat-rollback.js";
+import { getUserOngoingChats } from "../lib/redis/user-ongoing-chats.js";
 
 export const SocketHandler = async (socket: WebSocket) => {
   socket.on("message", async (e) => {
@@ -43,6 +44,19 @@ export const SocketHandler = async (socket: WebSocket) => {
 
         case "event:chat-rollback": {
           await chatRollbackCase({ rawData, socket });
+          break;
+        }
+
+        case "event:get-ongoing-chats": {
+          const ongoingChats = await getUserOngoingChats(socket.userId);
+          socket.send(
+            JSON.stringify({
+              key: "res:ongoing-chats",
+              data: {
+                chats: ongoingChats,
+              },
+            }),
+          );
           break;
         }
       }
