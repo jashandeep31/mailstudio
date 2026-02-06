@@ -110,18 +110,26 @@ export default function WebSocketProvider({
         case "error:no-chat":
           router.push(`/dashboard`);
           break;
-        case "error:wallet":
-          toast.error(data.message || "Wallet doesn't have the enough balacne");
-          break;
+
         default:
-          addEvent({
-            id: uuid(),
-            data,
-            key: key,
-          });
+          if (key.includes("error:")) {
+            toast.error(data.message || "Something had went wrong");
+          } else {
+            addEvent({
+              id: uuid(),
+              data,
+              key: key,
+            });
+          }
       }
     },
-    [router, addEvent, setOngoingChatIds],
+    [
+      router,
+      addEvent,
+      setOngoingChatIds,
+      appendOngoingChatId,
+      removeOngoingChatId,
+    ],
   );
   const connect = useCallback(() => {
     try {
