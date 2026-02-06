@@ -14,7 +14,9 @@ export const MailTemplateCard = ({
       className="bg-background block w-full overflow-clip rounded-md border"
     >
       <div className="relative aspect-3/2">
-        {template.thumbnail && <Image fill src={template.thumbnail} alt="" />}
+        {template.thumbnail && (
+          <Image width={800} height={600} src={template.thumbnail} alt="" />
+        )}
       </div>
       <div className="p-2">
         <div>

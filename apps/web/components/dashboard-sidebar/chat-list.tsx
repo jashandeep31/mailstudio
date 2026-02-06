@@ -11,8 +11,15 @@ import {
 } from "@repo/ui/components/sidebar";
 import { ChatItem } from "./chat-item";
 import { useRouter } from "next/navigation";
+import { useWebSocketContext } from "@/contexts/web-socket-context";
+import { useEffect } from "react";
+import { useOngoingChatsStore } from "@/zustand-store/ongoing-chats-store";
 
 export function ChatList() {
+  const { sendEvent } = useWebSocketContext();
+
+  const onGoingChats = useOngoingChatsStore((s) => s.chatIds);
+
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage } =
     useInfiniteChats();
   const { mutate: onDeleteChat } = useDeleteChat();
@@ -23,6 +30,10 @@ export function ChatList() {
     router.push(url);
     setOpenMobile(false);
   };
+
+  useEffect(() => {
+    sendEvent("event:get-ongoing-chats", {});
+  }, [sendEvent]);
 
   return (
     <SidebarGroup>
@@ -40,7 +51,15 @@ export function ChatList() {
                   className="active:bg-background data-active:bg-background"
                   onClick={() => handleNavigation(`/chat/${chat.id}`)}
                 >
-                  <span>{chat.name}</span>
+                  <span className="flex items-center gap-2">
+                    {onGoingChats.has(chat.id) && (
+                      <span className="relative flex size-2">
+                        <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-green-400 opacity-75"></span>
+                        <span className="relative inline-flex size-2 rounded-full bg-green-500"></span>
+                      </span>
+                    )}{" "}
+                    {chat.name}
+                  </span>
                 </SidebarMenuButton>
                 <ChatItem chat={chat} onDelete={onDeleteChat} />
               </SidebarMenuItem>

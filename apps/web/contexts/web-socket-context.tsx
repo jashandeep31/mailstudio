@@ -39,6 +39,7 @@ import React from "react";
 import { useRouter } from "next/navigation";
 import { useSocketEvents } from "@/zustand-store/socket-events-store";
 import { toast } from "sonner";
+import { useOngoingChatsStore } from "@/zustand-store/ongoing-chats-store";
 
 const WS_URL =
   process.env.NODE_ENV === "production"
@@ -57,6 +58,15 @@ export default function WebSocketProvider({
   const [isConnected, setIsConnected] = useState<boolean>(false);
   const isConnectedRef = useRef(false);
   const pendingMessagesRef = useRef<Array<string>>([]);
+
+  // ongoing chats store
+  const appendOngoingChatId = useOngoingChatsStore(
+    (s) => s.appendOngoingChatId,
+  );
+  const setOngoingChatIds = useOngoingChatsStore((s) => s.setOngoingChatIds);
+  const removeOngoingChatId = useOngoingChatsStore(
+    (s) => s.removeOngoingChatId,
+  );
 
   const sendEvent = useCallback<SendEvent>((event, payload) => {
     const parsed = SocketEventSchemas[event].parse(payload);
@@ -88,11 +98,14 @@ export default function WebSocketProvider({
         case "res:new-chat":
           router.push(`${data.redirectUrl}`);
           break;
+        case "res:ongoing-chats":
+          console.log(data.chats);
+          setOngoingChatIds(data.chats);
+          break;
         case "error:no-chat":
           router.push(`/dashboard`);
           break;
         case "error:wallet":
-          console.log(data);
           toast.error(data.message || "Wallet doesn't have the enough balacne");
           break;
         default:
@@ -103,7 +116,7 @@ export default function WebSocketProvider({
           });
       }
     },
-    [router, addEvent],
+    [router, addEvent, setOngoingChatIds],
   );
   const connect = useCallback(() => {
     try {
