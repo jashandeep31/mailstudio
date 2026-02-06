@@ -48,7 +48,7 @@ export function ChatList() {
             page?.map((chat) => (
               <SidebarMenuItem key={chat.id}>
                 <SidebarMenuButton
-                  className="active:bg-background data-active:bg-background"
+                  className="active:bg-background data-active:bg-background cursor-pointer"
                   onClick={() => handleNavigation(`/chat/${chat.id}`)}
                 >
                   <span className="flex items-center gap-2">

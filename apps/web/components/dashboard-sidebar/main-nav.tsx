@@ -31,7 +31,7 @@ export function MainNav({ items }: MainNavProps) {
       {items.map((item) => (
         <SidebarMenuItem key={item.title}>
           <SidebarMenuButton
-            className="active:bg-background data-active:bg-background"
+            className="active:bg-background data-active:bg-background cursor-pointer"
             onClick={() => {
               handleNavigation(item.url);
             }}

@@ -91,7 +91,7 @@ export default function LeftPanel({ versions, streamingOverview }: LeftPanel) {
                               variant={"destructive"}
                               size="sm"
                               disabled={activeStream ? true : false}
-                              className="flex items-center gap-2 text-xs"
+                              className="flex cursor-pointer items-center gap-2 text-xs"
                             >
                               <Trash2 className="" />
                               Roll back
