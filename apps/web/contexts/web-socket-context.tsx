@@ -110,7 +110,6 @@ export default function WebSocketProvider({
         case "error:no-chat":
           router.push(`/dashboard`);
           break;
-
         default:
           if (key.includes("error:")) {
             toast.error(data.message || "Something had went wrong");

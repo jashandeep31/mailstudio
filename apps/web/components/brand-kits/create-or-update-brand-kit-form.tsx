@@ -64,7 +64,6 @@ export default function CreateOrUpdateBrandKitForm({
     } else {
       const res = await createManualBrandKit(data);
       if (res.status === "success") {
-        console.log(res.data);
         toast.success("Brand kit created successfully", { id: toastId });
         router.push(`/dashboard/brand-kits`);
         queryClient.invalidateQueries({ queryKey: ["user-brand-kits"] });

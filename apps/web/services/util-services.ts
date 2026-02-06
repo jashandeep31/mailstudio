@@ -30,7 +30,6 @@ export const logoutUser = async (): Promise<void> => {
   const res = await axios.get(`${BASE_URL}/api/v1/logout`, {
     withCredentials: true,
   });
-  console.log(res);
   if (res.status === 200) {
     redirect("/");
   }

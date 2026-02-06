@@ -30,4 +30,8 @@ export const socketErrors = {
     "error:too-many-ongoing-chats",
     "Too many chats are going on. Please let them finish first",
   ),
+  "error:no-free-plan": errorStringfier(
+    "error:no-free-plan",
+    "Please upgrade your plan to pro or pro plus",
+  ),
 } as const;

@@ -43,7 +43,6 @@ export default function ClientView() {
           toast.success(res.message, { id: toastId });
         },
         onError: (e) => {
-          console.log(e);
           toast.error("Something went wrong", { id: toastId });
         },
       },
@@ -51,10 +50,8 @@ export default function ClientView() {
   };
 
   const handlePurchaseClick = () => {
-    console.log("Purchase clicked for template:", params.id);
     mutate(params.id as string, {
       onSuccess: (res) => {
-        console.log(res);
         toast.success("Template purchased successfully");
         router.push(`/chat/${res.id}`);
       },

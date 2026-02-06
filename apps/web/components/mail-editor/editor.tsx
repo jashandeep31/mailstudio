@@ -82,9 +82,6 @@ const MainEditor = ({ html }: { html: string }) => {
         );
         if (customClass) {
           const isFromParent = el !== target;
-          console.log(
-            `${isFromParent ? "[from parent] " : ""}Custom class: ${customClass}`,
-          );
           // Add outline to the element with custom- class
           el.style.outline = "2px solid #3b82f6";
           el.style.outlineOffset = "2px";

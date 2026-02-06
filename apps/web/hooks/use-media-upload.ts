@@ -36,7 +36,6 @@ export const useUploadMedia = () => {
       return res;
     } catch (e) {
       if (axios.isAxiosError(e)) {
-        console.log(e.response?.data.message);
         toast.error(
           e.response?.data.message || "Please try again with valid file type",
         );

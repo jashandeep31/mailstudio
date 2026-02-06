@@ -27,7 +27,6 @@ export const useChatEventHandler = () => {
           setSelectedVersionId(lastVersion.chat_versions.id);
         }
       } else if (event.key === "res:stream-answer") {
-        console.log(event.data, "res:stream-answer");
         setActiveStream({
           versionId: event.data.versionId,
           chatId: event.data.chatId,
@@ -43,7 +42,6 @@ export const useChatEventHandler = () => {
       } else if (event.key === "res:version-update") {
         updateChatVersion(event.data);
         if (activeStream) {
-          console.log(`okay we had removed the active stream sir`);
           setActiveStream(null);
         }
       } else if (event.key === "res:rollback") {

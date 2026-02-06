@@ -2,7 +2,6 @@ import { main } from "./seeding.js";
 
 main()
   .then(() => {
-    console.log("Seeding completed successfully.");
     process.exit(0);
   })
   .catch((err) => {

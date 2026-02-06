@@ -21,6 +21,5 @@ export const getSubsriptionManagementUrl = async (): Promise<{
       withCredentials: true,
     },
   );
-  console.log(res.data.data);
   return res.data.data;
 };

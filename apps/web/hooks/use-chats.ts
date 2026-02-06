@@ -53,7 +53,6 @@ export const useUpdateChat = () =>
       queryClient.invalidateQueries({ queryKey: ["chats", variables.chatId] });
     },
     onError: (e) => {
-      console.log(e);
       toast.error("Something went wrong");
     },
   });

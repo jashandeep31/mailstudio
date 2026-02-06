@@ -59,7 +59,6 @@ const TestMailsClientView = () => {
   };
 
   const handleCreateMail = (email: string) => {
-    console.log("handleCreateMail called with:", email);
     createUserTestMail({ email });
   };
 

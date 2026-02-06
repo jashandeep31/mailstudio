@@ -55,7 +55,6 @@ export const r2GetSignedUrl = async ({
 
 export const r2RemoveObject = async (fullPath: string) => {
   const key = fullPath.replace(env.CLOUDFLARE_R2_PUBLIC_DOMAIN + "/", "");
-  console.log(key);
   const command = new DeleteObjectCommand({
     Bucket: env.CLOUDFLARE_R2_BUCKET_NAME,
     Key: key,
