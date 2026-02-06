@@ -29,6 +29,7 @@ export const SocketEventSchemas = {
     versionId: z.string(),
     chatId: z.string(),
   }),
+  "event:get-ongoing-chats": z.object({}),
 } as const;
 
 export const SocketEventKeySchema = z.enum(
