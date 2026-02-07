@@ -70,7 +70,7 @@ export const DashboardTemplateCard = ({
         <div className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 transition-opacity group-hover:opacity-100">
           <Button
             variant="secondary"
-            size="sm"
+            size="lg"
             className="gap-2 font-medium shadow-lg"
             asChild
           >
