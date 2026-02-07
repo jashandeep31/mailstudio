@@ -1,8 +1,9 @@
-import { raw, Request, Response } from "express";
-import { catchAsync } from "../../lib/catch-async.js";
-import { AppError } from "../../lib/app-error.js";
+import { db, brandKitsTable, eq, uploadMediaTable, inArray } from "@repo/db";
 import { createBrandkitSchema } from "@repo/shared";
-import { brandKitsTable, db, eq, inArray, uploadMediaTable } from "@repo/db";
+import { Request, Response } from "express";
+import { AppError } from "../../lib/app-error.js";
+import { catchAsync } from "../../lib/catch-async.js";
+import { getPlanInfoByType } from "../../lib/get-plan-info.js";
 
 export const createManualBrandkit = catchAsync(
   async (req: Request, res: Response) => {
@@ -13,6 +14,7 @@ export const createManualBrandkit = catchAsync(
       throw new AppError("Pro or Pro plus version is required", 400);
 
     // Checking the the total user brandkits
+    const planInfo = getPlanInfoByType(req.user.planType);
     const userBrandKits = await db
       .select()
       .from(brandKitsTable)

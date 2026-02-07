@@ -40,7 +40,7 @@ export const createBrandKit = catchAsync(
       .select()
       .from(brandKitsTable)
       .where(eq(brandKitsTable.user_id, req.user.id));
-    if (userBrandKits.length >= planInfo.brandkitsAllowed - 5)
+    if (userBrandKits.length >= planInfo.brandkitsAllowed)
       throw new AppError("You have reached the brandkits limit", 400);
 
     // getting the user brandkit
