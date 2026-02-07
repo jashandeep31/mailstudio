@@ -5,9 +5,14 @@ import { BrandKitDialogShell } from "./brand-kit-dialog-shell";
 type BrandKitUpgradeProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  limitReached?: boolean;
 };
 
-export function BrandKitUpgrade({ open, onOpenChange }: BrandKitUpgradeProps) {
+export function BrandKitUpgrade({
+  open,
+  onOpenChange,
+  limitReached = false,
+}: BrandKitUpgradeProps) {
   const router = useRouter();
 
   const handleUpgrade = () => {
@@ -19,7 +24,7 @@ export function BrandKitUpgrade({ open, onOpenChange }: BrandKitUpgradeProps) {
     <BrandKitDialogShell
       open={open}
       onOpenChange={onOpenChange}
-      title="Upgrade Plan"
+      title={limitReached ? "Brand Kit Limit Reached" : "Upgrade Plan"}
       description=""
       footer={
         <div className="flex w-full justify-end gap-2">
@@ -32,7 +37,9 @@ export function BrandKitUpgrade({ open, onOpenChange }: BrandKitUpgradeProps) {
     >
       <div className="py-4">
         <div className="text-muted-foreground text-sm">
-          Please upgrade to Pro or Pro plus to import or create new Brand kits.
+          {limitReached
+            ? "You've reached the maximum number of brand kits allowed on your current plan. Please upgrade your plan to create more."
+            : "Please upgrade to Pro or Pro plus to import or create new Brand kits."}
         </div>
       </div>
     </BrandKitDialogShell>

@@ -10,7 +10,7 @@ import {
 } from "@repo/ui/components/dropdown-menu";
 import Link from "next/link";
 import { Button } from "@repo/ui/components/button";
-import { BrandKitDialog } from "@/components/dialogs/brand-kit-dialog";
+import { BrandKitDialog } from "@/components/dialogs/brand-kit";
 import { ConfirmationDialog } from "@/components/dialogs/confirmation-dialog";
 import { toast } from "sonner";
 import Image from "next/image";
