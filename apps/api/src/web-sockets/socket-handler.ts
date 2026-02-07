@@ -23,13 +23,6 @@ export const SocketHandler = async (socket: WebSocket) => {
 
       switch (event) {
         case "event:new-chat": {
-          if (env.ENVIRONMENT === "development") {
-            await new Promise<void>((res) =>
-              setTimeout(() => {
-                res();
-              }, 10000),
-            );
-          }
           await newChatCase({ rawData, socket });
           break;
         }

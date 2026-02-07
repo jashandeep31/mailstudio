@@ -26,7 +26,7 @@ export const newChatCase = async ({
     socket.send(socketErrors["no-wallet"]);
     return;
   }
-  if (Number(wallet.balance) <= 50) {
+  if (Number(wallet.balance) <= 0.08) {
     socket.send(socketErrors["low-credits"]);
     return;
   }

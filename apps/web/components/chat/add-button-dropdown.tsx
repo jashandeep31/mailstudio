@@ -10,9 +10,10 @@ import {
   DropdownMenuSubContent,
   DropdownMenuSubTrigger,
 } from "@repo/ui/components/dropdown-menu";
-import { Plus, Image, Palette, X } from "lucide-react";
+import { Plus, Image as IconImage, Palette, X, ImageIcon } from "lucide-react";
 import React from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { useUserBrandKits } from "@/hooks/use-brandkits";
 
 interface AddButtonDropdownProps {
@@ -48,7 +49,7 @@ export default function AddButtonDropdown({
         </DropdownMenuTrigger>
         <DropdownMenuContent align="start" className="w-max">
           <DropdownMenuItem onClick={handleAddPhotos}>
-            <Image className="mr-2 h-4 w-4" />
+            <IconImage className="mr-2 h-4 w-4" />
             Add photos
           </DropdownMenuItem>
           <DropdownMenuSub>
@@ -64,6 +65,17 @@ export default function AddButtonDropdown({
                   }
                   key={brandkit.id}
                 >
+                  {brandkit.logo_url ? (
+                    <Image
+                      alt="brand"
+                      width={30}
+                      height={30}
+                      className="h-auto w-4"
+                      src={brandkit.logo_url}
+                    />
+                  ) : (
+                    <ImageIcon className="h-4 w-4" />
+                  )}
                   {brandkit.name}
                 </DropdownMenuItem>
               ))}
