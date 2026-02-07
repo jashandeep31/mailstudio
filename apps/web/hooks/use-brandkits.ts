@@ -1,4 +1,5 @@
 import { queryClient } from "@/app/provider";
+import { getAxiosError } from "@/lib/utils";
 import {
   createBrandKit,
   deleteBrandKit,
@@ -6,6 +7,7 @@ import {
   getUserBrandKits,
 } from "@/services/brandkit-services";
 import { useMutation, useQuery } from "@tanstack/react-query";
+import { toast } from "sonner";
 
 export const useUserBrandKits = () =>
   useQuery({
@@ -18,22 +20,24 @@ export const useUserBrandKitById = (id: string) =>
     queryFn: () => getUserBrandKitById(id),
   });
 
-export const useCreateBrandKit = () => {
-  return useMutation({
+export const useCreateBrandKit = () =>
+  useMutation({
     mutationFn: createBrandKit,
     mutationKey: ["create-brand-kit"],
     onSuccess: () => {
+      toast.success("Brand is added successfully");
       queryClient.invalidateQueries({ queryKey: ["user-brand-kits"] });
     },
+    onError: (error) => {
+      toast.error(getAxiosError(error));
+    },
   });
-};
 
-export const useDeleteBrandKit = () => {
-  return useMutation({
+export const useDeleteBrandKit = () =>
+  useMutation({
     mutationFn: deleteBrandKit,
     mutationKey: ["delete-brand-kit"],
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["user-brand-kits"] });
     },
   });
-};

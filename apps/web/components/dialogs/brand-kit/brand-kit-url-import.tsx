@@ -3,7 +3,6 @@ import { Button } from "@repo/ui/components/button";
 import { Input } from "@repo/ui/components/input";
 import { Loader } from "lucide-react";
 import React, { useState, useEffect } from "react";
-import { toast } from "sonner";
 import { BrandKitDialogShell } from "./brand-kit-dialog-shell";
 
 type BrandKitUrlImportProps = {
@@ -34,20 +33,7 @@ export function BrandKitUrlImport({
 
   const handleSubmit = () => {
     if (!url.trim()) return;
-    const toastId = toast.loading("Importing brand kit...");
-    mutate(
-      { websiteUrl: url },
-      {
-        onSuccess: () => {
-          toast.success("Brand kit imported successfully", { id: toastId });
-          setUrl("");
-          onOpenChange(false);
-        },
-        onError: () => {
-          toast.error("Failed to import brand kit", { id: toastId });
-        },
-      },
-    );
+    mutate({ websiteUrl: url });
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
