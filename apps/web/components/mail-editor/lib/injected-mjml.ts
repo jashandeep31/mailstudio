@@ -1,11 +1,3 @@
-import { chatsTable, chatVersionOutputsTable, db } from "@repo/db";
-
-export async function test() {
-  console.log("Test is fired 🔥 up ");
-  const [chatOutput] = await db.select().from(chatVersionOutputsTable).limit(1);
-  if (!chatOutput) return;
-  getClassesInjectedMJML(chatOutput.mjml_code);
-}
 // Generate a random class name
 function generateRandomClass(): string {
   return "el-" + Math.random().toString(36).substring(2, 10);

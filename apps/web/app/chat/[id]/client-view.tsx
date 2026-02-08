@@ -8,13 +8,14 @@ import { useChatStore } from "@/zustand-store/chat-store";
 import { RightPanel } from "@/components/chat/right-panel";
 import { useChatEventHandler } from "@/hooks/use-chat-event-handler";
 import { Button } from "@repo/ui/components/button";
+import Editor from "@/components/mail-editor/editor";
 
 const ClientView = () => {
   // hook to handle incoming events
   useChatEventHandler();
   const [mobileView, setMobileView] = useState<"chat" | "preview">("chat");
   const params = useParams();
-  const [view, setView] = useState<"code" | "preview" | "edit">("preview");
+  const [view, setView] = useState<"code" | "preview" | "edit">("edit");
   const { sendEvent } = useWebSocketContext();
   const chatVersionsMap = useChatStore((s) => s.chatVersions);
   const activeStream = useChatStore((s) => s.activeStream);
@@ -39,15 +40,26 @@ const ClientView = () => {
     <div className="flex h-screen flex-col p-2">
       <Navbar />
 
+      {/* desktop view only  */}
       <div className="hidden min-h-0 flex-1 grid-cols-4 md:grid">
-        <div className="grid min-h-0 border-r md:col-span-2 lg:col-span-1">
-          <LeftPanel versions={chatVersions} streamingOverview={activeStream} />
-        </div>
-        <div className="grid min-h-0 md:col-span-2 lg:col-span-3">
-          <RightPanel view={view} setView={setView} />
-        </div>
+        {view !== "edit" ? (
+          <>
+            <div className="grid min-h-0 border-r md:col-span-2 lg:col-span-1">
+              <LeftPanel
+                versions={chatVersions}
+                streamingOverview={activeStream}
+              />
+            </div>
+            <div className="grid min-h-0 md:col-span-2 lg:col-span-3">
+              <RightPanel view={view} setView={setView} />
+            </div>
+          </>
+        ) : (
+          <Editor />
+        )}
       </div>
 
+      {/* mobile view */}
       <div className="flex min-h-0 flex-1 flex-col md:hidden">
         <div className="bg-muted flex rounded-md p-1">
           <Button

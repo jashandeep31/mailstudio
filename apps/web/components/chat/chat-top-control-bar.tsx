@@ -5,7 +5,6 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
   DropdownMenuTrigger,
 } from "@repo/ui/components/dropdown-menu";
 import {
@@ -79,6 +78,13 @@ export const ChatTopControlBar = ({
             onClick={() => setView("code")}
           >
             Code
+          </Button>
+          <Button
+            variant={view === "edit" ? "default" : "ghost"}
+            size={"sm"}
+            onClick={() => setView("edit")}
+          >
+            Edit
           </Button>
         </div>
       </div>
