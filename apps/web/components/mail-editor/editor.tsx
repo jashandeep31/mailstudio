@@ -105,28 +105,35 @@ const PreviewRender = ({
     };
   }, [activeHTML, activeMJML, processedMJML]);
 
-  const handleApplyChanges = () => {
+  useEffect(() => {
     if (!currentEditingFullTag) return;
-    let updatedTag = currentEditingFullTag;
-    for (const tag of editableTags) {
-      if (tag.value !== tag.preValue) {
-        updatedTag = updatedTag.replace(
-          `${tag.name}="${tag.preValue}"`,
-          `${tag.name}="${tag.value}"`,
-        );
+    const hasChanges = editableTags.some((t) => t.value !== t.preValue);
+    if (!hasChanges) return;
+
+    const timer = setTimeout(() => {
+      let updatedTag = currentEditingFullTag;
+      for (const tag of editableTags) {
+        if (tag.value !== tag.preValue) {
+          updatedTag = updatedTag.replace(
+            `${tag.name}="${tag.preValue}"`,
+            `${tag.name}="${tag.value}"`,
+          );
+        }
       }
-    }
-    const newMJML = activeMJML.replace(currentEditingFullTag, updatedTag);
-    setEditedMJML(newMJML);
-    setCurrentEditingFullTag(updatedTag);
-    setEditableTags((prev) => prev.map((t) => ({ ...t, preValue: t.value })));
-  };
+      const newMJML = activeMJML.replace(currentEditingFullTag, updatedTag);
+      setEditedMJML(newMJML);
+      setCurrentEditingFullTag(updatedTag);
+      setEditableTags((prev) => prev.map((t) => ({ ...t, preValue: t.value })));
+    }, 400);
+
+    return () => clearTimeout(timer);
+  }, [editableTags, currentEditingFullTag, activeMJML]);
 
   return (
     <div className="flex h-full">
-      <div className="w-3/4">
+      <div className="w-3/4 p-6">
         {editableTags.map((tag) => (
-          <div key={tag.name}>
+          <div key={tag.name} className="mt-4">
             <Label>{tag.name}</Label>
             <Input
               value={tag.value}
@@ -140,14 +147,6 @@ const PreviewRender = ({
             />
           </div>
         ))}
-        {editableTags.length > 0 && (
-          <button
-            className="mt-2 rounded bg-blue-500 px-3 py-1 text-white"
-            onClick={handleApplyChanges}
-          >
-            Apply
-          </button>
-        )}
       </div>
       <div className="h-full">
         <iframe
@@ -181,22 +180,22 @@ export default function Editor() {
   return (
     <div className="col-span-4 h-full">
       <PreviewRender
-        // mjmlCode={selectedVersion.chat_version_outputs.mjml_code}
-        mjmlCode={`<mjml>
-  <mj-body>
-    <mj-section>
-      <mj-column>
+        mjmlCode={selectedVersion.chat_version_outputs.mjml_code}
+        //         mjmlCode={`<mjml>
+        //   <mj-body>
+        //     <mj-section>
+        //       <mj-column>
 
-        <mj-image width="100px" src="https://mjml.io/assets/img/logo-white-small.png"></mj-image>"></mj-image>
+        //         <mj-image width="100px" src="https://mjml.io/assets/img/logo-white-small.png"></mj-image>"></mj-image>
 
-        <mj-divider border-color="#F45E43"></mj-divider>
+        //         <mj-divider border-color="#F45E43"></mj-divider>
 
-        <mj-text font-size="20px" color="#F45E43" font-family="helvetica">Hello World</mj-text>
+        //         <mj-text font-size="20px" color="#F45E43" font-family="helvetica">Hello World</mj-text>
 
-      </mj-column>
-    </mj-section>
-  </mj-body>
-</mjml>`}
+        //       </mj-column>
+        //     </mj-section>
+        //   </mj-body>
+        // </mjml>`}
         htmlCode={selectedVersion.chat_version_outputs.html_code}
       />
     </div>
