@@ -1,6 +1,11 @@
 // Generate a random class name
+
+const usedClasses: string[] = [];
 function generateRandomClass(): string {
-  return "el-" + Math.random().toString(36).substring(2, 10);
+  const randomClass: string =
+    "el-" + Math.random().toString(36).substring(2, 10);
+  usedClasses.push(randomClass);
+  return randomClass;
 }
 
 export const getClassesInjectedMJML = (rawCode: string): string => {
@@ -14,5 +19,12 @@ export const getClassesInjectedMJML = (rawCode: string): string => {
       return `<${tagName} css-class="custom-${randomClass}" `;
     },
   );
+  console.log(usedClasses, usedClasses.length);
+  for (const randomClass of usedClasses) {
+    if (!result.includes(randomClass)) {
+      console.log(randomClass);
+    }
+  }
+
   return result;
 };

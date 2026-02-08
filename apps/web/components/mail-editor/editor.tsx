@@ -1,11 +1,13 @@
 "use client";
 
 import { useChatStore } from "@/zustand-store/chat-store";
-import { useEffect, useMemo, useRef } from "react";
-import { getClassesInjectedMJML } from "./lib/injected-mjml";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { getClassesInjectedMJML } from "./lib/helpers";
+import mjml2html from "mjml-browser";
+import { Label } from "@repo/ui/components/label";
+import { Input } from "@repo/ui/components/input";
 
 const PreviewRender = ({
-  htmlCode,
   mjmlCode,
 }: {
   htmlCode: string;
@@ -13,6 +15,13 @@ const PreviewRender = ({
 }) => {
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const traceableMJML = getClassesInjectedMJML(mjmlCode);
+  const processedHTML = mjml2html(traceableMJML).html;
+  const [editableTags, setEditableTags] = useState<
+    {
+      name: string;
+      value: string;
+    }[]
+  >([]);
 
   useEffect(() => {
     const iframe = iframeRef.current;
@@ -27,6 +36,11 @@ const PreviewRender = ({
         const el = e.target as HTMLElement;
         console.log("el is clicked");
         console.log(el.outerHTML);
+        const src = el.getAttribute("src");
+        console.log(src);
+        if (src) {
+          setEditableTags((x) => [...x, { name: "image", value: src }]);
+        }
       });
     };
     iframe.addEventListener("load", handleLoaded);
@@ -38,11 +52,18 @@ const PreviewRender = ({
 
   return (
     <div className="flex h-full">
-      <div className="w-3/4"></div>
+      <div className="w-3/4">
+        {editableTags.map((tag) => (
+          <div key={tag.name}>
+            <Label>{tag.name}</Label>
+            <Input value={tag.value} />
+          </div>
+        ))}
+      </div>
       <div className="h-full">
         <iframe
           ref={iframeRef}
-          srcDoc={htmlCode}
+          srcDoc={processedHTML}
           className="grid h-full w-100"
         ></iframe>
       </div>
