@@ -129,7 +129,7 @@ const PreviewRender = ({
       setEditedMJML(newMJML);
       setCurrentEditingFullTag(updatedTag);
       setEditableTags((prev) => prev.map((t) => ({ ...t, preValue: t.value })));
-    }, 400);
+    }, 1000);
 
     return () => clearTimeout(timer);
   }, [editableTags, currentEditingFullTag, activeMJML]);
@@ -173,22 +173,22 @@ export default function Editor() {
   return (
     <div className="col-span-4 h-full">
       <PreviewRender
-        // mjmlCode={selectedVersion.chat_version_outputs.mjml_code}
-        mjmlCode={`<mjml>
-          <mj-body>
-            <mj-section>
-              <mj-column>
-
-                <mj-image width="100px" src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/b2/Y_Combinator_logo.svg/240px-Y_Combinator_logo.svg.png"></mj-image>"></mj-image>
-
-                <mj-divider border-color="#F45E43"></mj-divider>
-
-                <mj-text font-size="20px" color="#F45E43" font-family="helvetica">Hello <strong>World</strong></mj-text>
-
-              </mj-column>
-            </mj-section>
-          </mj-body>
-        </mjml>`}
+        mjmlCode={selectedVersion.chat_version_outputs.mjml_code}
+        // mjmlCode={`<mjml>
+        //   <mj-body>
+        //     <mj-section>
+        //       <mj-column>
+        //
+        //         <mj-image width="100px" src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/b2/Y_Combinator_logo.svg/240px-Y_Combinator_logo.svg.png"></mj-image>"></mj-image>
+        //
+        //         <mj-divider border-color="#F45E43"></mj-divider>
+        //
+        //         <mj-text font-size="20px" color="#F45E43" font-family="helvetica">Hello <strong>World</strong></mj-text>
+        //
+        //       </mj-column>
+        //     </mj-section>
+        //   </mj-body>
+        // </mjml>`}
         htmlCode={selectedVersion.chat_version_outputs.html_code}
       />
     </div>
