@@ -7,6 +7,11 @@ import mjml2html from "mjml-browser";
 import { Label } from "@repo/ui/components/label";
 import { Input } from "@repo/ui/components/input";
 
+interface EditableTag {
+  name: string;
+  value: string;
+  preValue: string;
+}
 const PreviewRender = ({
   mjmlCode,
 }: {
@@ -17,15 +22,16 @@ const PreviewRender = ({
   const processedMJML = useMemo(() => {
     return getClassesInjectedMJML(mjmlCode);
   }, [mjmlCode]);
-  const processedHTML = useMemo(() => {
-    return mjml2html(processedMJML).html;
-  }, [mjmlCode, processedMJML]);
-  const [editableTags, setEditableTags] = useState<
-    {
-      name: string;
-      value: string;
-    }[]
-  >([]);
+  const [editableTags, setEditableTags] = useState<EditableTag[]>([]);
+  const [currentEditingFullTag, setCurrentEditingFullTag] = useState<
+    string | null
+  >(null);
+  const [editedMJML, setEditedMJML] = useState<string | null>(null);
+
+  const activeMJML = editedMJML ?? processedMJML;
+  const activeHTML = useMemo(() => {
+    return mjml2html(activeMJML).html;
+  }, [activeMJML]);
 
   useEffect(() => {
     const iframe = iframeRef.current;
@@ -39,17 +45,52 @@ const PreviewRender = ({
         e.stopPropagation();
         let el = e.target as HTMLElement | null;
         while (el) {
-          if (el.getAttribute("src")) {
+          if (
+            el.getAttribute("src") &&
+            !Array.from(el.classList).some((cls) =>
+              cls.startsWith("custom-el-"),
+            )
+          ) {
+            setCurrentEditingFullTag(null);
             setEditableTags([
-              { name: "Image", value: el.getAttribute("src")! },
+              {
+                name: "src",
+                value: el.getAttribute("src")!,
+                preValue: el.getAttribute("src")!,
+              },
             ]);
+            return;
           }
-          console.log(el.innerHTML);
           const hasCustomClass = Array.from(el.classList).some((cls) =>
             cls.startsWith("custom-el-"),
           );
           if (hasCustomClass) {
-            console.log(el);
+            const customClass = Array.from(el.classList).find((cls) =>
+              cls.startsWith("custom-el-"),
+            );
+            if (!customClass) return;
+            const regex = new RegExp(
+              `<(mj-[a-z-]+)([^>]*?)css-class="${customClass}"([^>]*)>`,
+              "i",
+            );
+            const match = processedMJML.match(regex);
+            if (match) {
+              const fullTag = match[0];
+              setCurrentEditingFullTag(fullTag);
+              const attrRegex = /([a-z-]+)="([^"]*)"/gi;
+              const tags: EditableTag[] = [];
+              let attrMatch;
+              while ((attrMatch = attrRegex.exec(fullTag)) !== null) {
+                const attrName = attrMatch[1]!;
+                if (attrName === "css-class") continue;
+                tags.push({
+                  name: attrName,
+                  value: attrMatch[2]!,
+                  preValue: attrMatch[2]!,
+                });
+              }
+              setEditableTags(tags);
+            }
             return;
           }
           el = el.parentElement;
@@ -62,7 +103,24 @@ const PreviewRender = ({
     return () => {
       iframe.removeEventListener("load", handleLoaded);
     };
-  }, [processedHTML]);
+  }, [activeHTML, activeMJML, processedMJML]);
+
+  const handleApplyChanges = () => {
+    if (!currentEditingFullTag) return;
+    let updatedTag = currentEditingFullTag;
+    for (const tag of editableTags) {
+      if (tag.value !== tag.preValue) {
+        updatedTag = updatedTag.replace(
+          `${tag.name}="${tag.preValue}"`,
+          `${tag.name}="${tag.value}"`,
+        );
+      }
+    }
+    const newMJML = activeMJML.replace(currentEditingFullTag, updatedTag);
+    setEditedMJML(newMJML);
+    setCurrentEditingFullTag(updatedTag);
+    setEditableTags((prev) => prev.map((t) => ({ ...t, preValue: t.value })));
+  };
 
   return (
     <div className="flex h-full">
@@ -70,16 +128,32 @@ const PreviewRender = ({
         {editableTags.map((tag) => (
           <div key={tag.name}>
             <Label>{tag.name}</Label>
-            <Input value={tag.value} />
+            <Input
+              value={tag.value}
+              onChange={(e) => {
+                setEditableTags((prev) =>
+                  prev.map((t) =>
+                    t.name === tag.name ? { ...t, value: e.target.value } : t,
+                  ),
+                );
+              }}
+            />
           </div>
         ))}
-        {processedMJML}
+        {editableTags.length > 0 && (
+          <button
+            className="mt-2 rounded bg-blue-500 px-3 py-1 text-white"
+            onClick={handleApplyChanges}
+          >
+            Apply
+          </button>
+        )}
       </div>
       <div className="h-full">
         <iframe
           ref={iframeRef}
-          key={processedHTML}
-          srcDoc={processedHTML}
+          key={activeHTML}
+          srcDoc={activeHTML}
           className="grid h-full w-100"
         ></iframe>
       </div>
