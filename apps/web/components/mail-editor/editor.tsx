@@ -4,10 +4,10 @@ import { useChatStore } from "@/zustand-store/chat-store";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { getClassesInjectedMJML } from "./lib/helpers";
 import mjml2html from "mjml-browser";
-import { Label } from "@repo/ui/components/label";
-import { Input } from "@repo/ui/components/input";
+import LeftSideBar from "./left-sidebar";
+import RightSidebar from "./right-sidebar";
 
-interface EditableTag {
+export interface EditableTag {
   name: string;
   value: string;
   preValue: string;
@@ -45,40 +45,32 @@ const PreviewRender = ({
         e.stopPropagation();
         let el = e.target as HTMLElement | null;
         while (el) {
-          if (
-            el.getAttribute("src") &&
-            !Array.from(el.classList).some((cls) =>
-              cls.startsWith("custom-el-"),
-            )
-          ) {
-            setCurrentEditingFullTag(null);
-            setEditableTags([
-              {
-                name: "src",
-                value: el.getAttribute("src")!,
-                preValue: el.getAttribute("src")!,
-              },
-            ]);
-            return;
-          }
           const hasCustomClass = Array.from(el.classList).some((cls) =>
             cls.startsWith("custom-el-"),
           );
           if (hasCustomClass) {
+            // getting the full custom class along with the random id
             const customClass = Array.from(el.classList).find((cls) =>
               cls.startsWith("custom-el-"),
             );
+
             if (!customClass) return;
+
             const regex = new RegExp(
               `<(mj-[a-z-]+)([^>]*?)css-class="${customClass}"([^>]*)>`,
               "i",
             );
+
             const match = processedMJML.match(regex);
             if (match) {
               const fullTag = match[0];
               setCurrentEditingFullTag(fullTag);
+
+              // getting and putting the attributes
+              // TODO: this only add the presents write the rules to append more
               const attrRegex = /([a-z-]+)="([^"]*)"/gi;
               const tags: EditableTag[] = [];
+
               let attrMatch;
               while ((attrMatch = attrRegex.exec(fullTag)) !== null) {
                 const attrName = attrMatch[1]!;
@@ -89,7 +81,17 @@ const PreviewRender = ({
                   preValue: attrMatch[2]!,
                 });
               }
-              setEditableTags(tags);
+              const innertext = el.innerText;
+
+              // TODO: testing mj-text only not for production
+              if (fullTag.includes("<mj-text")) {
+                setEditableTags([
+                  ...tags,
+                  { name: "innertext", value: innertext, preValue: innertext },
+                ]);
+              } else {
+                setEditableTags([...tags]);
+              }
             }
             return;
           }
@@ -105,11 +107,14 @@ const PreviewRender = ({
     };
   }, [activeHTML, activeMJML, processedMJML]);
 
+  // Handling the values changes
   useEffect(() => {
     if (!currentEditingFullTag) return;
+    // checking if some values are changed by the user
     const hasChanges = editableTags.some((t) => t.value !== t.preValue);
     if (!hasChanges) return;
 
+    // debounce if user is still updating the values
     const timer = setTimeout(() => {
       let updatedTag = currentEditingFullTag;
       for (const tag of editableTags) {
@@ -131,31 +136,19 @@ const PreviewRender = ({
 
   return (
     <div className="flex h-full">
-      <div className="w-3/4 p-6">
-        {editableTags.map((tag) => (
-          <div key={tag.name} className="mt-4">
-            <Label>{tag.name}</Label>
-            <Input
-              value={tag.value}
-              onChange={(e) => {
-                setEditableTags((prev) =>
-                  prev.map((t) =>
-                    t.name === tag.name ? { ...t, value: e.target.value } : t,
-                  ),
-                );
-              }}
-            />
-          </div>
-        ))}
-      </div>
-      <div className="h-full">
+      <RightSidebar />
+      <div className="bg-muted flex h-full flex-1 justify-center py-3">
         <iframe
           ref={iframeRef}
           key={activeHTML}
           srcDoc={activeHTML}
-          className="grid h-full w-100"
+          className="bg-background grid h-full w-100 rounded border shadow"
         ></iframe>
       </div>
+      <LeftSideBar
+        editableTags={editableTags}
+        setEditableTags={setEditableTags}
+      />
     </div>
   );
 };
@@ -180,22 +173,22 @@ export default function Editor() {
   return (
     <div className="col-span-4 h-full">
       <PreviewRender
-        mjmlCode={selectedVersion.chat_version_outputs.mjml_code}
-        //         mjmlCode={`<mjml>
-        //   <mj-body>
-        //     <mj-section>
-        //       <mj-column>
+        // mjmlCode={selectedVersion.chat_version_outputs.mjml_code}
+        mjmlCode={`<mjml>
+          <mj-body>
+            <mj-section>
+              <mj-column>
 
-        //         <mj-image width="100px" src="https://mjml.io/assets/img/logo-white-small.png"></mj-image>"></mj-image>
+                <mj-image width="100px" src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/b2/Y_Combinator_logo.svg/240px-Y_Combinator_logo.svg.png"></mj-image>"></mj-image>
 
-        //         <mj-divider border-color="#F45E43"></mj-divider>
+                <mj-divider border-color="#F45E43"></mj-divider>
 
-        //         <mj-text font-size="20px" color="#F45E43" font-family="helvetica">Hello World</mj-text>
+                <mj-text font-size="20px" color="#F45E43" font-family="helvetica">Hello <strong>World</strong></mj-text>
 
-        //       </mj-column>
-        //     </mj-section>
-        //   </mj-body>
-        // </mjml>`}
+              </mj-column>
+            </mj-section>
+          </mj-body>
+        </mjml>`}
         htmlCode={selectedVersion.chat_version_outputs.html_code}
       />
     </div>
