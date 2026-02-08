@@ -14,8 +14,12 @@ const PreviewRender = ({
   mjmlCode: string;
 }) => {
   const iframeRef = useRef<HTMLIFrameElement>(null);
-  const traceableMJML = getClassesInjectedMJML(mjmlCode);
-  const processedHTML = mjml2html(traceableMJML).html;
+  const processedMJML = useMemo(() => {
+    return getClassesInjectedMJML(mjmlCode);
+  }, [mjmlCode]);
+  const processedHTML = useMemo(() => {
+    return mjml2html(processedMJML).html;
+  }, [mjmlCode, processedMJML]);
   const [editableTags, setEditableTags] = useState<
     {
       name: string;
@@ -33,22 +37,32 @@ const PreviewRender = ({
       doc.addEventListener("click", (e) => {
         e.preventDefault();
         e.stopPropagation();
-        const el = e.target as HTMLElement;
-        console.log("el is clicked");
-        console.log(el.outerHTML);
-        const src = el.getAttribute("src");
-        console.log(src);
-        if (src) {
-          setEditableTags((x) => [...x, { name: "image", value: src }]);
+        let el = e.target as HTMLElement | null;
+        while (el) {
+          if (el.getAttribute("src")) {
+            setEditableTags([
+              { name: "Image", value: el.getAttribute("src")! },
+            ]);
+          }
+          console.log(el.innerHTML);
+          const hasCustomClass = Array.from(el.classList).some((cls) =>
+            cls.startsWith("custom-el-"),
+          );
+          if (hasCustomClass) {
+            console.log(el);
+            return;
+          }
+          el = el.parentElement;
         }
       });
     };
+
     iframe.addEventListener("load", handleLoaded);
 
     return () => {
       iframe.removeEventListener("load", handleLoaded);
     };
-  }, []);
+  }, [processedHTML]);
 
   return (
     <div className="flex h-full">
@@ -59,10 +73,12 @@ const PreviewRender = ({
             <Input value={tag.value} />
           </div>
         ))}
+        {processedMJML}
       </div>
       <div className="h-full">
         <iframe
           ref={iframeRef}
+          key={processedHTML}
           srcDoc={processedHTML}
           className="grid h-full w-100"
         ></iframe>
@@ -91,7 +107,22 @@ export default function Editor() {
   return (
     <div className="col-span-4 h-full">
       <PreviewRender
-        mjmlCode={selectedVersion.chat_version_outputs.mjml_code}
+        // mjmlCode={selectedVersion.chat_version_outputs.mjml_code}
+        mjmlCode={`<mjml>
+  <mj-body>
+    <mj-section>
+      <mj-column>
+
+        <mj-image width="100px" src="https://mjml.io/assets/img/logo-white-small.png"></mj-image>"></mj-image>
+
+        <mj-divider border-color="#F45E43"></mj-divider>
+
+        <mj-text font-size="20px" color="#F45E43" font-family="helvetica">Hello World</mj-text>
+
+      </mj-column>
+    </mj-section>
+  </mj-body>
+</mjml>`}
         htmlCode={selectedVersion.chat_version_outputs.html_code}
       />
     </div>
