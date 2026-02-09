@@ -1,13 +1,13 @@
 "use client";
 
 import { useChatStore } from "@/zustand-store/chat-store";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { getClassesInjectedMJML } from "./lib/helpers";
-import { handleIframeClick } from "./lib/iframe-click-handler";
-import { applyTagEdits } from "./lib/tag-editor";
 import mjml2html from "mjml-browser";
 import LeftSideBar from "./left-sidebar";
 import RightSidebar from "./right-sidebar";
+import { useIframeEvents } from "./hooks/use-iframe-events";
+import { useDebouncedTagEdits } from "./hooks/use-debounced-tag-edits";
 
 export interface EditableTag {
   name: string;
@@ -21,6 +21,7 @@ const PreviewRender = ({
   mjmlCode: string;
 }) => {
   const iframeRef = useRef<HTMLIFrameElement>(null);
+  const hoveredElRef = useRef<HTMLElement | null>(null);
   const processedMJML = useMemo(() => {
     return getClassesInjectedMJML(mjmlCode);
   }, [mjmlCode]);
@@ -35,51 +36,24 @@ const PreviewRender = ({
     return mjml2html(activeMJML).html;
   }, [activeMJML]);
 
-  useEffect(() => {
-    const iframe = iframeRef.current;
-    if (!iframe) return;
+  useIframeEvents({
+    iframeRef,
+    hoveredElRef,
+    processedMJML,
+    activeHTML,
+    activeMJML,
+    setCurrentEditingFullTag,
+    setEditableTags,
+  });
 
-    const handleLoaded = () => {
-      const doc = iframe.contentDocument;
-      if (!doc) return;
-      doc.addEventListener("click", (e) => {
-        handleIframeClick({
-          e,
-          processedMJML,
-          setCurrentEditingFullTag,
-          setEditableTags,
-        });
-      });
-    };
-
-    iframe.addEventListener("load", handleLoaded);
-
-    return () => {
-      iframe.removeEventListener("load", handleLoaded);
-    };
-  }, [activeHTML, activeMJML, processedMJML]);
-
-  // Handling the values changes
-  useEffect(() => {
-    if (!currentEditingFullTag) return;
-    // checking if some values are changed by the user
-    const hasChanges = editableTags.some((t) => t.value !== t.preValue);
-    if (!hasChanges) return;
-
-    // debounce if user is still updating the values
-    const timer = setTimeout(() => {
-      const { newMJML, updatedTag } = applyTagEdits({
-        currentEditingFullTag,
-        editableTags,
-        activeMJML,
-      });
-      setEditedMJML(newMJML);
-      setCurrentEditingFullTag(updatedTag);
-      setEditableTags((prev) => prev.map((t) => ({ ...t, preValue: t.value })));
-    }, 1000);
-
-    return () => clearTimeout(timer);
-  }, [editableTags, currentEditingFullTag, activeMJML]);
+  useDebouncedTagEdits({
+    currentEditingFullTag,
+    editableTags,
+    activeMJML,
+    setEditedMJML,
+    setCurrentEditingFullTag,
+    setEditableTags,
+  });
 
   return (
     <div className="flex h-full">
