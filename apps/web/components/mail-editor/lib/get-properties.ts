@@ -1,4 +1,5 @@
 import { paddingParser } from "./parsers/padding-parser";
+import { marginParser } from "./parsers/margin-parser";
 
 export interface property {
   name: string; // name of property for example padding-top
@@ -23,17 +24,20 @@ export const getProperties = (
   const tag = match?.[1];
   if (!tag) return null;
 
+  //all properties blank array
+  let properties: property[] = [];
+
   if (mjmlTags.includes(tag as (typeof mjmlTags)[number])) {
     switch (tag) {
       case "mj-section":
-        const properties = [...paddingParser(el)];
-
+        properties = [...paddingParser(el), ...marginParser(el)];
+        console.log(properties);
         break;
     }
   }
   return {
     name: "section",
-    properties: [],
+    properties,
   };
   //Steps
   //Only get the properties till the inner custom
