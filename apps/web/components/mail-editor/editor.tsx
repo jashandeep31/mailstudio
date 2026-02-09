@@ -11,7 +11,7 @@ import { useDebouncedTagEdits } from "./hooks/use-debounced-tag-edits";
 
 export interface EditableTag {
   name: string;
-  value: string;
+  value?: string;
   preValue: string;
 }
 const PreviewRender = ({

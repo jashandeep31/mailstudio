@@ -38,7 +38,7 @@ export function handleIframeClick({
         const fullTag = match[0];
         // custom get properties function
         // build to handle the all kinda values if i null but user can add them
-        getProperties(el, fullTag);
+        const properties = getProperties(el, fullTag);
         setCurrentEditingFullTag(fullTag);
 
         // getting and putting the attributes
@@ -54,6 +54,16 @@ export function handleIframeClick({
             name: attrName,
             value: attrMatch[2]!,
             preValue: attrMatch[2]!,
+          });
+        }
+
+        // TODO: fix the temp solution
+        // TODO: get the properties category so that easy to create the groups in ui
+        for (const property of properties) {
+          tags.push({
+            name: property.name,
+            value: property.defaultValue as string,
+            preValue: property.defaultValue as string,
           });
         }
 

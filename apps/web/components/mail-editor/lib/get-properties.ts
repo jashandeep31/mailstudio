@@ -17,12 +17,12 @@ interface getPropertiesResponse {
 export const getProperties = (
   el: HTMLElement,
   mjmlFullTag: string,
-): getPropertiesResponse | null => {
+): property[] => {
   console.log(el, mjmlFullTag);
   const mjmlTags = ["mj-text", "mj-section", "mj-body"] as const;
   const match = mjmlFullTag.match(/^<([\w-]+)/);
   const tag = match?.[1];
-  if (!tag) return null;
+  if (!tag) return [];
 
   //all properties blank array
   let properties: property[] = [];
@@ -35,10 +35,8 @@ export const getProperties = (
         break;
     }
   }
-  return {
-    name: "section",
-    properties,
-  };
+  return properties;
+
   //Steps
   //Only get the properties till the inner custom
   //TODO: rethink above point as it can cause issue
