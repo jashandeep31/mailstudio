@@ -36,7 +36,7 @@ export function useDebouncedTagEdits({
       setEditedMJML(newMJML);
       setCurrentEditingFullTag(updatedTag);
       setEditableTags((prev) => prev.map((t) => ({ ...t, preValue: t.value })));
-    }, 1000);
+    }, 300);
 
     return () => clearTimeout(timer);
   }, [

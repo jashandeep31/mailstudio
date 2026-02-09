@@ -22,16 +22,15 @@ const PreviewRender = ({
 }) => {
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const hoveredElRef = useRef<HTMLElement | null>(null);
-  const processedMJML = useMemo(() => {
-    return getClassesInjectedMJML(mjmlCode);
-  }, [mjmlCode]);
   const [editableTags, setEditableTags] = useState<EditableTag[]>([]);
   const [currentEditingFullTag, setCurrentEditingFullTag] = useState<
     string | null
   >(null);
-  const [editedMJML, setEditedMJML] = useState<string | null>(null);
+  const [processedMJML, setProcessedMJML] = useState<string>(
+    getClassesInjectedMJML(mjmlCode),
+  );
 
-  const activeMJML = editedMJML ?? processedMJML;
+  const activeMJML = processedMJML;
   const activeHTML = useMemo(() => {
     return mjml2html(activeMJML).html;
   }, [activeMJML]);
@@ -50,7 +49,7 @@ const PreviewRender = ({
     currentEditingFullTag,
     editableTags,
     activeMJML,
-    setEditedMJML,
+    setEditedMJML: setProcessedMJML,
     setCurrentEditingFullTag,
     setEditableTags,
   });
@@ -62,7 +61,7 @@ const PreviewRender = ({
         <iframe
           ref={iframeRef}
           srcDoc={activeHTML}
-          className="bg-background grid h-full w-100 rounded border shadow"
+          className="grid h-full w-100 rounded border bg-white shadow"
         ></iframe>
       </div>
       <LeftSideBar
@@ -93,7 +92,24 @@ export default function Editor() {
   return (
     <div className="col-span-4 h-full">
       <PreviewRender
-        mjmlCode={selectedVersion.chat_version_outputs.mjml_code}
+        // mjmlCode={selectedVersion.chat_version_outputs.mjml_code}
+        mjmlCode={`<mjml>
+  <mj-body>
+    <mj-section>
+      <mj-column>
+
+        <mj-image width="100px" src="/assets/img/logo-small.png"></mj-image>
+
+        <mj-divider padding-bottom="100px" border-color="#F45E43"></mj-divider>
+
+        <mj-text font-size="20px" color="#F45E43" font-family="helvetica">Hello World</mj-text>
+<mj-section padding="10px" >
+        <mj-text font-size="20px" color="#F45E43" font-family="helvetica">Hello World</mj-text>
+</mj-section>
+      </mj-column>
+    </mj-section>
+  </mj-body>
+</mjml>`}
         htmlCode={selectedVersion.chat_version_outputs.html_code}
       />
     </div>

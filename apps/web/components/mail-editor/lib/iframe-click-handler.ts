@@ -1,4 +1,5 @@
 import { EditableTag } from "../editor";
+import { getProperties } from "./get-properties";
 
 interface HandleIframeClickParams {
   e: MouseEvent;
@@ -25,7 +26,6 @@ export function handleIframeClick({
       const customClass = Array.from(el.classList).find((cls) =>
         cls.startsWith("custom-el-"),
       );
-
       if (!customClass) return;
 
       const regex = new RegExp(
@@ -36,6 +36,9 @@ export function handleIframeClick({
       const match = processedMJML.match(regex);
       if (match) {
         const fullTag = match[0];
+        // custom get properties function
+        // build to handle the all kinda values if i null but user can add them
+        getProperties(el, fullTag);
         setCurrentEditingFullTag(fullTag);
 
         // getting and putting the attributes
@@ -53,17 +56,17 @@ export function handleIframeClick({
             preValue: attrMatch[2]!,
           });
         }
-        const innertext = el.innerText;
 
         // TODO: testing mj-text only not for production
-        if (fullTag.includes("<mj-text")) {
-          setEditableTags([
-            ...tags,
-            { name: "innertext", value: innertext, preValue: innertext },
-          ]);
-        } else {
-          setEditableTags([...tags]);
-        }
+        // const innertext = el.innerText;
+        // if (fullTag.includes("<mj-text")) {
+        //   setEditableTags([
+        //     ...tags,
+        //     { name: "innertext", value: innertext, preValue: innertext },
+        //   ]);
+        // } else {
+        // }
+        setEditableTags([...tags]);
       }
       return;
     }
