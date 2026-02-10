@@ -2,16 +2,16 @@ import { Tabs, TabsList, TabsTrigger } from "@repo/ui/components/tabs";
 import { Brush, Cog, Layers2, LucideIcon } from "lucide-react";
 import { useState } from "react";
 
-type TabName = "colors" | "settings" | "layers";
+type TabName = "selector" | "settings" | "layers";
 
 const tabs: readonly { name: TabName; icon: LucideIcon }[] = [
-  { name: "colors", icon: Brush },
+  { name: "selector", icon: Brush },
   { name: "settings", icon: Cog },
   { name: "layers", icon: Layers2 },
 ];
 
 const RightSidebar = () => {
-  const [selectedTab, setSelectedTab] = useState<TabName>("colors");
+  const [selectedTab, setSelectedTab] = useState<TabName>("selector");
   return (
     <div className="block p-1">
       <Tabs
@@ -21,14 +21,14 @@ const RightSidebar = () => {
         <TabsList className="w-full rounded-none">
           {tabs.map(({ name, icon: Icon }) => (
             <TabsTrigger key={name} value={name}>
-              <Icon />
+              <Icon className={selectedTab === name ? "text-foreground" : ""} />
             </TabsTrigger>
           ))}
         </TabsList>
       </Tabs>
       <div className="mt-3">
-        {selectedTab && "colors" && (
-          <div className="bg-muted p-2"> colors </div>
+        {selectedTab && "selector" && (
+          <div className="bg-muted p-2"> selector </div>
         )}
       </div>
     </div>
