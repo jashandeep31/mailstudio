@@ -5,7 +5,7 @@ import ProfileDropdown from "../profile-dropdown";
 
 const Navbar = () => {
   return (
-    <header className="border-b">
+    <header className="h-14 border-b px-1 py-2">
       <div className="flex items-center justify-between px-2 pt-1 pb-2">
         <Link href={"/dashboard"}>
           <h2 className="flex items-center gap-2 text-lg font-bold">

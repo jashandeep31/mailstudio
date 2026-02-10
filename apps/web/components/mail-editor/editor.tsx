@@ -14,6 +14,12 @@ const EditorComponent = ({ mjmlCode }: { mjmlCode: string }) => {
     // Remove Import and Export buttons
     editor.Panels.removeButton("options", "export-template");
     editor.Panels.removeButton("options", "mjml-import");
+
+    editor.on("update", () => {
+      const mjmlData = editor.runCommand("mjml-code");
+      console.log("Updated HTML:", editor.getHtml());
+      console.log("Updated MJML:", mjmlData?.mjml);
+    });
   };
 
   return (
@@ -23,7 +29,7 @@ const EditorComponent = ({ mjmlCode }: { mjmlCode: string }) => {
         onEditor={onEditor}
         options={{
           // TODO: fix height remove the navbar height
-          height: "calc(100vh - 56px)",
+          height: "calc(100vh - 58px)",
 
           storageManager: false,
         }}
@@ -53,9 +59,12 @@ const EditorWrapper = () => {
   }
   return (
     // TODO: fix remove the mjml preview and mjml title these are causing issues in the render of the mjml
-    <EditorComponent
-      mjmlCode={selectedVersion.chat_version_outputs.mjml_code}
-    />
+    <div>
+      <button className="fixed bottom-2 left-2 z-50">edit</button>
+      <EditorComponent
+        mjmlCode={selectedVersion.chat_version_outputs.mjml_code}
+      />
+    </div>
   );
 };
 
