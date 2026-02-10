@@ -1,34 +1,31 @@
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from "@repo/ui/components/tabs";
-import { Brush, Cog } from "lucide-react";
+import { Tabs, TabsList, TabsTrigger } from "@repo/ui/components/tabs";
+import { Brush, Cog, LucideIcon } from "lucide-react";
 import { useState } from "react";
 
-const tabs = ["colors", "settings"] as const;
+type TabName = "colors" | "settings";
+
+const tabs: readonly { name: TabName; icon: LucideIcon }[] = [
+  { name: "colors", icon: Brush },
+  { name: "settings", icon: Cog },
+];
+
 const RightSidebar = () => {
-  const [selectedTab, setSelectedTab] =
-    useState<(typeof tabs)[number]>("colors");
+  const [selectedTab, setSelectedTab] = useState<TabName>("colors");
   return (
     <div className="block p-2">
-      <Tabs defaultValue="colors">
+      <Tabs
+        value={selectedTab}
+        onValueChange={(value) => setSelectedTab(value as TabName)}
+      >
         <TabsList>
-          <TabsTrigger value="colors">
-            <Brush />
-          </TabsTrigger>
-          <TabsTrigger value="settings">
-            <Cog />
-          </TabsTrigger>
+          {tabs.map(({ name, icon: Icon }) => (
+            <TabsTrigger key={name} value={name}>
+              <Icon />
+            </TabsTrigger>
+          ))}
         </TabsList>
-        <TabsContent value="colors" className="block">
-          <div>Make changes to your account here.</div>
-        </TabsContent>
-        <TabsContent value="settings">
-          <div>Change your password here.</div>
-        </TabsContent>
       </Tabs>
+      <div>{selectedTab === "colors" ? "Colors" : "Settings"}</div>
     </div>
   );
 };
