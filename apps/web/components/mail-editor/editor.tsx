@@ -5,6 +5,7 @@ import grapesJSMJML from "grapesjs-mjml";
 import grapesjs, { Editor } from "grapesjs";
 import GjsEditor, { Canvas } from "@grapesjs/react";
 import "grapesjs/dist/css/grapes.min.css";
+import RightSidebar from "./components/right-sidebar";
 
 const EditorComponent = ({ mjmlCode }: { mjmlCode: string }) => {
   const onEditor = (editor: Editor) => {
@@ -13,23 +14,30 @@ const EditorComponent = ({ mjmlCode }: { mjmlCode: string }) => {
   };
 
   return (
-    <div className="">
+    <div className="grid min-h-0">
       <GjsEditor
         grapesjs={grapesjs}
         grapesjsCss="https://unpkg.com/grapesjs/dist/css/grapes.min.css"
         onEditor={onEditor}
         options={{
           // TODO: fix height remove the navbar height
-          height: "100vh",
+          height: "90vh",
           storageManager: false,
         }}
         plugins={[grapesJSMJML]}
       >
-        <div>
-          <Canvas />
+        <div className="flex">
+          <div className="h-full w-[20%] p-2">
+            <div>sidebar 1 </div>
+          </div>
+          <div className="grid h-full flex-1">
+            <Canvas />
+          </div>
+          <div className="h-full w-[20%] p-2">
+            <RightSidebar />
+          </div>
         </div>
       </GjsEditor>
-      {mjmlCode}
     </div>
   );
 };
