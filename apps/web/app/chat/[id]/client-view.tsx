@@ -37,7 +37,7 @@ const ClientView = () => {
   }, [params.id, sendEvent, resetChat]);
 
   return (
-    <div className="flex h-screen flex-col p-2">
+    <div className="flex h-screen flex-col">
       <Navbar />
 
       {/* desktop view only  */}
