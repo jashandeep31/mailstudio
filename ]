@@ -13,13 +13,13 @@ const EditorComponent = ({ mjmlCode }: { mjmlCode: string }) => {
   };
 
   return (
-    <div className="">
+    <div className="bg-red-100">
       <GjsEditor
         grapesjs={grapesjs}
         grapesjsCss="https://unpkg.com/grapesjs/dist/css/grapes.min.css"
         onEditor={onEditor}
         options={{
-          // TODO: fix height remove the navbar height
+          // fix height remove the navbar height
           height: "100vh",
           storageManager: false,
         }}
@@ -29,7 +29,6 @@ const EditorComponent = ({ mjmlCode }: { mjmlCode: string }) => {
           <Canvas />
         </div>
       </GjsEditor>
-      {mjmlCode}
     </div>
   );
 };
@@ -53,7 +52,6 @@ const EditorWrapper = () => {
     return null;
   }
   return (
-    // TODO: fix remove the mjml preview and mjml title these are causing issues in the render of the mjml
     <EditorComponent
       mjmlCode={selectedVersion.chat_version_outputs.mjml_code}
     />

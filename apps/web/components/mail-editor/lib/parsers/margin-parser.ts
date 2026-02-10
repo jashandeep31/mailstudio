@@ -1,6 +1,6 @@
-import { property } from "../get-properties";
+import { propertyType } from "../get-properties";
 
-export const marginParser = (el: HTMLElement): property[] => {
+export const marginParser = (el: HTMLElement): propertyType[] => {
   const rawMarginValuesString = window.getComputedStyle(el).margin;
   const diffMargins = rawMarginValuesString.split(" ");
   const marginsLength = diffMargins.length;
@@ -68,7 +68,7 @@ export const marginParser = (el: HTMLElement): property[] => {
   }
 
   // Create property objects for each side
-  const properties: property[] = validNames.map((name, index) => {
+  const properties: propertyType[] = validNames.map((name, index) => {
     const { value, unit } = parseMargin(marginValues[index]);
     return {
       name,

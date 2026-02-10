@@ -8,7 +8,7 @@ import { useChatStore } from "@/zustand-store/chat-store";
 import { RightPanel } from "@/components/chat/right-panel";
 import { useChatEventHandler } from "@/hooks/use-chat-event-handler";
 import { Button } from "@repo/ui/components/button";
-import Editor from "@/components/mail-editor/editor";
+import EditorWrapper from "@/components/mail-editor/editor";
 
 const ClientView = () => {
   // hook to handle incoming events
@@ -55,7 +55,9 @@ const ClientView = () => {
             </div>
           </>
         ) : (
-          <Editor />
+          <div className="col-span-4">
+            <EditorWrapper />
+          </div>
         )}
       </div>
 

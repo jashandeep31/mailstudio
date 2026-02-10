@@ -1,7 +1,8 @@
 import { paddingParser } from "./parsers/padding-parser";
 import { marginParser } from "./parsers/margin-parser";
 
-export interface property {
+const groups = ["padding", "color", "text"];
+export interface propertyType {
   name: string; // name of property for example padding-top
   defaultUnit?: string; // current value which is before editing
   defaultValue: string | number | undefined; // current default value can 0, red or undefined
@@ -9,7 +10,7 @@ export interface property {
 }
 interface getPropertiesResponse {
   name: string;
-  properties: property[];
+  properties: propertyType[];
 }
 /**
  * @returns properties in well formated way, with allowed unit and type
@@ -17,7 +18,7 @@ interface getPropertiesResponse {
 export const getProperties = (
   el: HTMLElement,
   mjmlFullTag: string,
-): property[] => {
+): propertyType[] => {
   console.log(el, mjmlFullTag);
   const mjmlTags = ["mj-text", "mj-section", "mj-body"] as const;
   const match = mjmlFullTag.match(/^<([\w-]+)/);
@@ -25,7 +26,7 @@ export const getProperties = (
   if (!tag) return [];
 
   //all properties blank array
-  let properties: property[] = [];
+  let properties: propertyType[] = [];
 
   if (mjmlTags.includes(tag as (typeof mjmlTags)[number])) {
     switch (tag) {

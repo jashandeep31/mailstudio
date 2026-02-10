@@ -1,4 +1,4 @@
-import { chatsTable, chatVersionOutputsTable, db } from "@repo/db";
+import { chatVersionOutputsTable, db } from "@repo/db";
 
 export async function test() {
   console.log("Test is fired 🔥 up ");

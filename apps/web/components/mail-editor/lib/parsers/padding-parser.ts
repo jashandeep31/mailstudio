@@ -1,6 +1,6 @@
-import { property } from "../get-properties";
+import { propertyType } from "../get-properties";
 
-export const paddingParser = (el: HTMLElement): property[] => {
+export const paddingParser = (el: HTMLElement): propertyType[] => {
   const rawPaddingValuesString = window.getComputedStyle(el).padding;
   const diffPaddings = rawPaddingValuesString.split(" ");
   const paddingsLength = diffPaddings.length;
@@ -68,7 +68,7 @@ export const paddingParser = (el: HTMLElement): property[] => {
   }
 
   // Create property objects for each side
-  const properties: property[] = validNames.map((name, index) => {
+  const properties: propertyType[] = validNames.map((name, index) => {
     const { value, unit } = parsePadding(paddingValues[index]);
     return {
       name,

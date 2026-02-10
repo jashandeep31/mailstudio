@@ -11,6 +11,7 @@
     "check-types": "next typegen && tsc --noEmit"
   },
   "dependencies": {
+    "@grapesjs/react": "^2.0.0",
     "@hookform/resolvers": "^5.2.2",
     "@repo/db": "workspace:*",
     "@repo/shared": "workspace:*",
@@ -18,6 +19,8 @@
     "@tanstack/react-query": "^5.90.16",
     "@vercel/analytics": "^1.6.1",
     "axios": "^1.13.2",
+    "grapesjs": "^0.22.14",
+    "grapesjs-mjml": "^1.0.7",
     "highlight.js": "^11.11.1",
     "lucide-react": "^0.556.0",
     "mjml-browser": "^4.18.0",
