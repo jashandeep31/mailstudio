@@ -14,7 +14,6 @@ const EditorComponent = ({ mjmlCode }: { mjmlCode: string }) => {
     // Remove Import and Export buttons
     editor.Panels.removeButton("options", "export-template");
     editor.Panels.removeButton("options", "mjml-import");
-    editor.Panels.removeButton("options", "component-settings");
   };
 
   return (
@@ -24,7 +23,8 @@ const EditorComponent = ({ mjmlCode }: { mjmlCode: string }) => {
         onEditor={onEditor}
         options={{
           // TODO: fix height remove the navbar height
-          height: "90vh",
+          height: "calc(100vh - 56px)",
+
           storageManager: false,
         }}
         plugins={[grapesJSMJML]}

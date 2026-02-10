@@ -15,7 +15,7 @@ const ClientView = () => {
   useChatEventHandler();
   const [mobileView, setMobileView] = useState<"chat" | "preview">("chat");
   const params = useParams();
-  const [view, setView] = useState<"code" | "preview" | "edit">("edit");
+  const [view, setView] = useState<"code" | "preview" | "edit">("preview");
   const { sendEvent } = useWebSocketContext();
   const chatVersionsMap = useChatStore((s) => s.chatVersions);
   const activeStream = useChatStore((s) => s.activeStream);
