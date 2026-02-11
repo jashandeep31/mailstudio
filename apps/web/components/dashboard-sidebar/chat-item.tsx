@@ -1,6 +1,6 @@
 "use client";
 
-import { Pencil, PencilLine, Trash2, Copy } from "lucide-react";
+import { Pencil, Trash2, Copy, Cog } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuItem,
@@ -68,7 +68,7 @@ export function ChatItem({ chat, onDelete }: ChatItemProps) {
             setOpenMobile(false);
           }}
         >
-          <PencilLine className="text-muted-foreground mr-2 h-4 w-4" />
+          <Cog className="text-muted-foreground mr-2 h-4 w-4" />
           <span>Manage</span>
         </DropdownMenuItem>
 
