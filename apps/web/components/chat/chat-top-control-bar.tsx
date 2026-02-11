@@ -135,33 +135,31 @@ export const ChatTopControlBar = ({
             </Button>
           </>
         )}
-        {view === "preview" && (
-          <>
-            <Select
-              value={selectedVersionId ?? undefined}
-              onValueChange={(e) => {
-                setSelectedVersionId(e);
-              }}
-            >
-              <SelectTrigger className="">
-                <SelectValue placeholder="Select a Version" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectGroup>
-                  {chatVersions.map((version) => (
-                    <SelectItem
-                      key={version.chat_versions.id}
-                      value={version.chat_versions.id}
-                    >
-                      V{version.chat_versions.version_number}
-                    </SelectItem>
-                  ))}
-                </SelectGroup>
-              </SelectContent>
-            </Select>
-            <SendTestMailDropdown />
-          </>
+        {(view === "preview" || view === "code") && (
+          <Select
+            value={selectedVersionId ?? undefined}
+            onValueChange={(e) => {
+              setSelectedVersionId(e);
+            }}
+          >
+            <SelectTrigger className="">
+              <SelectValue placeholder="Select a Version" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectGroup>
+                {chatVersions.map((version) => (
+                  <SelectItem
+                    key={version.chat_versions.id}
+                    value={version.chat_versions.id}
+                  >
+                    V{version.chat_versions.version_number}
+                  </SelectItem>
+                ))}
+              </SelectGroup>
+            </SelectContent>
+          </Select>
         )}
+        {view === "preview" && <SendTestMailDropdown />}
       </div>
     </div>
   );

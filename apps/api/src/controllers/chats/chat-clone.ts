@@ -49,7 +49,7 @@ export const cloneChat = catchAsync(async (req: Request, res: Response) => {
       .insert(chatsTable)
       .values({
         user_id: userId,
-        name: chat.name + "copy",
+        name: chat.name + " copy",
         thumbnail: chat.thumbnail,
         public: chat.public,
         price: chat.price,
