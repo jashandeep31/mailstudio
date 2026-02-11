@@ -120,6 +120,7 @@ const ClientView = () => {
         <Link
           href={"https://mailstudio.featurebase.app"}
           className={buttonVariants({ variant: "default" })}
+          target="_blank"
         >
           Request Feature
         </Link>
