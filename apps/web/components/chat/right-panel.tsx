@@ -10,6 +10,7 @@ interface RightPanel {
 }
 export const RightPanel = ({ view, setView }: RightPanel) => {
   const [iframeWidth, setIframeWidth] = useState<number>(350);
+  const [codeType, setCodeType] = useState<"html" | "mjml">("html");
 
   // store
   const selectedVersionId = useChatStore((s) => s.selectedVersionId);
@@ -42,6 +43,8 @@ export const RightPanel = ({ view, setView }: RightPanel) => {
             setView={setView}
             iframeWidth={iframeWidth}
             setIframeWidth={setIframeWidth}
+            codeType={codeType}
+            setCodeType={setCodeType}
           />
           <div className="grid min-h-0 flex-1 overflow-hidden">
             {view === "preview" ? (
@@ -54,7 +57,12 @@ export const RightPanel = ({ view, setView }: RightPanel) => {
               />
             ) : view === "code" ? (
               <CodeView
-                html={selectedVersion.chat_version_outputs?.html_code}
+                code={
+                  codeType === "html"
+                    ? selectedVersion.chat_version_outputs?.html_code
+                    : selectedVersion.chat_version_outputs?.mjml_code
+                }
+                type={codeType}
               />
             ) : null}
           </div>

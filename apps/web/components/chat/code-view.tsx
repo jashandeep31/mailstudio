@@ -4,13 +4,19 @@ import rehypeHighlight from "rehype-highlight";
 import "highlight.js/styles/github-dark.css";
 import "./code-view.css";
 
-export const CodeView = ({ html }: { html: string | undefined }) => {
-  if (!html) {
+export const CodeView = ({
+  code,
+  type,
+}: {
+  code: string | undefined;
+  type: "html" | "mjml";
+}) => {
+  if (!code) {
     return <h1>We are making it yet</h1>;
   }
 
-  const markdown = `\`\`\`html
-${html}
+  const markdown = `\`\`\`${type === "mjml" ? "xml" : "html"}
+${code}
 \`\`\``;
   return (
     <div className="grid h-full min-h-0 overflow-hidden">
