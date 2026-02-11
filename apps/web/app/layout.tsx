@@ -16,38 +16,48 @@ const geistMono = localFont({
   variable: "--font-geist-mono",
 });
 
+const siteUrl = process.env.NEXT_PUBLIC_APP_URL || "https://mailstudio.com";
+const siteTitle = "Mail Studio";
+const defaultTitle = "AI Email Template Builder for MJML and HTML";
+const defaultDescription =
+  "Mail Studio helps you generate AI-powered email templates, then return production-ready MJML and HTML with a WYSIWYG editor for fast visual edits.";
+
 export const metadata: Metadata = {
   title: {
-    default: "Mail Studio - Design, manage, and ship email templates faster",
-    template: "%s | Mail Studio",
+    default: `${siteTitle} - ${defaultTitle}`,
+    template: `%s | ${siteTitle}`,
   },
-  description:
-    "Mail Studio is the API-first platform for building beautiful emails. Generate with AI, customize with MJML, and deploy via our global edge network.",
-  metadataBase: new URL("https://mailstudio.dev"),
+  description: defaultDescription,
+  metadataBase: new URL(siteUrl),
+  alternates: {
+    canonical: "/",
+  },
   keywords: [
+    "ai email template builder",
+    "mjml generator",
+    "html email generator",
+    "wysiwyg email editor",
     "email templates",
-    "AI email generator",
     "MJML",
     "email builder",
-    "API-first email",
-    "developer tools",
+    "responsive email templates",
   ],
   authors: [{ name: "Jashandeep Singh", url: "https://x.com/jashandeep31" }],
   creator: "Jashandeep Singh",
+  applicationName: siteTitle,
+  category: "technology",
   openGraph: {
     type: "website",
     locale: "en_US",
-    url: "https://mailstudio.dev",
-    title: "Mail Studio - Design, manage, and ship email templates faster",
-    description:
-      "Mail Studio is the API-first platform for building beautiful emails. Generate with AI, customize with MJML, and deploy via our global edge network.",
-    siteName: "Mail Studio",
+    url: siteUrl,
+    title: `${siteTitle} - ${defaultTitle}`,
+    description: defaultDescription,
+    siteName: siteTitle,
   },
   twitter: {
-    card: "summary",
-    title: "Mail Studio - Design, manage, and ship email templates faster",
-    description:
-      "Mail Studio is the API-first platform for building beautiful emails. Generate with AI, customize with MJML, and deploy via our global edge network.",
+    card: "summary_large_image",
+    title: `${siteTitle} - ${defaultTitle}`,
+    description: defaultDescription,
     creator: "@jashandeep31",
   },
   robots: {

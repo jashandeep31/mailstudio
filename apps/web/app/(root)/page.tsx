@@ -12,10 +12,42 @@ import {
 import { getSession } from "@/lib/get-session";
 import { redirect } from "next/navigation";
 import Link from "next/link";
+import type { Metadata } from "next";
 import { cn } from "@repo/ui/lib/utils";
 import { buttonVariants } from "@repo/ui/components/button";
 
 import { LandingPageTemplates } from "@/components/landing-page-templates";
+
+const siteUrl = process.env.NEXT_PUBLIC_APP_URL || "https://mailstudio.com";
+
+export const metadata: Metadata = {
+  title: "AI Email Template Builder with MJML and HTML Output",
+  description:
+    "Generate full email templates with AI, get both MJML and HTML instantly, and fine-tune designs in a WYSIWYG editor.",
+  alternates: {
+    canonical: "/",
+  },
+  keywords: [
+    "ai email template builder",
+    "mjml email generator",
+    "html email generator",
+    "wysiwyg email editor",
+    "responsive email templates",
+  ],
+  openGraph: {
+    title: "AI Email Template Builder with MJML and HTML Output",
+    description:
+      "Generate full email templates with AI, get both MJML and HTML instantly, and fine-tune designs in a WYSIWYG editor.",
+    url: siteUrl,
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "AI Email Template Builder with MJML and HTML Output",
+    description:
+      "Generate full email templates with AI, get both MJML and HTML instantly, and fine-tune designs in a WYSIWYG editor.",
+  },
+};
 
 const page = async () => {
   const session = await getSession();
@@ -31,21 +63,21 @@ const page = async () => {
         <div className="z-10 mx-auto max-w-4xl space-y-4">
           <div className="focus:ring-ring bg-secondary text-secondary-foreground hover:bg-secondary/80 mb-4 inline-flex items-center rounded-full border border-transparent px-2.5 py-0.5 text-xs font-semibold transition-colors focus:ring-2 focus:ring-offset-2 focus:outline-none">
             <span className="mr-2 flex h-2 w-2 rounded-full bg-sky-500"></span>
-            Beta Version
+            AI Email Template Builder
           </div>
 
           <h1 className="from-foreground to-foreground/70 bg-gradient-to-r bg-clip-text pb-2 text-4xl font-extrabold tracking-tight text-transparent sm:text-5xl md:text-6xl lg:text-7xl">
-            Design, manage, and ship <br className="hidden sm:inline" />
+            Generate complete email templates <br className="hidden sm:inline" />
             <span className="text-blue-600 dark:text-blue-500">
-              email templates
+              with AI
             </span>{" "}
-            faster.
+            in seconds.
           </h1>
 
           <p className="text-muted-foreground mx-auto max-w-[42rem] leading-normal sm:text-xl sm:leading-8">
-            Stop rewriting email HTML from scratch. MailStudio helps you design
-            faster, store reusable templates, and ship polished emails without
-            the usual headaches.
+            MailStudio creates responsive templates from a prompt, then returns
+            both MJML and HTML so you can ship faster or keep editing visually
+            in our WYSIWYG builder.
           </p>
 
           <div className="flex flex-wrap items-center justify-center gap-4 pt-4">
@@ -93,8 +125,8 @@ const page = async () => {
               <div className="space-y-2">
                 <h3 className="font-bold">Instant Generation with AI</h3>
                 <p className="text-muted-foreground text-sm">
-                  Describe your email in plain text and let our AI engine
-                  generate responsive MJML code in seconds.
+                  Describe your campaign in plain text and generate complete,
+                  responsive email templates in seconds.
                 </p>
               </div>
             </div>
@@ -104,10 +136,10 @@ const page = async () => {
             <div className="flex h-[180px] flex-col justify-between rounded-md p-6">
               <Code2 className="h-10 w-10 text-green-500" />
               <div className="space-y-2">
-                <h3 className="font-bold">HTML and MJML Support</h3>
+                <h3 className="font-bold">MJML + HTML Output</h3>
                 <p className="text-muted-foreground text-sm">
-                  Full control over the code. Edit generated templates or start
-                  from scratch with real-time preview.
+                  Get clean MJML and rendered HTML for every generation. Use
+                  the output directly in your sending pipeline.
                 </p>
               </div>
             </div>
@@ -119,8 +151,8 @@ const page = async () => {
               <div className="space-y-2">
                 <h3 className="font-bold">WYSIWYG Editor</h3>
                 <p className="text-muted-foreground text-sm">
-                  Real-time visual editor. What you see is exactly what you get
-                  when designing your email templates.
+                  Fine-tune layouts visually with true What-You-See-Is-What-You-Get
+                  editing, then export when you are ready.
                 </p>
               </div>
             </div>
@@ -138,13 +170,13 @@ const page = async () => {
               You own your code
             </h2>
             <p className="text-muted-foreground text-lg leading-relaxed">
-              Don&apos;t get stuck in a walled garden. MailStudio is built on
-              open standards, ensuring your templates work everywhere.
+              Don&apos;t get stuck in a closed builder. Generate with AI, edit
+              visually, and keep full ownership of the final code.
             </p>
             <ul className="space-y-4 pt-4">
               <li className="text-muted-foreground flex items-center gap-2">
                 <FileCode className="text-primary h-5 w-5" />
-                <span>Export to standard MJML or HTML</span>
+                <span>Export full template output as MJML and HTML</span>
               </li>
               <li className="text-muted-foreground flex items-center gap-2">
                 <CheckCircle2 className="text-primary h-5 w-5" />
@@ -237,7 +269,7 @@ const page = async () => {
               </li>{" "}
               <li className="flex items-center gap-2">
                 <CheckCircle2 className="text-primary h-4 w-4" />
-                <span className="text-sm">AI mail templates generation</span>
+                <span className="text-sm">AI email template generation</span>
               </li>
               <li className="flex items-center gap-2">
                 <CheckCircle2 className="text-primary h-4 w-4" />
@@ -245,9 +277,7 @@ const page = async () => {
               </li>
               <li className="flex items-center gap-2">
                 <CheckCircle2 className="text-primary h-4 w-4" />
-                <span className="text-sm">
-                  WYSIWYG editor access (Coming soon)
-                </span>
+                <span className="text-sm">WYSIWYG editor access</span>
               </li>
             </ul>
             <Link
@@ -275,7 +305,7 @@ const page = async () => {
               </li>
               <li className="flex items-center gap-2">
                 <CheckCircle2 className="text-primary h-4 w-4" />
-                <span className="text-sm">AI mail templates generation</span>
+                <span className="text-sm">AI email template generation</span>
               </li>
               <li className="flex items-center gap-2">
                 <CheckCircle2 className="text-primary h-4 w-4" />
@@ -283,9 +313,7 @@ const page = async () => {
               </li>
               <li className="flex items-center gap-2">
                 <CheckCircle2 className="text-primary h-4 w-4" />
-                <span className="text-sm">
-                  WYSIWYG editor access (Coming soon)
-                </span>
+                <span className="text-sm">WYSIWYG editor access</span>
               </li>
               <li className="flex items-center gap-2">
                 <CheckCircle2 className="text-primary h-4 w-4" />
@@ -313,7 +341,8 @@ const page = async () => {
             Ready to get started?
           </h2>
           <p className="text-muted-foreground max-w-[42rem] leading-normal sm:text-xl sm:leading-8">
-            Join thousands of developers building better emails today.
+            Start with a prompt, generate MJML + HTML, and finish in the
+            visual editor.
           </p>
           <div className="flex gap-4">
             <Link href="/login" className={cn(buttonVariants({ size: "lg" }))}>

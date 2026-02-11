@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import InputArea from "@/components/chat/input-area";
 import { useWebSocketContext } from "@/contexts/web-socket-context";
 import { MailTemplateCard } from "@/components/mail-template-card";
+import { MailTemplateCardSkeleton } from "@/components/mail-template-card-skeleton";
 import { useInfiniteMarkeplaceTemplates } from "@/hooks/use-marketplace";
 import Link from "next/link";
 import { buttonVariants } from "@repo/ui/components/button";
@@ -10,7 +11,7 @@ import { cn } from "@repo/ui/lib/utils";
 
 const ClientView = () => {
   const { sendEvent } = useWebSocketContext();
-  const { data } = useInfiniteMarkeplaceTemplates({});
+  const { data, isLoading } = useInfiniteMarkeplaceTemplates({});
   const [userPrompt, setUserPrompt] = useState("");
 
   const handleSubmit = (data: { mediaIds: string[]; brandKitId?: string }) => {
@@ -43,9 +44,13 @@ const ClientView = () => {
           Explore Templates
         </h2>
         <div className="mt-6 grid grid-cols-1 gap-6 md:grid-cols-3 lg:grid-cols-4">
-          {data?.pages[0]?.map((template) => (
-            <MailTemplateCard key={template.id} template={template} />
-          ))}
+          {isLoading
+            ? Array.from({ length: 8 }).map((_, i) => (
+                <MailTemplateCardSkeleton key={i} />
+              ))
+            : data?.pages[0]?.map((template) => (
+                <MailTemplateCard key={template.id} template={template} />
+              ))}
         </div>
         <div className="mt-8 flex items-center justify-center">
           <Link
