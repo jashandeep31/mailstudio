@@ -5,6 +5,7 @@ import {
   updateChat,
   getChatById,
   likeChat,
+  cloneChat,
 } from "@/services/chat-services";
 import { useInfiniteQuery, useMutation, useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
@@ -38,6 +39,7 @@ export const useDeleteChat = () =>
     onSuccess: () => {
       toast.success("Deleted");
       queryClient.refetchQueries({ queryKey: ["chats"] });
+      queryClient.refetchQueries({ queryKey: ["infinite-chats"] });
     },
     onError: () => {
       toast.error("eror");
@@ -50,10 +52,24 @@ export const useUpdateChat = () =>
     onSuccess: (_, variables) => {
       toast.success("Updated");
       queryClient.refetchQueries({ queryKey: ["chats"] });
+      queryClient.refetchQueries({ queryKey: ["infinite-chats"] });
       queryClient.invalidateQueries({ queryKey: ["chats", variables.chatId] });
     },
     onError: (e) => {
       toast.error("Something went wrong");
+    },
+  });
+
+export const useCloneChat = () =>
+  useMutation({
+    mutationFn: cloneChat,
+    onSuccess: () => {
+      toast.success("Cloned");
+      queryClient.refetchQueries({ queryKey: ["chats"] });
+      queryClient.refetchQueries({ queryKey: ["infinite-chats"] });
+    },
+    onError: () => {
+      toast.error("Failed to clone chat");
     },
   });
 

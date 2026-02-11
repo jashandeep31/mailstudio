@@ -4,8 +4,11 @@ import React from "react";
 import { Plus, Loader2 } from "lucide-react";
 import { Button, buttonVariants } from "@repo/ui/components/button";
 import { DashboardTemplateCard } from "@/components/dashboard-template-card";
-import { toast } from "sonner";
-import { useInfiniteChats, useDeleteChat } from "@/hooks/use-chats";
+import {
+  useInfiniteChats,
+  useDeleteChat,
+  useCloneChat,
+} from "@/hooks/use-chats";
 import Link from "next/link";
 import CommonLoader from "@/components/common-loader";
 
@@ -13,9 +16,10 @@ export default function ClientView() {
   const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } =
     useInfiniteChats();
   const { mutate: deleteTemplate } = useDeleteChat();
+  const { mutate: cloneTemplate } = useCloneChat();
 
   const handleDuplicate = (id: string) => {
-    toast.info(`Duplicate feature coming soon for ${id}`);
+    cloneTemplate({ chatId: id });
   };
 
   const handleDelete = (id: string) => {

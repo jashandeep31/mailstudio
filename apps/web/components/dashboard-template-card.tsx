@@ -132,7 +132,7 @@ export const DashboardTemplateCard = ({
                 </DropdownMenuItem>
               </RenameDialog>
 
-              <DropdownMenuItem disabled onClick={() => onDuplicate?.(id)}>
+              <DropdownMenuItem onClick={() => onDuplicate?.(id)}>
                 <Copy className="text-muted-foreground mr-2 h-3.5 w-3.5" />
                 Duplicate
               </DropdownMenuItem>

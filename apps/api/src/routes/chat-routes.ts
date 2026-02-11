@@ -8,6 +8,7 @@ import {
 import { checkAuthorization } from "../middlewares/check-authorization.js";
 import { deleteChatVersion } from "../controllers/chats/chat-version-controllers.js";
 import { likeChat } from "../controllers/chats/like-chat-controller.js";
+import { cloneChat } from "../controllers/chats/chat-clone.js";
 
 const routes: Router = Router();
 
@@ -24,6 +25,8 @@ routes
 routes
   .route("/delete/version/:versionId")
   .delete(checkAuthorization(["all"]), deleteChatVersion);
+
+routes.route("/clone").post(checkAuthorization(["all"]), cloneChat);
 
 routes.route("/like/").post(checkAuthorization(["all"]), likeChat);
 export default routes;

@@ -58,3 +58,12 @@ export const likeChat = async ({
   );
   return res.data;
 };
+
+export const cloneChat = async ({ chatId }: { chatId: string }) => {
+  const res = await axios.post(
+    `${BASE_URL}/api/v1/chats/clone`,
+    { chatId },
+    { withCredentials: true },
+  );
+  return res.data.data as { id: string };
+};
