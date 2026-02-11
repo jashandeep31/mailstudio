@@ -79,13 +79,13 @@ export const ChatTopControlBar = ({
           >
             Code
           </Button>
-          <Button
-            variant={view === "edit" ? "default" : "ghost"}
-            size={"sm"}
-            onClick={() => setView("edit")}
-          >
-            Edit
-          </Button>
+          {/* <Button */}
+          {/*   variant={view === "edit" ? "default" : "ghost"} */}
+          {/*   size={"sm"} */}
+          {/*   onClick={() => setView("edit")} */}
+          {/* > */}
+          {/*   Edit */}
+          {/* </Button> */}
         </div>
       </div>
 
