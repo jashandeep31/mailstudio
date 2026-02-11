@@ -4,8 +4,6 @@ import { useChatStore } from "@/zustand-store/chat-store";
 import { useMemo, useRef, useState } from "react";
 import { getClassesInjectedMJML } from "./lib/helpers";
 import mjml2html from "mjml-browser";
-import LeftSideBar from "./left-sidebar";
-import RightSidebar from "./right-sidebar";
 import { useIframeEvents } from "./hooks/use-iframe-events";
 import { useDebouncedTagEdits } from "./hooks/use-debounced-tag-edits";
 
@@ -56,7 +54,7 @@ const PreviewRender = ({
 
   return (
     <div className="flex h-full">
-      <RightSidebar />
+      {/* <RightSidebar /> */}
       <div className="bg-muted flex h-full flex-1 justify-center py-3">
         <iframe
           ref={iframeRef}
@@ -64,10 +62,10 @@ const PreviewRender = ({
           className="grid h-full w-100 rounded border bg-white shadow"
         ></iframe>
       </div>
-      <LeftSideBar
-        editableTags={editableTags}
-        setEditableTags={setEditableTags}
-      />
+      {/* <LeftSideBar */}
+      {/*   editableTags={editableTags} */}
+      {/*   setEditableTags={setEditableTags} */}
+      {/* /> */}
     </div>
   );
 };
