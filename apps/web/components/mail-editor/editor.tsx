@@ -38,7 +38,7 @@ const EditorComponent = ({ mjmlCode }: { mjmlCode: string }) => {
         onEditor={onEditor}
         options={{
           // TODO: fix height remove the navbar height
-          height: "calc(100vh - 90px)",
+          height: "calc(100vh - 58px)",
 
           storageManager: false,
         }}
@@ -75,7 +75,7 @@ const EditorWrapper = ({
   }
   return (
     // TODO: fix remove the mjml preview and mjml title these are causing issues in the render of the mjml
-    <div>
+    <div className="relative">
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent>
           <DialogHeader>
@@ -90,8 +90,8 @@ const EditorWrapper = ({
           </DialogFooter>
         </DialogContent>
       </Dialog>
-      <div className="flex h-12 items-center justify-center px-2">
-        <div className="bg-muted inline-flex rounded-md p-1">
+      <div className="fixed top-3 left-1/2 inline-flex -translate-x-1/2 transform items-center">
+        <div className="bg-muted inline-flex rounded-md border p-1 shadow-sm">
           <Button
             variant={view === "preview" ? "default" : "ghost"}
             size={"sm"}

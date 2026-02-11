@@ -23,7 +23,7 @@ Prompt enrichment requirements:
   - Reusable and modular structure
   - Accessibility-friendly practices
   - Try to hard code the image sizes as by default images can be larger of smaller
-  - Make the header logo harded coded size so that i doesn't take whole the width or height of the mail template
+  - Make the header logo hard coded size so that i doesn't take whole the width or height of the mail template idle size should be 60px height most  important 
 
 Email-specific constraints to embed:
 - Use MJML best practices

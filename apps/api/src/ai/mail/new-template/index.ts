@@ -1,4 +1,4 @@
-import { AiFunctionResponse, AiGeneratedTemplate } from "../../types.js";
+import { AiGeneratedTemplate } from "../../types.js";
 import {
   uploadMediaFiles,
   waitForFilesProcessing,
