@@ -56,7 +56,7 @@ const ClientView = () => {
           </>
         ) : (
           <div className="col-span-4">
-            <EditorWrapper />
+            <EditorWrapper view={view} setView={setView} />
           </div>
         )}
       </div>
