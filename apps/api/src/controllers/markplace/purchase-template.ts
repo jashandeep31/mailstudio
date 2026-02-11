@@ -1,12 +1,12 @@
 import { Request, Response } from "express";
 import {
+  asc,
   chatsTable,
   chatVersionOutputsTable,
   chatVersionPromptsTable,
   chatVersionsTable,
   db,
   eq,
-  desc,
   creditWalletsTable,
   sql,
   creditTransactionsTable,
@@ -46,10 +46,9 @@ export const purchaseTemplate = catchAsync(
       throw new AppError("You cannot purchase your own template", 400);
 
     const chat = await db.transaction(async (tx) => {
-      const [prevChatVersion] = await tx
+      const versions = await tx
         .select()
         .from(chatVersionsTable)
-        .where(eq(chatVersionsTable.chat_id, template.id))
         .leftJoin(
           chatVersionPromptsTable,
           eq(chatVersionPromptsTable.version_id, chatVersionsTable.id),
@@ -58,15 +57,13 @@ export const purchaseTemplate = catchAsync(
           chatVersionOutputsTable,
           eq(chatVersionOutputsTable.version_id, chatVersionsTable.id),
         )
-        .orderBy(desc(chatVersionsTable.created_at));
+        .where(eq(chatVersionsTable.chat_id, template.id))
+        .orderBy(asc(chatVersionsTable.created_at));
 
-      if (
-        !prevChatVersion ||
-        !prevChatVersion.chat_version_outputs ||
-        !prevChatVersion?.chat_version_prompts
-      ) {
+      if (versions.length === 0) {
         throw new AppError("Failed to create", 500);
       }
+
       const [newChat] = await tx
         .insert(chatsTable)
         .values({
@@ -80,27 +77,42 @@ export const purchaseTemplate = catchAsync(
         .returning();
 
       if (!newChat) throw new AppError("Failed to created", 500);
-      const [newVersion] = await tx
-        .insert(chatVersionsTable)
-        .values({
-          chat_id: newChat.id,
-          user_id: userId,
-          version_number: 1,
-        })
-        .returning();
-      if (!newVersion) throw new AppError("Failed to created", 500);
-      await tx.insert(chatVersionOutputsTable).values({
-        overview: prevChatVersion.chat_version_outputs.overview,
-        version_id: newVersion.id,
-        mjml_code: prevChatVersion.chat_version_outputs.mjml_code,
-        html_code: prevChatVersion.chat_version_outputs.html_code,
-        generation_instructions:
-          prevChatVersion.chat_version_outputs.generation_instructions,
-      });
-      await tx.insert(chatVersionPromptsTable).values({
-        version_id: newVersion.id,
-        prompt: prevChatVersion.chat_version_prompts.prompt,
-      });
+
+      for (const {
+        chat_versions,
+        chat_version_outputs,
+        chat_version_prompts,
+      } of versions) {
+        const [newVersion] = await tx
+          .insert(chatVersionsTable)
+          .values({
+            chat_id: newChat.id,
+            user_id: userId,
+            version_number: chat_versions.version_number,
+          })
+          .returning();
+
+        if (!newVersion) throw new AppError("Failed to created", 500);
+
+        if (chat_version_outputs) {
+          await tx.insert(chatVersionOutputsTable).values({
+            overview: chat_version_outputs.overview,
+            version_id: newVersion.id,
+            mjml_code: chat_version_outputs.mjml_code,
+            html_code: chat_version_outputs.html_code,
+            generation_instructions:
+              chat_version_outputs.generation_instructions,
+          });
+        }
+
+        if (chat_version_prompts) {
+          await tx.insert(chatVersionPromptsTable).values({
+            version_id: newVersion.id,
+            prompt: chat_version_prompts.prompt,
+          });
+        }
+      }
+
       // updating the user wallet
       if (Number(template.price) > 0) {
         const price = Number(template.price);
