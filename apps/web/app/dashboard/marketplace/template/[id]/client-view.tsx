@@ -15,7 +15,14 @@ import { toast } from "sonner";
 import { useLikeChat } from "@/hooks/use-chats";
 import { MailTemplateCard } from "@/components/mail-template-card";
 
-export default function ClientView() {
+export default function ClientView({
+  session,
+}: {
+  session: {
+    id: string;
+    role: string;
+  } | null;
+}) {
   const router = useRouter();
   const params = useParams();
   const {
@@ -194,14 +201,23 @@ export default function ClientView() {
               <span>{template.chat.like_count || 0} likes</span>
             </Button>
 
-            <ConfirmationDialog
-              title="Buy Template"
-              description="Are you sure you want to buy this template?"
-              onConfirm={() => handlePurchaseClick()}
-              confirmText={`Buy $${template.chat.price}`}
-            >
-              <Button size={"lg"}>Buy Template</Button>
-            </ConfirmationDialog>
+            {session?.id === template.user.id ? (
+              <Link
+                href={`/chat/${template.chat.id}`}
+                className={buttonVariants()}
+              >
+                Edit Template
+              </Link>
+            ) : (
+              <ConfirmationDialog
+                title="Buy Template"
+                description="Are you sure you want to buy this template?"
+                onConfirm={() => handlePurchaseClick()}
+                confirmText={`Buy $${template.chat.price}`}
+              >
+                <Button size={"lg"}>Buy Template</Button>
+              </ConfirmationDialog>
+            )}
           </div>
         </div>
       </div>

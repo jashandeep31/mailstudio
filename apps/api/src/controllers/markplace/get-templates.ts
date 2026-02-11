@@ -70,6 +70,7 @@ export const getMarketplaceTemplateById = catchAsync(
           firstName: usersTable.first_name,
           lastName: usersTable.last_name,
           avatar: usersTable.avatar,
+          id: usersTable.id,
         },
         isLiked: sql<boolean>`${userLikedChatsTable.id} IS NOT NULL`.as(
           "is_liked",

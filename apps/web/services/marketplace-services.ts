@@ -27,6 +27,7 @@ export const getMarketplaceTemplateById = async (
     firstName: string;
     lastName: string;
     avatar: string;
+    id: string;
   };
   isLiked: boolean;
 }> => {
