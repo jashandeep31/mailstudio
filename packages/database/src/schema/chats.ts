@@ -71,7 +71,7 @@ export const chatVersionPromptsTable = pgTable("chat_version_prompts", {
     }),
   prompt: text("prompt").notNull(),
   brand_kit_id: uuid("brand_kit_id").references(() => brandKitsTable.id, {
-    onDelete: "cascade",
+    onDelete: "set null",
   }),
   created_at: timestamp("created_at", { withTimezone: true })
     .notNull()
