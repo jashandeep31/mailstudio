@@ -1,6 +1,13 @@
 "use client";
 
-import { Moon, Sun, Settings, CreditCard, LogOut } from "lucide-react";
+import {
+  Moon,
+  Sun,
+  Settings,
+  CreditCard,
+  LogOut,
+  GitPullRequestCreateArrowIcon,
+} from "lucide-react";
 import Link from "next/link";
 import { useTheme } from "next-themes";
 import { Button } from "@repo/ui/components/button";
@@ -69,7 +76,7 @@ const ProfileDropdown = () => {
         </DropdownMenuItem>
         <DropdownMenuItem asChild>
           <Link href="https://mailstudio.featurebase.app">
-            <CreditCard className="mr-2 h-4 w-4" />
+            <GitPullRequestCreateArrowIcon className="mr-2 h-4 w-4" />
             <span>Request Feature</span>
           </Link>
         </DropdownMenuItem>
