@@ -1,7 +1,7 @@
 "use client";
 import { useDeleteBrandKit, useUserBrandKits } from "@/hooks/use-brandkits";
 import React, { useState } from "react";
-import { MoreVertical, Trash2 } from "lucide-react";
+import { MoreVertical, Pencil, Trash2 } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -60,7 +60,11 @@ export default function ClientView() {
                     </DropdownMenuTrigger>
                     <DropdownMenuContent>
                       <DropdownMenuItem asChild>
-                        <Link href={`/dashboard/brand-kits/${brandKit.id}`}>
+                        <Link
+                          href={`/dashboard/brand-kits/${brandKit.id}`}
+                          className="text-muted-foreground hover:text-foreground flex gap-1"
+                        >
+                          <Pencil />
                           Edit
                         </Link>
                       </DropdownMenuItem>
@@ -71,7 +75,7 @@ export default function ClientView() {
                       >
                         <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
                           <Trash2 className="text-muted-foreground" />
-                          <span>Delete</span>
+                          <span className="text-muted-foreground">Delete</span>
                         </DropdownMenuItem>
                       </ConfirmationDialog>
                     </DropdownMenuContent>

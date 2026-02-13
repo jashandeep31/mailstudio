@@ -75,7 +75,7 @@ const ProfileDropdown = () => {
           </Link>
         </DropdownMenuItem>
         <DropdownMenuItem asChild>
-          <Link href="https://mailstudio.featurebase.app">
+          <Link href="https://mailstudio.featurebase.app" target="__blank">
             <GitPullRequestCreateArrowIcon className="mr-2 h-4 w-4" />
             <span>Request Feature</span>
           </Link>
