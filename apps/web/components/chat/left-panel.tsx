@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Button } from "@repo/ui/components/button";
-import { Copy, Check, Trash2 } from "lucide-react";
+import { Copy, Check, Undo } from "lucide-react";
 import { ChatVersionAggregate, StreamingOverview } from "@/app/chat/[id]/types";
 import InputArea from "./input-area";
 import { useWebSocketContext } from "@/contexts/web-socket-context";
@@ -93,7 +93,7 @@ export default function LeftPanel({ versions, streamingOverview }: LeftPanel) {
                               disabled={activeStream ? true : false}
                               className="flex cursor-pointer items-center gap-2 text-xs"
                             >
-                              <Trash2 className="" />
+                              <Undo className="" />
                               Roll back
                             </Button>
                           </ConfirmationDialog>
