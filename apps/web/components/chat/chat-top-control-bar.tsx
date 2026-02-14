@@ -147,12 +147,15 @@ export const ChatTopControlBar = ({
             </SelectTrigger>
             <SelectContent>
               <SelectGroup>
-                {chatVersions.map((version) => (
+                {chatVersions.map((version, index) => (
                   <SelectItem
                     key={version.chat_versions.id}
                     value={version.chat_versions.id}
                   >
-                    V{version.chat_versions.version_number}
+                    {chatVersions.length === index + 1
+                      ? "Latest"
+                      : `V${version.chat_versions.version_number}`
+                    }
                   </SelectItem>
                 ))}
               </SelectGroup>
