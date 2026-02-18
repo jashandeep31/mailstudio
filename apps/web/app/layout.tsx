@@ -18,7 +18,7 @@ const geistMono = localFont({
 
 const siteUrl = process.env.NEXT_PUBLIC_APP_URL || "https://mailstudio.com";
 const siteTitle = "Mail Studio";
-const defaultTitle = "AI Email Template Builder for MJML and HTML";
+const defaultTitle = "";
 const defaultDescription =
   "Mail Studio helps you generate AI-powered email templates, then return production-ready MJML and HTML with a WYSIWYG editor for fast visual edits.";
 
