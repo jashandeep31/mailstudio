@@ -8,7 +8,7 @@ import { models } from "../../models.js";
 export const generateTemplate = async (
   content: ContentListUnion,
 ): Promise<AiFunctionResponse> => {
-  const MODEL = models["gemini-3-pro-preview"];
+  const MODEL = models["gemini-3.1-pro-preview"];
   const response = await googleGenAi.models.generateContent({
     model: MODEL.name,
     contents: content,

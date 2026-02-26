@@ -9,7 +9,7 @@ export const generateRefinedMjmlCode = async (
   content: ContentListUnion,
 ): Promise<AiFunctionResponse> => {
   try {
-    const MODEL = models["gemini-3-pro-preview"];
+    const MODEL = models["gemini-3.1-pro-preview"];
     console.log(`things are started of hte refineMJML`);
     const response = await googleGenAi.models.generateContent({
       model: MODEL.name,

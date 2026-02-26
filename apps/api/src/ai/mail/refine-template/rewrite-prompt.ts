@@ -10,7 +10,7 @@ export const rewritePromptForDownstreamModel = async (
 ): Promise<AiFunctionResponse> => {
   try {
     console.log(`we are are refining the prompt `);
-    const MODEL = models["gemini-3-pro-preview"];
+    const MODEL = models["gemini-3.1-pro-preview"];
     console.log(content);
     const response = await googleGenAi.models.generateContent({
       model: MODEL.name,
