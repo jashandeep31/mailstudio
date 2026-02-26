@@ -19,12 +19,13 @@ import { buttonVariants } from "@repo/ui/components/button";
 import { LandingPageTemplates } from "@/components/landing-page-templates";
 import { PricingCards } from "@/components/pricing-cards";
 
-const siteUrl = process.env.NEXT_PUBLIC_APP_URL || "https://mailstudio.com";
+const pageTitle = "AI Email Template Builder with MJML and HTML Output";
+const pageDescription =
+  "Generate full email templates with AI, get both MJML and HTML instantly, and fine-tune designs in a WYSIWYG editor.";
 
 export const metadata: Metadata = {
-  title: "AI Email Template Builder with MJML and HTML Output",
-  description:
-    "Generate full email templates with AI, get both MJML and HTML instantly, and fine-tune designs in a WYSIWYG editor.",
+  title: pageTitle,
+  description: pageDescription,
   alternates: {
     canonical: "/",
   },
@@ -36,17 +37,15 @@ export const metadata: Metadata = {
     "responsive email templates",
   ],
   openGraph: {
-    title: "AI Email Template Builder with MJML and HTML Output",
-    description:
-      "Generate full email templates with AI, get both MJML and HTML instantly, and fine-tune designs in a WYSIWYG editor.",
-    url: siteUrl,
+    title: pageTitle,
+    description: pageDescription,
+    url: "/",
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "AI Email Template Builder with MJML and HTML Output",
-    description:
-      "Generate full email templates with AI, get both MJML and HTML instantly, and fine-tune designs in a WYSIWYG editor.",
+    title: pageTitle,
+    description: pageDescription,
   },
 };
 

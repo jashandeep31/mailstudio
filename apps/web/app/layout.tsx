@@ -17,21 +17,17 @@ const geistMono = localFont({
 });
 
 const siteUrl = process.env.NEXT_PUBLIC_APP_URL || "https://mailstudio.com";
-const siteTitle = "Mail Studio";
-const defaultTitle = "";
+const siteTitle = "MailStudio";
 const defaultDescription =
-  "Mail Studio helps you generate AI-powered email templates, then return production-ready MJML and HTML with a WYSIWYG editor for fast visual edits.";
+  "MailStudio helps you generate AI-powered email templates, then returns production-ready MJML and HTML with a WYSIWYG editor for fast visual edits.";
 
 export const metadata: Metadata = {
   title: {
-    default: `${siteTitle} - ${defaultTitle}`,
+    default: siteTitle,
     template: `%s | ${siteTitle}`,
   },
   description: defaultDescription,
   metadataBase: new URL(siteUrl),
-  alternates: {
-    canonical: "/",
-  },
   keywords: [
     "ai email template builder",
     "mjml generator",
@@ -50,13 +46,13 @@ export const metadata: Metadata = {
     type: "website",
     locale: "en_US",
     url: siteUrl,
-    title: `${siteTitle} - ${defaultTitle}`,
+    title: siteTitle,
     description: defaultDescription,
     siteName: siteTitle,
   },
   twitter: {
     card: "summary_large_image",
-    title: `${siteTitle} - ${defaultTitle}`,
+    title: siteTitle,
     description: defaultDescription,
     creator: "@jashandeep31",
   },
