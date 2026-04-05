@@ -2,9 +2,9 @@ import { NextFunction, Request, Response } from "express";
 import {
   getUserFromCache,
   getUserFromDatabase,
-  sessionSchema,
   setUserInCache,
 } from "./check-authorization.js";
+import { verifySession } from "../lib/jwt-session.js";
 
 export const attachUserIfExists = async (
   req: Request,
@@ -12,20 +12,13 @@ export const attachUserIfExists = async (
   next: NextFunction,
 ) => {
   try {
-    const rawSession = req.cookies?.session;
-    if (!rawSession) return next();
+    const sessionToken = req.cookies?.session;
+    if (!sessionToken) return next();
 
-    let parsedJson: unknown;
-    try {
-      parsedJson = JSON.parse(rawSession);
-    } catch {
-      return next();
-    }
+    const parsedSession = await verifySession(sessionToken);
+    if (!parsedSession) return next();
 
-    const parsedSession = sessionSchema.safeParse(parsedJson);
-    if (!parsedSession.success) return next();
-
-    const userId = parsedSession.data.id;
+    const userId = parsedSession.id;
 
     let userData = await getUserFromCache(userId);
 
