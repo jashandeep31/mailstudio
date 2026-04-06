@@ -10,6 +10,8 @@ import {
 } from "@repo/db";
 import { z } from "zod";
 import { redis } from "../lib/db.js";
+import { env } from "../lib/env.js";
+import jwt from "jsonwebtoken";
 
 export const sessionSchema = z.object({
   id: z.string(),
@@ -93,9 +95,9 @@ export const checkAuthorization =
   (roles: UserRole[]) =>
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const session = req.cookies.session;
+      const token = req.cookies.session;
 
-      if (!session) {
+      if (!token) {
         res.status(401).json({
           error: "Authentication required. Please login.",
         });
@@ -104,8 +106,27 @@ export const checkAuthorization =
 
       let parsedSession;
       try {
-        parsedSession = sessionSchema.parse(JSON.parse(session));
+        const decoded = jwt.verify(token, env.JWT_SECRET) as {
+          id: string;
+          role: string;
+        };
+        parsedSession = sessionSchema.parse({
+          id: decoded.id,
+          role: decoded.role,
+        });
       } catch (error) {
+        if (error instanceof jwt.JsonWebTokenError) {
+          res.status(401).json({
+            error: "Invalid session token. Please login again.",
+          });
+          return;
+        }
+        if (error instanceof jwt.TokenExpiredError) {
+          res.status(401).json({
+            error: "Session expired. Please login again.",
+          });
+          return;
+        }
         res.status(401).json({
           error: "Invalid session format. Please login again.",
         });
