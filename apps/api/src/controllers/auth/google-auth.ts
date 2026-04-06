@@ -4,6 +4,7 @@ import { env } from "../../lib/env.js";
 import { OAuth2Client } from "google-auth-library";
 import { z } from "zod";
 import { createUser } from "./lib/create-user.js";
+import { signSession } from "../../lib/jwt.js";
 
 const payloadSchema = z.object({
   email: z.string(),
@@ -56,22 +57,16 @@ export const googleAuthCallbackController = catchAsync(
       provider: "google",
     });
     const isProd = env.ENVIRONMENT !== "development";
+    const sessionToken = await signSession(user.id, user.role);
 
-    res.cookie(
-      "session",
-      JSON.stringify({
-        id: user.id,
-        role: user.role,
-      }),
-      {
-        httpOnly: true,
-        secure: isProd,
-        sameSite: isProd ? "none" : "lax",
-        path: "/",
-        domain: isProd ? ".mailstudio.dev" : undefined,
-        maxAge: 1000 * 60 * 60 * 24 * 30, // 30 days
-      },
-    );
+    res.cookie("session", sessionToken, {
+      httpOnly: true,
+      secure: isProd,
+      sameSite: isProd ? "none" : "lax",
+      path: "/",
+      domain: isProd ? ".mailstudio.dev" : undefined,
+      maxAge: 1000 * 60 * 60 * 24 * 30, // 30 days
+    });
     res.redirect(`${env.FRONTEND_URL}/dashboard`);
   },
 );

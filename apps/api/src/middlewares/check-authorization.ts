@@ -1,20 +1,15 @@
 import type { Request, Response, NextFunction } from "express";
+import { z } from "zod";
 import {
   userRoleEnum,
   db,
   usersTable,
   eq,
   plansTable,
-  sql,
   planTypeEnum,
 } from "@repo/db";
-import { z } from "zod";
 import { redis } from "../lib/db.js";
-
-export const sessionSchema = z.object({
-  id: z.string(),
-  role: z.enum(userRoleEnum.enumValues),
-});
+import { verifySession } from "../lib/jwt.js";
 
 const userCacheSchema = z.object({
   id: z.string(),
@@ -93,29 +88,29 @@ export const checkAuthorization =
   (roles: UserRole[]) =>
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const session = req.cookies.session;
+      const sessionToken = req.cookies.session;
 
-      if (!session) {
+      if (!sessionToken) {
         res.status(401).json({
           error: "Authentication required. Please login.",
         });
         return;
       }
 
-      let parsedSession;
-      try {
-        parsedSession = sessionSchema.parse(JSON.parse(session));
-      } catch (error) {
+      const payload = await verifySession(sessionToken);
+      if (!payload) {
         res.status(401).json({
-          error: "Invalid session format. Please login again.",
+          error: "Invalid or expired session. Please login again.",
         });
         return;
       }
 
-      let userData = await getUserFromCache(parsedSession.id);
+      const { userId } = payload;
+
+      let userData = await getUserFromCache(userId);
 
       if (!userData) {
-        userData = await getUserFromDatabase(parsedSession.id);
+        userData = await getUserFromDatabase(userId);
 
         if (!userData) {
           res.status(401).json({
@@ -124,14 +119,7 @@ export const checkAuthorization =
           return;
         }
 
-        await setUserInCache(parsedSession.id, userData);
-      }
-
-      if (parsedSession.id !== userData.id) {
-        res.status(401).json({
-          error: "Session mismatch. Please login again.",
-        });
-        return;
+        await setUserInCache(userId, userData);
       }
 
       req["user"] = userData;

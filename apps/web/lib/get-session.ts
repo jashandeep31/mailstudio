@@ -1,21 +1,35 @@
 import { cookies } from "next/headers";
-import { z } from "zod";
-const sessionSchema = z.object({
-  id: z.string(),
-  role: z.string(),
-});
-export const getSession = async (): Promise<z.infer<
-  typeof sessionSchema
-> | null> => {
+import { jwtVerify } from "jose";
+
+interface Session {
+  id: string;
+  role: string;
+}
+
+const getSecret = () => {
+  const secret = process.env.JWT_SECRET;
+  if (!secret) {
+    throw new Error("JWT_SECRET environment variable is not set");
+  }
+  return new TextEncoder().encode(secret);
+};
+
+export const getSession = async (): Promise<Session | null> => {
   try {
     const cookieStore = await cookies();
-    const session = cookieStore.get("session");
-    if (!session?.value) return null;
-    const parsedSession = sessionSchema.safeParse(JSON.parse(session.value));
-    if (parsedSession.success) {
-      return parsedSession.data;
+    const sessionToken = cookieStore.get("session");
+    if (!sessionToken?.value) return null;
+
+    const { payload } = await jwtVerify(sessionToken.value, getSecret());
+    
+    if (typeof payload.userId !== "string" || typeof payload.role !== "string") {
+      return null;
     }
-    return null;
+
+    return {
+      id: payload.userId,
+      role: payload.role,
+    };
   } catch {
     return null;
   }
