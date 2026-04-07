@@ -4,6 +4,7 @@ import { env } from "../../lib/env.js";
 import { OAuth2Client } from "google-auth-library";
 import { z } from "zod";
 import { createUser } from "./lib/create-user.js";
+import { signSession } from "../../lib/session.js";
 
 const payloadSchema = z.object({
   email: z.string(),
@@ -59,7 +60,7 @@ export const googleAuthCallbackController = catchAsync(
 
     res.cookie(
       "session",
-      JSON.stringify({
+      signSession({
         id: user.id,
         role: user.role,
       }),

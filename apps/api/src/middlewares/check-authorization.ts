@@ -10,11 +10,7 @@ import {
 } from "@repo/db";
 import { z } from "zod";
 import { redis } from "../lib/db.js";
-
-export const sessionSchema = z.object({
-  id: z.string(),
-  role: z.enum(userRoleEnum.enumValues),
-});
+import { verifySession } from "../lib/session.js";
 
 const userCacheSchema = z.object({
   id: z.string(),
@@ -102,15 +98,16 @@ export const checkAuthorization =
         return;
       }
 
-      let parsedSession;
-      try {
-        parsedSession = sessionSchema.parse(JSON.parse(session));
-      } catch (error) {
+      const sessionResult = verifySession(session);
+
+      if (!sessionResult.valid) {
         res.status(401).json({
-          error: "Invalid session format. Please login again.",
+          error: sessionResult.error,
         });
         return;
       }
+
+      const { payload: parsedSession } = sessionResult;
 
       let userData = await getUserFromCache(parsedSession.id);
 
