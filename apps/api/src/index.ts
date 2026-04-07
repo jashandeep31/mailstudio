@@ -20,6 +20,7 @@ import utilRoutes from "./routes/util-routes.js";
 import brandKitRoutes from "./routes/brandkit-routes.js";
 import marketplaceRoutes from "./routes/marketplace-routes.js";
 import * as Sentry from "@sentry/node";
+import { verifyToken } from "./lib/jwt.js";
 
 const app = express();
 const server = createServer(app);
@@ -96,19 +97,25 @@ ws.on("connection", async (socket, req) => {
   try {
     const cookies = req.headers.cookie;
     if (!cookies) {
-      console.log(`not authenticated `);
+      console.log(`❌ WS: No cookies`);
       return;
     }
     const parsedCookie = cookie.parse(req.headers.cookie!);
-    if (!parsedCookie.session) return;
+    if (!parsedCookie.session) {
+      console.log(`❌ WS: No session cookie`);
+      return;
+    }
 
-    let session;
-    session = JSON.parse(decodeURIComponent(parsedCookie.session));
+    const payload = await verifyToken(parsedCookie.session);
+    if (!payload) {
+      console.log(`❌ WS: Invalid token`);
+      return;
+    }
 
-    socket.userId = session.id;
+    socket.userId = payload.id;
     await SocketHandler(socket);
   } catch (e) {
-    console.log(`Error: ${e}`);
+    console.log(`❌ WS Error: ${e}`);
   }
 });
 

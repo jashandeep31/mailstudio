@@ -5,6 +5,7 @@ import {
   sessionSchema,
   setUserInCache,
 } from "./check-authorization.js";
+import { verifyToken } from "../lib/jwt.js";
 
 export const attachUserIfExists = async (
   req: Request,
@@ -12,17 +13,13 @@ export const attachUserIfExists = async (
   next: NextFunction,
 ) => {
   try {
-    const rawSession = req.cookies?.session;
-    if (!rawSession) return next();
+    const token = req.cookies?.session;
+    if (!token) return next();
 
-    let parsedJson: unknown;
-    try {
-      parsedJson = JSON.parse(rawSession);
-    } catch {
-      return next();
-    }
+    const payload = await verifyToken(token);
+    if (!payload) return next();
 
-    const parsedSession = sessionSchema.safeParse(parsedJson);
+    const parsedSession = sessionSchema.safeParse(payload);
     if (!parsedSession.success) return next();
 
     const userId = parsedSession.data.id;

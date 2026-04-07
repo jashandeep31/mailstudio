@@ -10,6 +10,7 @@ import {
 } from "@repo/db";
 import { z } from "zod";
 import { redis } from "../lib/db.js";
+import { verifyToken } from "../lib/jwt.js";
 
 export const sessionSchema = z.object({
   id: z.string(),
@@ -93,19 +94,25 @@ export const checkAuthorization =
   (roles: UserRole[]) =>
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const session = req.cookies.session;
+      const token = req.cookies.session;
 
-      if (!session) {
+      if (!token) {
         res.status(401).json({
           error: "Authentication required. Please login.",
         });
         return;
       }
 
-      let parsedSession;
-      try {
-        parsedSession = sessionSchema.parse(JSON.parse(session));
-      } catch (error) {
+      const payload = await verifyToken(token);
+      if (!payload) {
+        res.status(401).json({
+          error: "Invalid session. Please login again.",
+        });
+        return;
+      }
+
+      const parsedSession = sessionSchema.parse(payload);
+      if (!parsedSession) {
         res.status(401).json({
           error: "Invalid session format. Please login again.",
         });
