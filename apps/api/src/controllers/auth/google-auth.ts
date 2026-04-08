@@ -4,6 +4,7 @@ import { env } from "../../lib/env.js";
 import { OAuth2Client } from "google-auth-library";
 import { z } from "zod";
 import { createUser } from "./lib/create-user.js";
+import { signJWT } from "../../lib/jwt.js";
 
 const payloadSchema = z.object({
   email: z.string(),
@@ -56,13 +57,11 @@ export const googleAuthCallbackController = catchAsync(
       provider: "google",
     });
     const isProd = env.ENVIRONMENT !== "development";
+    const token = await signJWT({ userId: user.id, role: user.role });
 
     res.cookie(
       "session",
-      JSON.stringify({
-        id: user.id,
-        role: user.role,
-      }),
+      token,
       {
         httpOnly: true,
         secure: isProd,

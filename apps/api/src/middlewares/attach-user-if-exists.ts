@@ -2,9 +2,9 @@ import { NextFunction, Request, Response } from "express";
 import {
   getUserFromCache,
   getUserFromDatabase,
-  sessionSchema,
   setUserInCache,
 } from "./check-authorization.js";
+import { verifyJWT } from "../lib/jwt.js";
 
 export const attachUserIfExists = async (
   req: Request,
@@ -15,17 +15,10 @@ export const attachUserIfExists = async (
     const rawSession = req.cookies?.session;
     if (!rawSession) return next();
 
-    let parsedJson: unknown;
-    try {
-      parsedJson = JSON.parse(rawSession);
-    } catch {
-      return next();
-    }
+    const payload = await verifyJWT(rawSession);
+    if (!payload) return next();
 
-    const parsedSession = sessionSchema.safeParse(parsedJson);
-    if (!parsedSession.success) return next();
-
-    const userId = parsedSession.data.id;
+    const userId = payload.userId;
 
     let userData = await getUserFromCache(userId);
 

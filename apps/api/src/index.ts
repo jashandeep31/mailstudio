@@ -19,6 +19,7 @@ import paymentRoutes from "./routes/payment-routes.js";
 import utilRoutes from "./routes/util-routes.js";
 import brandKitRoutes from "./routes/brandkit-routes.js";
 import marketplaceRoutes from "./routes/marketplace-routes.js";
+import { verifyJWT } from "./lib/jwt.js";
 import * as Sentry from "@sentry/node";
 
 const app = express();
@@ -102,10 +103,10 @@ ws.on("connection", async (socket, req) => {
     const parsedCookie = cookie.parse(req.headers.cookie!);
     if (!parsedCookie.session) return;
 
-    let session;
-    session = JSON.parse(decodeURIComponent(parsedCookie.session));
+    const payload = await verifyJWT(parsedCookie.session);
+    if (!payload) return;
 
-    socket.userId = session.id;
+    socket.userId = payload.userId;
     await SocketHandler(socket);
   } catch (e) {
     console.log(`Error: ${e}`);
