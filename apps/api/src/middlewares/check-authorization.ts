@@ -10,11 +10,7 @@ import {
 } from "@repo/db";
 import { z } from "zod";
 import { redis } from "../lib/db.js";
-
-export const sessionSchema = z.object({
-  id: z.string(),
-  role: z.enum(userRoleEnum.enumValues),
-});
+import { verifySessionToken } from "../lib/jwt.js";
 
 const userCacheSchema = z.object({
   id: z.string(),
@@ -102,20 +98,22 @@ export const checkAuthorization =
         return;
       }
 
-      let parsedSession;
+      let decoded;
       try {
-        parsedSession = sessionSchema.parse(JSON.parse(session));
+        decoded = verifySessionToken(session);
       } catch (error) {
         res.status(401).json({
-          error: "Invalid session format. Please login again.",
+          error: "Invalid or expired session. Please login again.",
         });
         return;
       }
 
-      let userData = await getUserFromCache(parsedSession.id);
+      const userId = decoded.userId;
+
+      let userData = await getUserFromCache(userId);
 
       if (!userData) {
-        userData = await getUserFromDatabase(parsedSession.id);
+        userData = await getUserFromDatabase(userId);
 
         if (!userData) {
           res.status(401).json({
@@ -124,14 +122,7 @@ export const checkAuthorization =
           return;
         }
 
-        await setUserInCache(parsedSession.id, userData);
-      }
-
-      if (parsedSession.id !== userData.id) {
-        res.status(401).json({
-          error: "Session mismatch. Please login again.",
-        });
-        return;
+        await setUserInCache(userId, userData);
       }
 
       req["user"] = userData;

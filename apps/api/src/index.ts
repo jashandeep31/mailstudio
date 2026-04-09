@@ -20,6 +20,7 @@ import utilRoutes from "./routes/util-routes.js";
 import brandKitRoutes from "./routes/brandkit-routes.js";
 import marketplaceRoutes from "./routes/marketplace-routes.js";
 import * as Sentry from "@sentry/node";
+import { verifySessionToken } from "./lib/jwt.js";
 
 const app = express();
 const server = createServer(app);
@@ -102,11 +103,13 @@ ws.on("connection", async (socket, req) => {
     const parsedCookie = cookie.parse(req.headers.cookie!);
     if (!parsedCookie.session) return;
 
-    let session;
-    session = JSON.parse(decodeURIComponent(parsedCookie.session));
-
-    socket.userId = session.id;
-    await SocketHandler(socket);
+    try {
+      const decoded = verifySessionToken(parsedCookie.session);
+      socket.userId = decoded.userId;
+      await SocketHandler(socket);
+    } catch (e) {
+      console.log(`Invalid session token: ${e}`);
+    }
   } catch (e) {
     console.log(`Error: ${e}`);
   }

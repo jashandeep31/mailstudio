@@ -201,7 +201,7 @@ export default function ClientView({
               <span>{template.chat.like_count || 0} likes</span>
             </Button>
 
-            {session?.id === template.user.id ? (
+            {session?.userId === template.user.id ? (
               <Link
                 href={`/chat/${template.chat.id}`}
                 className={buttonVariants()}
