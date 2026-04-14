@@ -8,6 +8,7 @@ import {
   plansTable,
   usersTable,
 } from "@repo/db";
+import { AppError } from "../../lib/app-error.js";
 interface CreateUser {
   email: string;
   name?: string | undefined;
@@ -34,7 +35,7 @@ export const createUser = async ({
       .where(eq(accountsTable.user_id, isUser.id));
 
     if (isAccount && isAccount.provider !== "google") {
-      throw new Error("please login with the proper way");
+      throw new AppError("Please login with the proper way", 400);
     }
 
     return isUser;
@@ -64,7 +65,7 @@ export const createUser = async ({
       })
       .returning();
 
-    if (!user) throw new Error("Unable to create the user");
+    if (!user) throw new AppError("Unable to create the user", 500);
     // creating the user account
     await tx.insert(accountsTable).values({
       user_id: user.id,

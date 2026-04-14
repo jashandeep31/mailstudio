@@ -1,4 +1,5 @@
 import dotenv from "dotenv";
+import { AppError } from "./app-error.js";
 dotenv.config();
 
 export const env = {
@@ -38,6 +39,6 @@ export const env = {
 // Validate env variables
 for (const [key, value] of Object.entries(env)) {
   if (!value) {
-    throw new Error(`❌ Missing required environment variable: ${key}`);
+    throw new AppError(`Missing required environment variable: ${key}`, 500);
   }
 }

@@ -2,6 +2,7 @@ import type WebSocket from "ws";
 import { SocketEventSchemas, SocketEventKeySchema } from "@repo/shared";
 import { z } from "zod";
 import { env } from "../lib/env.js";
+import { AppError } from "../lib/app-error.js";
 import { newChatCase } from "./cases/new-chat.js";
 import { joinedChat } from "./cases/joined-chat.js";
 import { refineTemplateCase } from "./cases/refine-template.js";
@@ -75,7 +76,7 @@ export const getParsedData = <K extends keyof typeof SocketEventSchemas>(
   const schema = SocketEventSchemas[event] as (typeof SocketEventSchemas)[K];
   const parsedResult = schema.safeParse(rawData);
   if (!parsedResult.success) {
-    throw new Error("something went wrong");
+    throw new AppError("Failed to parse event data", 400);
   }
   return parsedResult.data as z.infer<(typeof SocketEventSchemas)[K]>;
 };

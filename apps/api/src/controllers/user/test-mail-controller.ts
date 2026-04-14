@@ -37,7 +37,7 @@ const verifyTestMailSchema = z.object({
 
 export const getUserTestMails = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
-    if (!req.user) throw new Error("login is required");
+    if (!req.user) throw new AppError("Login is required", 401);
     const mails = await db
       .select({
         id: userTestMailsTable.id,
@@ -53,7 +53,7 @@ export const getUserTestMails = catchAsync(
 
 export const deleteTestMail = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
-    if (!req.user) throw new Error("Authentication failed ");
+    if (!req.user) throw new AppError("Authentication failed", 401);
     const parsedData = deleteTestMailSchema.parse(req.params);
     await db
       .delete(userTestMailsTable)

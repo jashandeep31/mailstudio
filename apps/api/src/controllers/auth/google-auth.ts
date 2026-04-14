@@ -4,6 +4,7 @@ import { env } from "../../lib/env.js";
 import { OAuth2Client } from "google-auth-library";
 import { z } from "zod";
 import { createUser } from "./lib/create-user.js";
+import { AppError } from "../../lib/app-error.js";
 
 const payloadSchema = z.object({
   email: z.string(),
@@ -34,7 +35,7 @@ export const googleAuthCallbackController = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const { code } = req.query;
     if (typeof code !== "string") {
-      throw new Error("Code is required");
+      throw new AppError("Code is required", 400);
     }
 
     const { tokens } = await oauthClient.getToken(code);

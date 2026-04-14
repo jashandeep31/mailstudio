@@ -12,6 +12,7 @@ import { SocketEventSchemas } from "@repo/shared";
 import { z } from "zod";
 import { WebSocket } from "ws";
 import { streamAndHandleQuestion } from "../functions/stream-and-handle-question.js";
+import { AppError } from "../../lib/app-error.js";
 
 export const handleQuestionEvent = async (
   data: z.infer<(typeof SocketEventSchemas)["event:first-chat-message"]>,
@@ -29,7 +30,7 @@ export const handleQuestionEvent = async (
         })
         .returning();
 
-      if (!chatVersion) throw new Error("Failed to create the chat");
+      if (!chatVersion) throw new AppError("Failed to create chat", 500);
       const [chatQuestion] = await tx
         .insert(chatVersionPromptsTable)
         .values({
@@ -38,7 +39,7 @@ export const handleQuestionEvent = async (
           brand_kit_id: data.brandKitId,
         })
         .returning();
-      if (!chatQuestion) throw new Error("Something went wrong");
+      if (!chatQuestion) throw new AppError("Failed to create chat question", 500);
       let chatMedia: (typeof chatMediaTable.$inferSelect)[] = [];
       if (validMedia.length > 0) {
         chatMedia = await tx
@@ -60,7 +61,7 @@ export const handleQuestionEvent = async (
       };
     },
   );
-  if (!chatQuestion) throw new Error("Something went wrong");
+  if (!chatQuestion) throw new AppError("Failed to process chat question", 500);
 
   await streamAndHandleQuestion({
     chatQuestion: chatQuestion,
@@ -88,7 +89,7 @@ export const validateMediaIds = async (
     );
 
   if (validMedia.length !== mediaIds.length) {
-    throw new Error("Invalid media id");
+    throw new AppError("Invalid media id", 400);
   }
 
   return validMedia;

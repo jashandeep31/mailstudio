@@ -3,6 +3,7 @@ import { SocketEventSchemas } from "@repo/shared";
 import { chatsTable, db } from "@repo/db";
 import WebSocket from "ws";
 import { redis } from "../../lib/db.js";
+import { AppError } from "../../lib/app-error.js";
 export const handleNewChatEvent = async (
   data: z.infer<(typeof SocketEventSchemas)["event:new-chat"]>,
   socket: WebSocket,
@@ -17,7 +18,7 @@ export const handleNewChatEvent = async (
     })
     .returning();
 
-  if (!chat) throw new Error("Something went wrong");
+  if (!chat) throw new AppError("Failed to create chat", 500);
   socket.send(
     JSON.stringify({
       key: "res:new-chat",

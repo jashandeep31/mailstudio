@@ -14,6 +14,7 @@ import { z } from "zod";
 import { v4 as uuid } from "uuid";
 
 import mjml2html from "mjml";
+import { AppError } from "../../lib/app-error.js";
 import { WebSocket } from "ws";
 import { streamOverview } from "../functions/stream-overview.js";
 import { ProcesingVersions } from "../../state/processing-versions-state.js";
@@ -145,7 +146,7 @@ export const refineTemplateHandler = async ({
         .values(DummyVersion)
         .returning();
 
-      if (!chatVersion) throw new Error("failed to create the chat version");
+      if (!chatVersion) throw new AppError("Failed to create chat version", 500);
 
       const [chatQuestion] = await tx
         .insert(chatVersionPromptsTable)
