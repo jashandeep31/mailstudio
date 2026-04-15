@@ -18,7 +18,6 @@ export const handleDodoPaymentWebhook = catchAsync(
       case "payment.succeeded":
         await handlePaymentSuccessWebhook({
           event,
-          res,
         });
         break;
       case "subscription.active":

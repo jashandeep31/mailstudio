@@ -6,7 +6,6 @@ import {
   billingsTable,
 } from "@repo/db";
 import DodoPayments from "dodopayments";
-import { Response } from "express";
 import { AppError } from "../../../lib/app-error.js";
 import { getPlanInfo } from "../../../lib/get-plan-info.js";
 import { dodoPaymentClient } from "../dodo-payments.js";
@@ -20,10 +19,8 @@ import { dodoPaymentClient } from "../dodo-payments.js";
  */
 export const handlePaymentSuccessWebhook = async ({
   event,
-  res,
 }: {
   event: DodoPayments.Webhooks.PaymentSucceededWebhookEvent;
-  res: Response;
 }) => {
   const paymentData = event.data;
   const userId = paymentData.metadata.user_id;
@@ -41,7 +38,6 @@ export const handlePaymentSuccessWebhook = async ({
 
   if (!userId || !orderId) {
     console.error("Missing required metadata in webhook payload");
-    res.status(200).json({ received: true });
     return;
   }
 
@@ -53,7 +49,6 @@ export const handlePaymentSuccessWebhook = async ({
 
   if (!userPlan) {
     console.error(`User plan not found for user: ${userId}`);
-    res.status(200).json({ received: true });
     return;
   }
 
@@ -125,6 +120,4 @@ export const handlePaymentSuccessWebhook = async ({
       `Payment processed successfully for user ${userId}, payment ${paymentData.payment_id}`,
     );
   });
-
-  res.status(200).json({ received: true });
 };
