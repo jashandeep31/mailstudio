@@ -19,9 +19,9 @@ import { buttonVariants } from "@repo/ui/components/button";
 import { LandingPageTemplates } from "@/components/landing-page-templates";
 import { PricingCards } from "@/components/pricing-cards";
 
-const pageTitle = "AI Email Template Builder with MJML and HTML Output";
+const pageTitle = "Create AI-Powered Email Templates";
 const pageDescription =
-  "Generate full email templates with AI, get both MJML and HTML instantly, and fine-tune designs in a WYSIWYG editor.";
+  "MailStudio leverages AI to create responsive email templates from plain text, providing ready-to-use MJML and HTML output.";
 
 export const metadata: Metadata = {
   title: pageTitle,
@@ -67,17 +67,16 @@ const page = async () => {
           </div>
 
           <h1 className="from-foreground to-foreground/70 bg-gradient-to-r bg-clip-text pb-2 text-4xl font-extrabold tracking-tight text-transparent sm:text-5xl md:text-6xl lg:text-7xl">
-            Generate complete email templates <br className="hidden sm:inline" />
+            Create AI-Powered Email Templates
+            <br className="hidden sm:inline" />
             <span className="text-blue-600 dark:text-blue-500">
-              with AI
-            </span>{" "}
-            in seconds.
+              in seconds.
+            </span>
           </h1>
 
           <p className="text-muted-foreground mx-auto max-w-[42rem] leading-normal sm:text-xl sm:leading-8">
-            MailStudio creates responsive templates from a prompt, then returns
-            both MJML and HTML so you can ship faster or keep editing visually
-            in our WYSIWYG builder.
+            MailStudio leverages AI to create responsive email templates from plain text,
+            providing ready-to-use MJML and HTML output for your email campaigns.
           </p>
 
           <div className="flex flex-wrap items-center justify-center gap-4 pt-4">
