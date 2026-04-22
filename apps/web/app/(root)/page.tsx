@@ -67,7 +67,7 @@ const page = async () => {
           </div>
 
           <h1 className="from-foreground to-foreground/70 bg-gradient-to-r bg-clip-text pb-2 text-4xl font-extrabold tracking-tight text-transparent sm:text-5xl md:text-6xl lg:text-7xl">
-            Generate complete email templates <br className="hidden sm:inline" />
+            Craft professional email templates <br className="hidden sm:inline" />
             <span className="text-blue-600 dark:text-blue-500">
               with AI
             </span>{" "}
@@ -75,9 +75,8 @@ const page = async () => {
           </h1>
 
           <p className="text-muted-foreground mx-auto max-w-[42rem] leading-normal sm:text-xl sm:leading-8">
-            MailStudio creates responsive templates from a prompt, then returns
-            both MJML and HTML so you can ship faster or keep editing visually
-            in our WYSIWYG builder.
+            Turn your ideas into high-converting emails with AI, MJML, and HTML
+            output instantly.
           </p>
 
           <div className="flex flex-wrap items-center justify-center gap-4 pt-4">
