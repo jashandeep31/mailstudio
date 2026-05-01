@@ -13,7 +13,7 @@ export const createOTPEmailHTML = (otp: string) => {
     <!doctype html>
 <html lang="und" dir="auto" xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
   <head>
-    <title>Security Verification - jashan.dev</title>
+    <title>Security Verification - balkaran.me</title>
     <!--[if !mso]><!-->
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <!--<![endif]-->
@@ -69,10 +69,10 @@ export const createOTPEmailHTML = (otp: string) => {
   </head>
   <body style="word-spacing:normal;background-color:#FFFFFF;">
     
-    <div style="display:none;font-size:1px;color:#ffffff;line-height:1px;max-height:0px;max-width:0px;opacity:0;overflow:hidden;">Your one-time verification code for jashan.dev</div>
+    <div style="display:none;font-size:1px;color:#ffffff;line-height:1px;max-height:0px;max-width:0px;opacity:0;overflow:hidden;">Your one-time verification code for balkaran.me</div>
   
     
-      <div aria-label="Security Verification - jashan.dev" aria-roledescription="email" style="background-color:#FFFFFF;" role="article" lang="und" dir="auto">
+      <div aria-label="Security Verification - balkaran.me" aria-roledescription="email" style="background-color:#FFFFFF;" role="article" lang="und" dir="auto">
         
       
       <!--[if mso | IE]><table align="center" border="0" cellpadding="0" cellspacing="0" class="" role="presentation" style="width:600px;" width="600" ><tr><td style="line-height:0px;font-size:0px;mso-line-height-rule:exactly;"><![endif]-->
@@ -94,7 +94,7 @@ export const createOTPEmailHTML = (otp: string) => {
               <tr>
                 <td align="center" class="brand-text" style="letter-spacing: -0.5px; font-size: 0px; padding: 10px 25px; word-break: break-word;">
                   
-      <div style="font-family:'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:20px;font-weight:700;line-height:1.5;text-align:center;color:#000000;">jashan.dev</div>
+      <div style="font-family:'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:20px;font-weight:700;line-height:1.5;text-align:center;color:#000000;">balkaran.me</div>
     
                 </td>
               </tr>
@@ -156,7 +156,7 @@ export const createOTPEmailHTML = (otp: string) => {
               <tr>
                 <td align="center" style="font-size:0px;padding:10px 25px;padding-top:30px;word-break:break-word;">
                   
-      <div style="font-family:'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:14px;line-height:1.5;text-align:center;color:#555555;"><strong>Security Warning:</strong> For your protection, do not share this code with anyone. jashan.dev representatives will never ask for this code via email, phone, or chat. If you did not request this verification, please disregard this message; your account security remains intact.</div>
+      <div style="font-family:'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:14px;line-height:1.5;text-align:center;color:#555555;"><strong>Security Warning:</strong> For your protection, do not share this code with anyone. balkaran.me representatives will never ask for this code via email, phone, or chat. If you did not request this verification, please disregard this message; your account security remains intact.</div>
     
                 </td>
               </tr>
@@ -237,9 +237,9 @@ export const createOTPEmailHTML = (otp: string) => {
               <tr>
                 <td align="center" style="font-size:0px;padding:10px 25px;word-break:break-word;">
                   
-      <div style="font-family:'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:12px;line-height:18px;text-align:center;color:#999999;">© 2024 jashan.dev. This is an automated transactional message.<br>
+      <div style="font-family:'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:12px;line-height:18px;text-align:center;color:#999999;">© 2024 balkaran.me. This is an automated transactional message.<br>
           123 Developer Parkway, San Francisco, CA 94107<br>
-          <a href="https://jashan.dev/privacy" class="footer-link" style="color: #666666; text-decoration: underline;">Privacy Policy</a> | <a href="mailto:support@jashan.dev" class="footer-link" style="color: #666666; text-decoration: underline;">Support</a></div>
+          <a href="https://balkaran.me/privacy" class="footer-link" style="color: #666666; text-decoration: underline;">Privacy Policy</a> | <a href="mailto:support@balkaran.me" class="footer-link" style="color: #666666; text-decoration: underline;">Support</a></div>
     
                 </td>
               </tr>
@@ -247,7 +247,7 @@ export const createOTPEmailHTML = (otp: string) => {
               <tr>
                 <td align="center" style="font-size:0px;padding:10px 25px;padding-top:20px;word-break:break-word;">
                   
-      <div style="font-family:'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:11px;line-height:1.5;text-align:center;color:#BBBBBB;">This email was sent to complete a requested security action on jashan.dev.</div>
+      <div style="font-family:'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;font-size:11px;line-height:1.5;text-align:center;color:#BBBBBB;">This email was sent to complete a requested security action on balkaran.me.</div>
     
                 </td>
               </tr>

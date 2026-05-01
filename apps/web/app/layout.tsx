@@ -38,7 +38,7 @@ export const metadata: Metadata = {
     "email builder",
     "responsive email templates",
   ],
-  authors: [{ name: "Jashandeep Singh", url: "https://x.com/jashandeep31" }],
+  authors: [{ name: "Jashandeep Singh", url: "https://x.com/iBalkaransidhu" }],
   creator: "Jashandeep Singh",
   applicationName: siteTitle,
   category: "technology",
@@ -54,7 +54,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: siteTitle,
     description: defaultDescription,
-    creator: "@jashandeep31",
+    creator: "@iBalkaransidhu",
   },
   robots: {
     index: true,

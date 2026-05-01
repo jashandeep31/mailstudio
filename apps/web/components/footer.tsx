@@ -89,13 +89,13 @@ export default function Footer() {
           </p>
           <div className="flex items-center gap-4">
             <Link
-              href="https://x.com/jashandeep31"
+              href="https://x.com/iBalkaransidhu"
               target="_blank"
               rel="noopener noreferrer"
               className="text-muted-foreground hover:text-foreground inline-flex items-center gap-2 transition-colors"
               aria-label="Follow us on X"
             >
-              <Twitter className="size-5" /> @jashandeep31
+              <Twitter className="size-5" /> @iBalkaransidhu
             </Link>
           </div>
         </div>

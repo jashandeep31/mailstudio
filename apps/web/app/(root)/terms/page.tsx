@@ -106,10 +106,10 @@ export default function TermsPage() {
           <p className="text-muted-foreground">
             If you have any questions about these Terms, please contact us at{" "}
             <a
-              href="mailto:hi@jashan.dev"
+              href="mailto:hi@balkaran.me"
               className="text-primary hover:underline"
             >
-              hi@jashan.dev
+              hi@balkaran.me
             </a>
             .
           </p>

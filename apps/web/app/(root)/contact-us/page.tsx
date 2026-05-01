@@ -38,9 +38,9 @@ export default function ContactPage() {
             <CardDescription>For general inquiries and support</CardDescription>
           </CardHeader>
           <CardContent className="pb-8 text-center">
-            <Link href="mailto:hi@jashan.dev">
+            <Link href="mailto:hi@balkaran.me">
               <Button variant="link" className="h-auto p-0 text-lg">
-                hi@jashan.dev
+                hi@balkaran.me
               </Button>
             </Link>
           </CardContent>
@@ -58,9 +58,9 @@ export default function ContactPage() {
             </CardDescription>
           </CardHeader>
           <CardContent className="pb-8 text-center">
-            <Link href="https://x.com/jashandeep31" target="_blank">
+            <Link href="https://x.com/iBalkaransidhu" target="_blank">
               <Button variant="link" className="h-auto p-0 text-lg">
-                @jashandeep31
+                @iBalkaransidhu
               </Button>
             </Link>
           </CardContent>

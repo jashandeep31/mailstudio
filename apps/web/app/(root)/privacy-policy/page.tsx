@@ -83,10 +83,10 @@ export default function PrivacyPolicyPage() {
             If you have any questions about this Privacy Policy, please contact
             us at{" "}
             <a
-              href="mailto:hi@jashan.dev"
+              href="mailto:hi@balkaran.me"
               className="text-primary hover:underline"
             >
-              hi@jashan.dev
+              hi@balkaran.me
             </a>
             .
           </p>
